@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Šifry">
+<meta name="theme-color" content="#0e0e15">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Šifry</title>
+<style>
+/* ── RESET & TOKENS ──────────────────────────────────────── */
+:root{
+  --bg:#0e0e15; --card:#1b1b27; --card2:#232335; --border:#2a2a3f; --border2:#3a3a58;
+  --violet:#a78bfa; --vd:rgba(167,139,250,.2);
+  --amber:#fbbf24;  --ad:rgba(251,191,36,.18);
+  --green:#34d399;  --gd:rgba(52,211,153,.16);
+  --sky:#38bdf8;    --sd:rgba(56,189,248,.16);
+  --rose:#fb7185;   --rd:rgba(251,113,133,.16);
+  --t1:#e0e0f2; --t2:#8080aa; --t3:#3c3c5a;
+  --r:14px; --rr:20px;
+  --nav:56px;
+  --safe-b: env(safe-area-inset-bottom,0px);
+  --safe-t: env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-family:-apple-system,'SF Pro Display',BlinkMacSystemFont,sans-serif;}
+
+/* ── LAYOUT SHELL ───────────────────────────────────────── */
+#app{
+  display:flex;flex-direction:column;
+  height:100dvh;
+  /* fallback for older safari */
+  height:calc(var(--vh,1vh)*100);
+  padding-top:calc(var(--safe-t) + var(--safe-t) * 0.5);
+}
+
+/* ── BOTTOM NAV ─────────────────────────────────────────── */
+nav{
+  flex:0 0 auto;
+  background:rgba(14,14,21,.96);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;
+  padding-bottom:var(--safe-b);
+}
+.nb{
+  flex:1;padding:7px 0 5px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:none;border:none;color:#55556a;
+  font-size:8px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
+  cursor:pointer;transition:color .15s;
+}
+.nb svg{display:block;transition:color .15s;width:26px;height:26px;flex-shrink:0;}
+.nb span.lbl{line-height:1;}
+.nb.on{color:#e8334a;}
+.nb.on svg{filter:drop-shadow(0 0 4px rgba(232,51,74,.4));}
+
+/* ── PAGES ──────────────────────────────────────────────── */
+.pg{
+  display:none;flex:1;flex-direction:column;min-height:0;overflow:hidden;
+}
+.pg.on{display:flex;}
+
+/* ── OUTPUT BAR ─────────────────────────────────────────── */
+.obar{
+  flex:0 0 auto;
+  margin:10px 12px 0;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:10px 12px;
+  display:flex;align-items:center;gap:10px;
+}
+.olet{
+  font-size:36px;font-weight:800;min-width:44px;text-align:center;
+  transition:color .12s;line-height:1;
+}
+.olet.pop{animation:pop .16s ease;}
+@keyframes pop{0%{transform:scale(1.4);}100%{transform:scale(1);}}
+.ohist{
+  flex:1;display:flex;flex-wrap:wrap;gap:3px;align-items:center;
+  max-height:50px;overflow:hidden;
+}
+.hl{display:inline-block;padding:2px 6px;background:var(--card2);border-radius:6px;font-size:14px;font-weight:700;}
+.hl.sp{background:transparent;color:var(--t3);font-size:10px;}
+.bdel{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;padding:4px 6px;flex-shrink:0;}
+.bdel:active{color:var(--rose);}
+
+/* ── BODY AREA (fills remaining space) ─────────────────── */
+.body{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:10px 12px;gap:10px;min-height:0;overflow:hidden;
+}
+
+/* ── SHARED: ADD / CLEAR BUTTON ROW ────────────────────── */
+.act-row{
+  display:flex;gap:8px;width:100%;max-width:420px;flex-shrink:0;
+}
+.btn-add{
+  flex:1;padding:0;height:48px;border:none;border-radius:var(--r);
+  font-size:15px;font-weight:700;cursor:pointer;transition:opacity .12s;
+}
+.btn-add:active{opacity:.72;}
+.btn-rst{
+  height:48px;padding:0 18px;border-radius:var(--r);
+  background:var(--card);border:1px solid var(--border);
+  color:var(--t2);font-size:15px;font-weight:700;cursor:pointer;
+}
+.btn-rst:active{background:var(--card2);}
+
+/* ══════════════════════════════════════════════════════════
+   MORSE
+══════════════════════════════════════════════════════════ */
+.morse-seq{
+  flex:0 0 auto;
+  display:flex;gap:4px;flex-wrap:wrap;align-items:center;
+  padding:6px 12px 0;min-height:30px;
+}
+.ms{font-size:26px;line-height:1;animation:pop .14s ease;}
+
+/* Two big buttons */
+.morse-btns{
+  flex:1;display:flex;gap:12px;width:100%;max-width:420px;min-height:0;
+}
+.mb{
+  flex:1;min-height:0;
+  border-radius:var(--rr);border:2px solid var(--border);
+  background:var(--card);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;transition:background .07s,border-color .07s,transform .06s;
+  touch-action:manipulation;
+}
+.mb:active,.mb.pr{transform:scale(.95);}
+.mb.dot-btn:active,.mb.dot-btn.pr{background:var(--vd);border-color:var(--violet);}
+.mb.dash-btn:active,.mb.dash-btn.pr{background:var(--ad);border-color:var(--amber);}
+.mb .sym{font-size:min(52px,10vw);line-height:1;}
+.mb .lbl{font-size:11px;font-weight:700;letter-spacing:.6px;color:var(--t2);}
+
+.morse-actions{
+  flex:0 0 auto;display:flex;gap:8px;width:100%;max-width:420px;
+}
+.ma{
+  flex:1;height:44px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  color:var(--t2);font-size:12px;font-weight:700;letter-spacing:.3px;
+  cursor:pointer;transition:background .1s;
+}
+.ma:active{background:var(--card2);}
+.ma.ok{color:var(--green);}
+
+/* ══════════════════════════════════════════════════════════
+   SEMAPHORE
+══════════════════════════════════════════════════════════ */
+.sem-step{
+  flex:0 0 auto;
+  display:flex;gap:8px;align-items:center;font-size:13px;font-weight:600;color:var(--t2);
+}
+.ssd{width:9px;height:9px;border-radius:50%;background:var(--border2);transition:background .18s;}
+.ssd.on{background:var(--violet);}
+.ssd.done{background:var(--green);}
+
+.sem-main{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  min-height:0;width:100%;
+  padding:0;
+  overflow:hidden;
+}
+.sem-dial{
+  /* Fill width, but shrink to available height between obar+step and act-row */
+  width:100vw;
+  height:100vw;
+  max-width:calc(100 * var(--vh,1vh) - 220px);
+  max-height:calc(100 * var(--vh,1vh) - 220px);
+  touch-action:none;flex-shrink:0;
+}
+.sem-dial canvas{width:100%;height:100%;display:block;}
+
+/* ══════════════════════════════════════════════════════════
+   BRAILLE
+══════════════════════════════════════════════════════════ */
+.brl-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:min(12px,2.5vw);
+  padding:min(20px,4vw);
+  background:var(--card);border:2px solid var(--border);border-radius:var(--rr);
+  flex:0 0 auto;
+}
+.brd{
+  width:min(82px,18vw);height:min(82px,18vw);
+  border-radius:50%;
+  background:var(--card2);border:3px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:min(22px,5vw);font-weight:800;color:var(--t3);
+  cursor:pointer;transition:all .11s;touch-action:manipulation;
+}
+.brd.on{background:var(--amber);border-color:var(--amber);color:#1a1000;box-shadow:0 0 20px rgba(251,191,36,.3);}
+.brd:active{transform:scale(.9);}
+
+.brl-match{
+  font-size:min(72px,16vw);font-weight:800;
+  height:min(80px,18vw);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--amber);transition:all .15s;flex:0 0 auto;
+}
+.brl-match.none{font-size:min(20px,5vw);color:var(--t3);}
+.brl-note{font-size:11px;color:var(--t3);text-align:center;line-height:1.7;flex:0 0 auto;}
+
+/* ══════════════════════════════════════════════════════════
+   BINARY
+══════════════════════════════════════════════════════════ */
+.bin-display{
+  flex:0 0 auto;
+  display:flex;gap:min(10px,2.5vw);align-items:center;justify-content:center;
+}
+.bin-bit{
+  width:min(54px,15vw);height:min(54px,15vw);
+  border-radius:var(--r);
+  background:var(--card2);border:3px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:min(24px,6vw);font-weight:800;color:var(--t3);
+  cursor:pointer;transition:all .11s;touch-action:manipulation;
+}
+.bin-bit.on{background:var(--sky);border-color:var(--sky);color:#001a2e;box-shadow:0 0 18px rgba(56,189,248,.3);}
+.bin-bit:active{transform:scale(.9);}
+
+.bin-match{
+  font-size:min(72px,16vw);font-weight:800;
+  height:min(80px,18vw);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--sky);transition:all .15s;flex:0 0 auto;
+}
+.bin-match.none{font-size:min(20px,5vw);color:var(--t3);}
+
+.bin-eq{
+  font-size:12px;color:var(--t2);font-family:'SF Mono',monospace;
+  text-align:center;flex:0 0 auto;min-height:18px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TERNARY
+══════════════════════════════════════════════════════════ */
+.ter-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:min(10px,2.5vw);
+  padding:min(18px,3.5vw);
+  background:var(--card);border:2px solid var(--border);border-radius:var(--rr);
+  flex:0 0 auto;width:100%;max-width:340px;
+}
+.tbd{
+  aspect-ratio:1;
+  border-radius:var(--r);
+  background:var(--card2);border:3px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:min(26px,7vw);font-weight:800;color:var(--t3);
+  cursor:pointer;transition:all .11s;touch-action:manipulation;
+}
+.tbd.on{border-color:transparent;color:#fff;}
+.tbd.on.v0{background:#4b5563;color:#d1d5db;}  /* zero = grey */
+.tbd.on.v1{background:var(--violet);color:#fff;box-shadow:0 0 16px rgba(167,139,250,.35);}
+.tbd.on.v2{background:var(--rose);color:#fff;box-shadow:0 0 16px rgba(251,113,133,.3);}
+.tbd:active{transform:scale(.9);}
+
+/* row labels */
+.ter-row-labels{
+  display:grid;grid-template-rows:repeat(3,1fr);
+  gap:min(10px,2.5vw);padding:min(18px,3.5vw) 0;
+  flex:0 0 auto;font-size:12px;color:var(--t3);font-weight:700;
+  align-items:center;
+}
+
+.ter-wrap{display:flex;gap:6px;align-items:stretch;width:100%;max-width:340px;}
+
+.ter-match{
+  font-size:min(72px,16vw);font-weight:800;
+  height:min(80px,18vw);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--rose);transition:all .15s;flex:0 0 auto;
+}
+.ter-match.none{font-size:min(20px,5vw);color:var(--t3);}
+.ter-eq{font-size:12px;color:var(--t2);font-family:'SF Mono',monospace;text-align:center;flex:0 0 auto;min-height:18px;}
+
+/* ══════════════════════════════════════════════════════════
+   REFERENCE
+══════════════════════════════════════════════════════════ */
+.ref-body{flex:1;overflow-y:auto;padding:12px;-webkit-overflow-scrolling:touch;}
+.rh{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);margin:14px 0 7px;}
+.rh:first-child{margin-top:0;}
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:5px;}
+.rc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 3px;text-align:center;}
+.rc .rl{font-size:14px;font-weight:800;display:block;}
+.rc .rs{font-family:'SF Mono',monospace;font-size:10px;color:var(--violet);display:block;margin-top:1px;word-break:break-all;}
+
+/* ══════════════════════════════════════════════════════════
+   7-SEGMENT DISPLAY
+══════════════════════════════════════════════════════════ */
+.seg-wrap{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;min-height:0;width:100%;
+}
+.seg-display-area{
+  display:flex;align-items:center;gap:20px;flex-shrink:0;
+}
+.seg-match{
+  font-size:min(72px,18vw);font-weight:800;
+  color:var(--green);transition:all .15s;
+  text-align:center;min-width:60px;line-height:1;
+}
+.seg-match.none{font-size:min(18px,5vw);color:var(--t3);}
+.seg-segs-label{
+  font-size:11px;color:var(--t3);text-align:center;line-height:1.8;flex:0 0 auto;
+}
+
+/* ══════════════════════════════════════════════════════════
+   POLSKÝ KŘÍŽ
+══════════════════════════════════════════════════════════ */
+.pkr-variant{
+  display:flex;align-items:center;gap:0;flex-shrink:0;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;align-self:center;
+}
+.pkr-variant button{
+  flex:1;padding:7px 14px;border:none;background:none;
+  color:var(--t2);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;
+}
+.pkr-variant button.on{background:#e8334a;color:#fff;}
+
+.pkr-main{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  min-height:0;width:100%;
+}
+.pkr-dial{
+  width:min(80vw, calc(100 * var(--vh,1vh) - 220px));
+  height:calc(min(80vw, calc(100 * var(--vh,1vh) - 220px)) / 2);
+  touch-action:none;flex-shrink:0;
+}
+.pkr-dial canvas{width:100%;height:100%;display:block;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ MORSE ══════════════════════════════════════════════ -->
+<div id="pg-morse" class="pg on">
+  <div class="obar">
+    <div class="olet" id="m-let" style="color:var(--violet)">—</div>
+    <div class="ohist" id="m-hist"></div>
+    <button class="bdel" onclick="mDel()">⌫</button>
+  </div>
+  <div class="morse-seq" id="m-seq"></div>
+  <div class="body">
+    <div class="morse-btns">
+      <button class="mb dot-btn" id="mb-dot">
+        <span class="sym" style="color:var(--violet)">●</span>
+        <span class="lbl">TEČKA</span>
+      </button>
+      <button class="mb dash-btn" id="mb-dash">
+        <span class="sym" style="color:var(--amber)">▬</span>
+        <span class="lbl">ČÁRKA</span>
+      </button>
+    </div>
+    <div class="morse-actions">
+      <button class="ma" onclick="mBackspace()">⌫ Zpět</button>
+      <button class="ma ok" onclick="mConfirm()">✓ Písmeno</button>
+      <button class="ma" onclick="mSpace()">␣ Mezera</button>
+      <button class="ma" onclick="mClearAll()" style="color:var(--rose)">✕ Vše</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEMAPHORE ══════════════════════════════════════════ -->
+<div id="pg-semaphore" class="pg">
+  <div class="obar">
+    <div class="olet" id="s-let" style="color:var(--amber)">—</div>
+    <div class="ohist" id="s-hist"></div>
+    <button class="bdel" onclick="sDel()">⌫</button>
+  </div>
+  <div class="body" style="padding:4px 0 4px;gap:4px;">
+    <div class="sem-step">
+      <div class="ssd on" id="ss-l"></div>
+      <span id="ss-lbl">Vyber polohu <b>levé</b> paže</span>
+      <div class="ssd" id="ss-r"></div>
+    </div>
+    <div class="sem-main">
+      <div class="sem-dial" id="sem-dial">
+        <canvas id="sem-cv"></canvas>
+      </div>
+    </div>
+    <div class="act-row">
+      <button class="btn-add" style="background:var(--violet);color:#fff" onclick="sAdd()">+ Přidat písmeno</button>
+      <button class="btn-rst" onclick="sClearAll()">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BRAILLE ════════════════════════════════════════════ -->
+<div id="pg-braille" class="pg">
+  <div class="obar">
+    <div class="olet" id="b-let" style="color:var(--amber)">—</div>
+    <div class="ohist" id="b-hist"></div>
+    <button class="bdel" onclick="bDel()">⌫</button>
+  </div>
+  <div class="body">
+    <div class="brl-grid" id="brl-grid"></div>
+    <div class="brl-match none" id="brl-match">?</div>
+    <div class="brl-note">Levý sloupec = body 1 2 3 &nbsp;·&nbsp; Pravý = 4 5 6</div>
+    <div class="act-row">
+      <button class="btn-add" style="background:var(--amber);color:#1a1000" onclick="bAdd()">+ Přidat písmeno</button>
+      <button class="btn-rst" onclick="bReset()">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BINARY ════════════════════════════════════════════ -->
+<div id="pg-binary" class="pg">
+  <div class="obar">
+    <div class="olet" id="bi-let" style="color:var(--sky)">—</div>
+    <div class="ohist" id="bi-hist"></div>
+    <button class="bdel" onclick="biDel()">⌫</button>
+  </div>
+  <div class="body">
+    <div class="bin-display" id="bin-bits"></div>
+    <div class="bin-match none" id="bin-match">?</div>
+    <div class="bin-eq" id="bin-eq"></div>
+    <div class="act-row">
+      <button class="btn-add" style="background:var(--sky);color:#001a2e" onclick="biAdd()">+ Přidat písmeno</button>
+      <button class="btn-rst" onclick="biReset()">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
+      5 bitů &nbsp;·&nbsp; 00001 = A &nbsp;·&nbsp; 11010 = Z<br>klepni na bity které jsou <b style="color:var(--sky)">1</b>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TERNARY ════════════════════════════════════════════ -->
+<div id="pg-ternary" class="pg">
+  <div class="obar">
+    <div class="olet" id="t-let" style="color:var(--rose)">—</div>
+    <div class="ohist" id="t-hist"></div>
+    <button class="bdel" onclick="tDel()">⌫</button>
+  </div>
+  <div class="body">
+    <div class="ter-wrap">
+      <div class="ter-row-labels" id="ter-row-labels">
+        <span>0</span><span>1</span><span>2</span>
+      </div>
+      <div class="ter-grid" id="ter-grid"></div>
+    </div>
+    <div class="ter-match none" id="ter-match">?</div>
+    <div class="ter-eq" id="ter-eq"></div>
+    <div class="act-row">
+      <button class="btn-add" style="background:var(--rose);color:#1a0008" onclick="tAdd()">+ Přidat písmeno</button>
+      <button class="btn-rst" onclick="tReset()">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
+      3 cifry (základ 3) &nbsp;·&nbsp; 001 = A &nbsp;·&nbsp; 222 = Z<br>
+      <span style="color:#4b5563">■</span> = 0 &nbsp;
+      <span style="color:var(--violet)">■</span> = 1 &nbsp;
+      <span style="color:var(--rose)">■</span> = 2
+    </div>
+  </div>
+</div>
+
+<!-- ══ 7-SEGMENT ══════════════════════════════════════════ -->
+<div id="pg-7seg" class="pg">
+  <div class="obar">
+    <div class="olet" id="seg-let" style="color:var(--green)">—</div>
+    <div class="ohist" id="seg-hist"></div>
+    <button class="bdel" onclick="segDel()">⌫</button>
+  </div>
+  <div class="body">
+    <div class="seg-wrap">
+      <div class="seg-display-area">
+        <canvas id="seg-cv" class="seg-canvas-wrap"></canvas>
+        <div class="seg-match none" id="seg-match">?</div>
+      </div>
+      <div class="seg-segs-label" id="seg-active-label">Žádný segment</div>
+    </div>
+    <div class="act-row">
+      <button class="btn-add" style="background:var(--green);color:#001a0d" onclick="segAdd()">+ Přidat písmeno</button>
+      <button class="btn-rst" onclick="segReset()">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ POLSKÝ KŘÍŽ ══════════════════════════════════════════ -->
+<div id="pg-pkriz" class="pg">
+  <div class="obar">
+    <div class="olet" id="pk-let" style="color:var(--green)">—</div>
+    <div class="ohist" id="pk-hist"></div>
+    <button class="bdel" onclick="pkDel()">⌫</button>
+  </div>
+  <div class="body" style="gap:10px;">
+    <div class="pkr-variant">
+      <button class="on" id="pk-btn-noch" onclick="pkSetVariant(false)">Bez CH</button>
+      <button id="pk-btn-ch" onclick="pkSetVariant(true)">S CH</button>
+    </div>
+    <div class="pkr-main">
+      <div class="pkr-dial" id="pk-dial">
+        <canvas id="pk-cv"></canvas>
+      </div>
+    </div>
+    <div class="act-row">
+      <button class="btn-add" style="background:#e8334a;color:#fff" onclick="pkAdd()">+ Přidat písmeno</button>
+      <button class="btn-rst" onclick="pkReset()">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REFERENCE ══════════════════════════════════════════ -->
+
+<!-- ══ NAV ════════════════════════════════════════════════ -->
+<nav>
+  <button class="nb on" onclick="go('morse',this)">
+    <svg width="26" height="26" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- dot -->
+      <circle cx="6" cy="11" r="3" fill="currentColor"/>
+      <!-- dash -->
+      <rect x="11" y="9.5" width="8" height="3" rx="1.5" fill="currentColor"/>
+    </svg>
+    <span class="lbl">Morse</span>
+  </button>
+  <button class="nb" onclick="go('semaphore',this)">
+    <svg width="26" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- head -->
+      <circle cx="12" cy="5" r="3" fill="currentColor"/>
+      <!-- body -->
+      <line x1="12" y1="8" x2="12" y2="18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <!-- N: right arm straight up -->
+      <line x1="12" y1="11" x2="12" y2="3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <!-- N: left arm down-left -->
+      <line x1="12" y1="11" x2="4" y2="18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+    <span class="lbl">Semafor</span>
+  </button>
+  <button class="nb" onclick="go('braille',this)">
+    <svg width="26" height="26" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="7" cy="5.5" r="2" fill="currentColor"/>
+      <circle cx="7" cy="11" r="2" fill="currentColor"/>
+      <circle cx="7" cy="16.5" r="2" fill="currentColor" opacity=".35"/>
+      <circle cx="15" cy="5.5" r="2" fill="currentColor" opacity=".35"/>
+      <circle cx="15" cy="11" r="2" fill="currentColor"/>
+      <circle cx="15" cy="16.5" r="2" fill="currentColor"/>
+    </svg>
+    <span class="lbl">Braille</span>
+  </button>
+  <button class="nb" onclick="go('binary',this)">
+    <svg width="26" height="26" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="1" y="16" font-size="14" font-weight="800" fill="currentColor" font-family="-apple-system,monospace">01</text>
+    </svg>
+    <span class="lbl">Binárně</span>
+  </button>
+  <button class="nb" onclick="go('ternary',this)">
+    <svg width="26" height="26" viewBox="0 0 28 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="16" font-size="14" font-weight="800" fill="currentColor" font-family="-apple-system,monospace">012</text>
+    </svg>
+    <span class="lbl">Trojkově</span>
+  </button>
+  <button class="nb" onclick="go('7seg',this)">
+    <svg width="14" height="26" viewBox="0 0 13 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- top -->
+      <rect x="2" y="0.5" width="9" height="2" rx="1" fill="currentColor"/>
+      <!-- top-right -->
+      <rect x="11" y="1.5" width="2" height="8" rx="1" fill="currentColor"/>
+      <!-- bottom-right -->
+      <rect x="11" y="11.5" width="2" height="8" rx="1" fill="currentColor"/>
+      <!-- bottom -->
+      <rect x="2" y="21.5" width="9" height="2" rx="1" fill="currentColor"/>
+      <!-- bottom-left -->
+      <rect x="0" y="11.5" width="2" height="8" rx="1" fill="currentColor"/>
+      <!-- top-left -->
+      <rect x="0" y="1.5" width="2" height="8" rx="1" fill="currentColor"/>
+      <!-- middle -->
+      <rect x="2" y="10.5" width="9" height="2" rx="1" fill="currentColor"/>
+    </svg>
+    <span class="lbl">7-Seg</span>
+  </button>
+  <button class="nb" onclick="go('pkriz',this)">
+    <svg width="26" height="16" viewBox="0 0 26 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="10.5" width="24" height="2" rx="1" fill="currentColor"/>
+      <rect x="0" y="0.5" width="2" height="12" rx="1" fill="currentColor"/>
+      <circle cx="8.5" cy="5.5" r="1.6" fill="currentColor"/>
+      <circle cx="13" cy="5.5" r="1.6" fill="currentColor"/>
+      <circle cx="17.5" cy="5.5" r="1.6" fill="currentColor"/>
+    </svg>
+    <span class="lbl">P.Kříž</span>
+  </button>
+</nav>
+</div><!-- #app -->
+
+<script>
+// ── vh fix for iOS ──────────────────────────────────────────
+function setVH(){document.documentElement.style.setProperty('--vh',window.innerHeight*.01+'px');}
+setVH();window.addEventListener('resize',setVH);
+
+// ── NAV ─────────────────────────────────────────────────────
+function go(name,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pg-'+name).classList.add('on');
+  btn.classList.add('on');
+  if(name==='semaphore') requestAnimationFrame(()=>{ setVH(); semDrawState(); semDraw(); });
+  if(name==='pkriz') requestAnimationFrame(()=>{ setVH(); pkDraw(); });
+}
+
+// ── DATA ────────────────────────────────────────────────────
+const MMAP={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',Ch:'----',
+  I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',
+  R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',
+  '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....',
+  '6':'-....','7':'--...','8':'---..','9':'----.'};
+const MREV={};Object.entries(MMAP).forEach(([k,v])=>MREV[v]=k);
+
+// Kompletní česká znaková sada Braillova písma (teiresias.muni.cz/czbraille/Z-1)
+const BRL={
+  // Základní latinka
+  A:[1],B:[1,2],C:[1,4],D:[1,4,5],E:[1,5],F:[1,2,4],G:[1,2,4,5],H:[1,2,5],
+  I:[2,4],J:[2,4,5],K:[1,3],L:[1,2,3],M:[1,3,4],N:[1,3,4,5],O:[1,3,5],
+  P:[1,2,3,4],Q:[1,2,3,4,5],R:[1,2,3,5],S:[2,3,4],T:[2,3,4,5],
+  U:[1,3,6],V:[1,2,3,6],W:[1,2,3,5,6],X:[1,3,4,6],Y:[1,3,4,5,6],Z:[1,3,5,6],
+  // Česká diakritika
+  'Á':[1,6],'Č':[1,4,6],'Ď':[1,4,5,6],'É':[3,4,5],'Ě':[1,2,6],
+  'Í':[3,4],'Ň':[1,2,4,6],'Ó':[2,4,6],'Ř':[2,4,5,6],'Š':[1,5,6],
+  'Ť':[1,2,5,6],'Ú':[3,4,6],'Ů':[2,3,4,5,6],'Ý':[1,2,3,4,6],'Ž':[2,3,4,6],
+  // Interpunkce
+  ',':[2],';':[2,3],':':[2,5],'.':[3],'!':[2,3,5],'?':[2,6],
+  '"':[2,3,5,6],'(':[2,3,6],')':[3,5,6],'-':[3,6],'*':[3,5],'+':[2,5,6],
+  '/':[1,2,4,5,6],'|':[4,5,6],"'":[4],
+  // Prefixy a speciální znaky
+  'mal.pís.':[5],'řetěz.vel.':[5,6],'vel.pís.':[6],
+  'řec.mal.':[4,5],'řec.vel.':[4,6],
+  'čísl.znak':[3,4,5,6],'plný znak':[1,2,3,4,5,6]
+};
+
+// 1=nahoru, po směru hod. ručiček: 2=vpravo-nahoru, 3=vpravo, 4=vpravo-dolů, 5=dolů, 6=vlevo-dolů, 7=vlevo, 8=vlevo-nahoru
+const SEM={
+  A:[5,6],B:[5,7],C:[5,8],D:[5,1],E:[5,2],F:[5,3],G:[5,4],
+  H:[6,7],I:[6,8],J:[1,3],K:[6,1],L:[6,2],M:[6,3],N:[6,4],
+  O:[7,8],P:[7,1],Q:[7,2],R:[7,3],S:[7,4],
+  T:[8,1],U:[8,2],V:[1,4],W:[2,3],X:[2,4],Y:[8,5],Z:[3,4]};
+function posRad(p){return((p-1)*45-90)*Math.PI/180;}
+
+// Binary: A=1=00001 … Z=26=11010
+const ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const BIN2L={}, L2BIN={};
+ALPHA.split('').forEach((l,i)=>{const b=((i+1)>>>0).toString(2).padStart(5,'0');BIN2L[b]=l;L2BIN[l]=b;});
+
+// Ternary: A=1=001 … Z=26=222 (base-3, 3 digits)
+const TER2L={}, L2TER={};
+ALPHA.split('').forEach((l,i)=>{const t=toBase3(i+1,3);TER2L[t]=l;L2TER[l]=t;});
+function toBase3(n,digits){let s='';for(let i=digits-1;i>=0;i--){s+=Math.floor(n/Math.pow(3,i))%3;}return s;}
+
+// ═══════════════════════════════════════════════════════════
+// MORSE
+// ═══════════════════════════════════════════════════════════
+let mSeq=[],mHist=[],mTimer=null;
+
+function mAdd(sym){
+  clearTimeout(mTimer);
+  mSeq.push(sym);
+  const el=document.getElementById('m-seq');
+  const sp=document.createElement('span');
+  sp.className='ms';sp.style.color=sym==='.'?'var(--violet)':'var(--amber)';
+  sp.textContent=sym==='.'?'·':'—';el.appendChild(sp);
+  mRefresh();
+  mTimer=setTimeout(mConfirm,1400);
+  vib(sym==='.'?25:65);
+}
+function mRefresh(){
+  const code=mSeq.join(''),l=MREV[code];
+  const el=document.getElementById('m-let');
+  el.textContent=l||(mSeq.map(s=>s==='.'?'·':'—').join(''))||'—';
+  el.style.color=l?'var(--green)':'var(--violet)';
+}
+function mConfirm(){
+  clearTimeout(mTimer);if(!mSeq.length)return;
+  const l=MREV[mSeq.join('')]||'?';
+  mHist.push(l);mSeq=[];
+  document.getElementById('m-seq').innerHTML='';
+  document.getElementById('m-let').textContent='—';
+  document.getElementById('m-let').style.color='var(--violet)';
+  mRender();vib(40);
+}
+function mSpace(){mConfirm();mHist.push(' ');mRender();}
+function mBackspace(){
+  clearTimeout(mTimer);
+  if(mSeq.length){mSeq.pop();document.getElementById('m-seq').lastChild?.remove();mRefresh();}
+  else if(mHist.length){mHist.pop();mRender();}
+}
+function mDel(){histDel(mHist,'m-hist');}
+function mClearAll(){clearTimeout(mTimer);mSeq=[];mHist=[];document.getElementById('m-seq').innerHTML='';document.getElementById('m-let').textContent='—';document.getElementById('m-let').style.color='var(--violet)';mRender();}
+function mRender(){histRender('m-hist',mHist);}
+
+// Attach morse buttons — touchstart + mousedown fallback
+function attachMorse(id,sym){
+  const btn=document.getElementById(id);
+  let touched=false;
+  btn.addEventListener('touchstart',e=>{e.preventDefault();touched=true;mAdd(sym);},{passive:false});
+  btn.addEventListener('mousedown',e=>{if(!touched)mAdd(sym);touched=false;});
+}
+attachMorse('mb-dot','.');
+attachMorse('mb-dash','-');
+
+// ═══════════════════════════════════════════════════════════
+// SEMAPHORE
+// ═══════════════════════════════════════════════════════════
+let semA={L:null,R:null},semStep='L',semHist=[];
+
+function semDraw(){
+  const cv=document.getElementById('sem-cv');
+  const dial=document.getElementById('sem-dial');
+  const W=dial.offsetWidth||300;
+  cv.width=W*devicePixelRatio;cv.height=W*devicePixelRatio;
+  cv.style.width=W+'px';cv.style.height=W+'px';
+  const ctx=cv.getContext('2d');ctx.scale(devicePixelRatio,devicePixelRatio);
+  const cx=W/2,cy=W/2,R=W/2-3,ir=R-W*0.12;
+
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.fillStyle='#1b1b27';ctx.fill();
+  const ringCol=semStep==='L'?'#a78bfa':semStep==='R'?'#fbbf24':'#34d399';
+  ctx.strokeStyle=ringCol;ctx.lineWidth=3;ctx.stroke();
+
+  // Arms drawn before buttons
+  const armLen=ir*0.72;
+  function drawArm(pos,col){
+    if(!pos)return;
+    const a=posRad(pos);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+armLen*Math.cos(a),cy+armLen*Math.sin(a));
+    ctx.strokeStyle=col;ctx.lineWidth=Math.max(6,W*0.026);
+    ctx.lineCap='round';ctx.stroke();
+  }
+  drawArm(semA.L,'#a78bfa');
+  drawArm(semA.R,'#fbbf24');
+
+  // 8 position buttons
+  const btnR=Math.max(20,W*0.085);
+  for(let p=1;p<=8;p++){
+    const a=posRad(p);
+    const bx=cx+ir*Math.cos(a),by=cy+ir*Math.sin(a);
+    const isL=semA.L===p,isR=semA.R===p;
+    ctx.beginPath();ctx.arc(bx,by,btnR,0,Math.PI*2);
+    ctx.fillStyle=isL&&isR?'#7c3aed':isL?'rgba(167,139,250,.9)':isR?'rgba(251,191,36,.9)':'#232335';
+    ctx.fill();
+    ctx.strokeStyle=isL||isR?'transparent':'#3a3a58';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle=isL||isR?'#fff':'#6060a0';
+    ctx.font=`bold ${Math.max(13,W*.052)}px -apple-system,sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(p,bx,by);
+  }
+
+  // Figure in center
+  const headR=Math.max(9,W*.038);
+  const figTop=cy-headR*1.7;
+  ctx.beginPath();ctx.arc(cx,figTop,headR,0,Math.PI*2);
+  ctx.fillStyle='#2a2a3f';ctx.fill();
+  ctx.strokeStyle='#8080aa';ctx.lineWidth=Math.max(2,W*0.009);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,figTop+headR);ctx.lineTo(cx,figTop+headR*3.2);
+  ctx.strokeStyle='#8080aa';ctx.lineWidth=Math.max(3,W*0.012);ctx.lineCap='round';ctx.stroke();
+
+  // Result letter
+  if(semStep==='done'){
+    const l=semFind(semA.L,semA.R);
+    ctx.fillStyle=l?'#34d399':'#fb7185';
+    ctx.font=`bold ${Math.max(32,W*.14)}px -apple-system,sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(l||'?',cx,cy+W*0.22);
+  }
+
+  // Step hint
+  if(semStep!=='done'){
+    const sc=semStep==='L'?'#a78bfa':'#fbbf24';
+    const ht=semStep==='L'?'LEV\u00c1 RUKA':'PRAV\u00c1 RUKA';
+    ctx.fillStyle=sc+'99';
+    ctx.font=`bold ${Math.max(9,W*.030)}px -apple-system,sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(ht,cx,cy+R-Math.max(13,W*.048));
+  }
+}
+
+function semDrawState(){
+  const lDot=document.getElementById('ss-l');
+  const rDot=document.getElementById('ss-r');
+  const lbl=document.getElementById('ss-lbl');
+  if(semStep==='L'){
+    lDot.className='ssd on';rDot.className='ssd';
+    lbl.innerHTML='Vyber polohu <b>lev\u00e9</b> pa\u017ee';
+  } else if(semStep==='R'){
+    lDot.className='ssd done';rDot.className='ssd on';
+    lbl.innerHTML='Vyber polohu <b>prav\u00e9</b> pa\u017ee';
+  } else {
+    const l=semFind(semA.L,semA.R);
+    lDot.className='ssd done';rDot.className='ssd done';
+    lbl.innerHTML=l
+      ?`Písmeno: <b style="color:var(--green);font-size:15px;">${l}</b>`
+      :'⚠ Nenalezeno — zkus znovu';
+  }
+}
+
+function semTap(e){
+  e.preventDefault();
+  const cv=document.getElementById('sem-cv');
+  const rect=cv.getBoundingClientRect();
+  const touch=e.touches?e.touches[0]:e;
+  const x=touch.clientX-rect.left-rect.width/2;
+  const y=touch.clientY-rect.top-rect.height/2;
+  const deg=((Math.atan2(y,x)*180/Math.PI)+90+360)%360;
+  const pos=Math.round(deg/45)%8+1;
+  // Check if tap is near a button (within inner ring radius)
+  const W=cv.offsetWidth||300;
+  const ir=(W/2-3)-W*0.12;
+  const dist=Math.sqrt(x*x+y*y);
+  const btnR=Math.max(20,W*0.085);
+  const nearButton=Math.abs(dist-ir)<btnR*1.6;
+
+  if(semStep==='done'){
+    semA={L:null,R:null};semStep='L';
+    if(nearButton){
+      // Tap was on a position — register as left arm immediately
+      semA.L=pos;semStep='R';
+      semDrawState();semDraw();vib(20);
+    } else {
+      semDrawState();semDraw();
+    }
+    return;
+  }
+  semA[semStep]=pos;
+  if(semStep==='L'){
+    semStep='R';
+    semDrawState();semDraw();vib(20);
+  } else {
+    semStep='done';
+    const l=semFind(semA.L,semA.R);
+    const el=document.getElementById('s-let');
+    if(l){
+      el.textContent=l;el.style.color='var(--green)';
+      vib([25,20,25]);
+    } else {
+      el.textContent='?';el.style.color='var(--rose)';
+      vib(70);
+    }
+    semDrawState();semDraw();
+  }
+}
+const semCv=document.getElementById('sem-cv');
+semCv.addEventListener('touchstart',semTap,{passive:false});
+semCv.addEventListener('click',semTap);
+
+function semFind(l,r){
+  for(const[lt,[lp,rp]]of Object.entries(SEM))if((lp===l&&rp===r)||(lp===r&&rp===l))return lt;
+  return null;
+}
+function sAdd(){
+  const l=document.getElementById('s-let').textContent;
+  if(l==='—'||l==='?')return;
+  semHist.push(l);sRender();
+  semA={L:null,R:null};semStep='L';
+  document.getElementById('s-let').textContent='—';
+  document.getElementById('s-let').style.color='var(--amber)';
+  semDrawState();semDraw();vib(40);
+}
+function sDel(){histDel(semHist,'s-hist');}
+function sClearAll(){semHist=[];sRender();semA={L:null,R:null};semStep='L';document.getElementById('s-let').textContent='\u2014';document.getElementById('s-let').style.color='var(--amber)';semDrawState();semDraw();}
+function sRender(){histRender('s-hist',semHist);}
+
+// ═══════════════════════════════════════════════════════════
+// BRAILLE
+// ═══════════════════════════════════════════════════════════
+let bAct=new Set(),bHist=[];
+function buildBrl(){
+  const g=document.getElementById('brl-grid');g.innerHTML='';
+  [1,4,2,5,3,6].forEach(d=>{
+    const btn=document.createElement('button');
+    btn.className='brd';btn.id='bd-'+d;btn.textContent=d;
+    let t=false;
+    btn.addEventListener('touchstart',e=>{e.preventDefault();t=true;bToggle(d);},{passive:false});
+    btn.addEventListener('click',()=>{if(!t)bToggle(d);t=false;});
+    g.appendChild(btn);
+  });
+}
+function bToggle(d){
+  bAct.has(d)?bAct.delete(d):bAct.add(d);
+  document.getElementById('bd-'+d).classList.toggle('on',bAct.has(d));
+  bRefresh();vib(20);
+}
+function bRefresh(){
+  const a=[...bAct].sort((x,y)=>x-y);
+  const key=JSON.stringify(a);
+  const matches=[];
+  for(const[l,dots]of Object.entries(BRL)){
+    if(JSON.stringify([...dots].sort((x,y)=>x-y))===key) matches.push(l);
+  }
+  let found=null;
+  if(matches.length){
+    matches.sort((a,b)=>a.length-b.length);
+    found=matches[0];
+    const lower=matches.find(m=>m.length===1&&m===m.toLowerCase()&&m!==m.toUpperCase());
+    if(lower) found=lower;
+  }
+  const m=document.getElementById('brl-match');
+  const el=document.getElementById('b-let');
+  if(found){
+    const isSpecial=found.length>1;
+    m.innerHTML=isSpecial
+      ? '<span style="font-size:min(22px,5vw);color:var(--t2)">'+found+'</span>'
+      : found;
+    m.className='brl-match'+(isSpecial?' none':'');
+    el.textContent=found;el.style.color='var(--green)';
+  } else {
+    m.textContent=a.length?a.join(' '):'?';
+    m.className='brl-match none';
+    el.textContent='—';el.style.color='var(--amber)';
+  }
+}
+function bAdd(){
+  const l=document.getElementById('b-let').textContent;if(l==='—')return;
+  bHist.push(l);bRenderH();bReset();vib(40);
+}
+function bReset(){
+  bAct.clear();document.querySelectorAll('.brd').forEach(b=>b.classList.remove('on'));
+  document.getElementById('brl-match').textContent='?';document.getElementById('brl-match').className='brl-match none';
+  document.getElementById('b-let').textContent='—';
+}
+function bDel(){histDel(bHist,'b-hist');}
+function bRenderH(){histRender('b-hist',bHist);}
+
+// ═══════════════════════════════════════════════════════════
+// BINARY
+// ═══════════════════════════════════════════════════════════
+let biState=[0,0,0,0,0],biHist=[];
+function buildBin(){
+  const g=document.getElementById('bin-bits');g.innerHTML='';
+  for(let i=0;i<5;i++){
+    const btn=document.createElement('button');
+    btn.className='bin-bit';btn.id='bb-'+i;btn.textContent='0';
+    let t=false;
+    btn.addEventListener('touchstart',e=>{e.preventDefault();t=true;biToggle(i);},{passive:false});
+    btn.addEventListener('click',()=>{if(!t)biToggle(i);t=false;});
+    g.appendChild(btn);
+  }
+}
+function biToggle(i){
+  biState[i]=biState[i]?0:1;
+  const btn=document.getElementById('bb-'+i);
+  btn.textContent=biState[i];btn.classList.toggle('on',!!biState[i]);
+  biRefresh();vib(20);
+}
+function biRefresh(){
+  const code=biState.join('');
+  const l=BIN2L[code]||null;
+  const val=parseInt(code,2);
+  const m=document.getElementById('bin-match');
+  m.textContent=l||(!biState.some(b=>b)?'?':val);
+  m.className='bin-match'+(l?'':' none');
+  const el=document.getElementById('bi-let');
+  el.textContent=l||'—';el.style.color=l?'var(--green)':'var(--sky)';
+  document.getElementById('bin-eq').textContent=l?`${code}₂ = ${val}₁₀ = ${l}`:(biState.some(b=>b)?`${code}₂ = ${val}₁₀`:'');
+}
+function biAdd(){
+  const l=document.getElementById('bi-let').textContent;if(l==='—')return;
+  biHist.push(l);biRenderH();biReset();vib(40);
+}
+function biReset(){
+  biState=[0,0,0,0,0];
+  for(let i=0;i<5;i++){const b=document.getElementById('bb-'+i);b.textContent='0';b.classList.remove('on');}
+  document.getElementById('bin-match').textContent='?';document.getElementById('bin-match').className='bin-match none';
+  document.getElementById('bi-let').textContent='—';document.getElementById('bin-eq').textContent='';
+}
+function biDel(){histDel(biHist,'bi-hist');}
+function biRenderH(){histRender('bi-hist',biHist);}
+
+// ═══════════════════════════════════════════════════════════
+// TERNARY
+// ═══════════════════════════════════════════════════════════
+// Grid: 3 rows × 3 cols. Row 0 = digit value 0, row 1 = 1, row 2 = 2.
+// Each col = one of 3 digit positions (hundreds/tens/units).
+// User selects one cell per column (= the digit value for that position).
+let terSel=[null,null,null],terHist=[];
+
+function buildTer(){
+  const g=document.getElementById('ter-grid');g.innerHTML='';
+  // Layout: rows=digit value (0,1,2), cols=position (0,1,2)
+  for(let row=0;row<3;row++){
+    for(let col=0;col<3;col++){
+      const btn=document.createElement('button');
+      btn.className='tbd';btn.id=`tb-${col}-${row}`;btn.textContent=row;
+      let t=false;
+      btn.addEventListener('touchstart',e=>{e.preventDefault();t=true;terTap(col,row);},{passive:false});
+      btn.addEventListener('click',()=>{if(!t)terTap(col,row);t=false;});
+      g.appendChild(btn);
+    }
+  }
+}
+
+function terTap(col,val){
+  // toggle: if already selected, deselect
+  terSel[col]= terSel[col]===val ? null : val;
+  // update button states for this column
+  for(let v=0;v<3;v++){
+    const btn=document.getElementById(`tb-${col}-${v}`);
+    const active=terSel[col]===v;
+    btn.classList.toggle('on',active);
+    btn.classList.remove('v0','v1','v2');
+    if(active) btn.classList.add('v'+v);
+  }
+  terRefresh();vib(20);
+}
+
+function terRefresh(){
+  const complete=terSel.every(v=>v!==null);
+  let code=null,l=null;
+  if(complete){
+    code=terSel.join('');
+    l=TER2L[code]||null;
+  }
+  const m=document.getElementById('ter-match');
+  if(l){m.textContent=l;m.className='ter-match';}
+  else if(!complete){m.textContent='?';m.className='ter-match none';}
+  else{const val=terSel[0]*9+terSel[1]*3+terSel[2];m.textContent=val;m.className='ter-match none';}
+  const el=document.getElementById('t-let');
+  el.textContent=l||'—';el.style.color=l?'var(--green)':'var(--rose)';
+  if(complete){const val=terSel[0]*9+terSel[1]*3+terSel[2];document.getElementById('ter-eq').textContent=l?`${terSel.join('')}₃ = ${val}₁₀ = ${l}`:`${terSel.join('')}₃ = ${val}₁₀`;}
+  else document.getElementById('ter-eq').textContent='';
+}
+
+function tAdd(){
+  const l=document.getElementById('t-let').textContent;if(l==='—')return;
+  terHist.push(l);tRenderH();tReset();vib(40);
+}
+function tReset(){
+  terSel=[null,null,null];
+  for(let c=0;c<3;c++)for(let v=0;v<3;v++){const b=document.getElementById(`tb-${c}-${v}`);b.classList.remove('on','v0','v1','v2');}
+  document.getElementById('ter-match').textContent='?';document.getElementById('ter-match').className='ter-match none';
+  document.getElementById('t-let').textContent='—';document.getElementById('ter-eq').textContent='';
+}
+function tDel(){histDel(terHist,'t-hist');}
+function tRenderH(){histRender('t-hist',terHist);}
+
+// ═══════════════════════════════════════════════════════════
+// POLSKÝ KŘÍŽ
+// Edges: 1=top,2=right,3=bottom,4=left  Dots: 1-3
+// ═══════════════════════════════════════════════════════════
+const PK_NOCH={
+  'A':[[2,3],1],'B':[[2,3],2],'C':[[2,3],3],
+  'D':[[2,3,4],1],'E':[[2,3,4],2],'F':[[2,3,4],3],
+  'G':[[3,4],1],'H':[[3,4],2],'I':[[3,4],3],
+  'J':[[1,2,3],1],'K':[[1,2,3],2],'L':[[1,2,3],3],
+  'M':[[1,2,3,4],1],'N':[[1,2,3,4],2],'O':[[1,2,3,4],3],
+  'P':[[1,3,4],1],'Q':[[1,3,4],2],'R':[[1,3,4],3],
+  'S':[[1,2],1],'T':[[1,2],2],'U':[[1,2],3],
+  'V':[[1,2,4],1],'W':[[1,2,4],2],'X':[[1,2,4],3],
+  'Y':[[1,4],1],'Z':[[1,4],2]
+};
+const PK_CH={
+  'A':[[2,3],1],'B':[[2,3],2],'C':[[2,3],3],
+  'D':[[2,3,4],1],'E':[[2,3,4],2],'F':[[2,3,4],3],
+  'G':[[3,4],1],'H':[[3,4],2],'Ch':[[3,4],3],
+  'I':[[1,2,3],1],'J':[[1,2,3],2],'K':[[1,2,3],3],
+  'L':[[1,2,3,4],1],'M':[[1,2,3,4],2],'N':[[1,2,3,4],3],
+  'O':[[1,3,4],1],'P':[[1,3,4],2],'Q':[[1,3,4],3],
+  'R':[[1,2],1],'S':[[1,2],2],'T':[[1,2],3],
+  'U':[[1,2,4],1],'V':[[1,2,4],2],'W':[[1,2,4],3],
+  'X':[[1,4],1],'Y':[[1,4],2],'Z':[[1,4],3]
+};
+
+// Reverse maps
+function pkBuildRev(map){
+  const rev={};
+  Object.entries(map).forEach(([ch,[edges,dots]])=>{
+    const k=edges.join(',')+':'+dots;
+    rev[k]=ch;
+  });
+  return rev;
+}
+const PK_NOCH_REV=pkBuildRev(PK_NOCH);
+const PK_CH_REV=pkBuildRev(PK_CH);
+
+let pkEdges=new Set(),pkDots=0,pkWithCh=false,pkHist=[];
+
+function pkDraw(){
+  const cv=document.getElementById('pk-cv');
+  const dial=document.getElementById('pk-dial');
+  const W=dial.offsetWidth||300;
+  const H=Math.round(W/2);
+  const dpr=devicePixelRatio||1;
+  cv.width=W*dpr;cv.height=H*dpr;
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+
+  const pad=W*0.04;
+  const thick=Math.max(5,W*0.045);
+  const x0=pad,x1=W-pad,y0=pad,y1=H-pad;
+  const midX=(x0+x1)/2;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Background rect
+  ctx.beginPath();ctx.roundRect(x0,y0,x1-x0,y1-y0,4);
+  ctx.fillStyle='#1b1b27';ctx.fill();
+
+  // Hit areas for edges (for tap detection) — invisible, stored for later
+  // Draw inactive edges first (dim)
+  const edgeSegs=[
+    null, // placeholder for 1-index
+    {x1:x0,y1:y0,x2:x1,y2:y0},  // 1 top
+    {x1:x1,y1:y0,x2:x1,y2:y1},  // 2 right
+    {x1:x0,y1:y1,x2:x1,y2:y1},  // 3 bottom
+    {x1:x0,y1:y0,x2:x0,y2:y1},  // 4 left
+  ];
+
+  // Draw each edge
+  for(let e=1;e<=4;e++){
+    const on=pkEdges.has(e);
+    const seg=edgeSegs[e];
+    ctx.beginPath();
+    ctx.moveTo(seg.x1,seg.y1);ctx.lineTo(seg.x2,seg.y2);
+    ctx.strokeStyle=on?'#e8334a':'#2a2a3f';
+    ctx.lineWidth=thick;ctx.lineCap='round';ctx.stroke();
+    // Edge number label
+    const lx=(seg.x1+seg.x2)/2+(e===4?thick*0.8:e===2?-thick*0.8:0);
+    const ly=(seg.y1+seg.y2)/2+(e===3?-thick*0.8:e===1?thick*0.8:0);
+    ctx.fillStyle=on?'#fff':'#44445a';
+    ctx.font=`bold ${Math.max(10,W*0.038)}px -apple-system,sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(e,lx,ly);
+  }
+
+  // Dots area — 3 tap zones horizontally centered
+  const dotY=(y0+y1)/2;
+  const dotSpacing=Math.max(32,W*0.18);
+  const dotR=Math.max(8,W*0.055);
+  const dotPositions=[midX-dotSpacing,midX,midX+dotSpacing];
+
+  for(let i=0;i<3;i++){
+    const active=(i+1)<=pkDots;
+    const dx=dotPositions[i];
+    ctx.beginPath();ctx.arc(dx,dotY,dotR,0,Math.PI*2);
+    ctx.fillStyle=active?'#e8334a':'#2a2a3f';ctx.fill();
+    ctx.fillStyle=active?'#fff':'#44445a';
+    ctx.font=`bold ${Math.max(9,W*0.036)}px -apple-system,sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(i+1,dx,dotY);
+  }
+}
+
+function pkTap(e){
+  e.preventDefault();
+  const cv=document.getElementById('pk-cv');
+  const rect=cv.getBoundingClientRect();
+  const touch=e.touches?e.touches[0]:e;
+  const W=cv.offsetWidth||300; const H=W/2;
+  // Use pixel coords matching the draw coordinate space
+  const px=(touch.clientX-rect.left)*(W/rect.width);
+  const py=(touch.clientY-rect.top)*(H/rect.height);
+  const pad=W*0.04;
+  const thick=Math.max(5,W*0.045);
+  const edgeZone=thick*2.2;
+
+  const inTop=py<edgeZone;
+  const inBottom=py>H-edgeZone;
+  const inLeft=px<edgeZone;
+  const inRight=px>W-edgeZone;
+
+  // Dot positions — identical formula to pkDraw
+  const x0=pad,x1=W-pad,y0=pad,y1=H-pad;
+  const midX=(x0+x1)/2;
+  const dotY=(y0+y1)/2;
+  const dotSpacing=Math.max(32,W*0.18);
+  const dotR=Math.max(8,W*0.055);
+  const dotPositions=[midX-dotSpacing, midX, midX+dotSpacing];
+  const hitR=dotR+Math.max(8,W*0.04); // generous hit area
+
+  let hitDot=null;
+  for(let i=0;i<3;i++){
+    if(Math.abs(px-dotPositions[i])<hitR && Math.abs(py-dotY)<hitR){hitDot=i+1;break;}
+  }
+
+  const teE=e=>pkEdges.has(e)?pkEdges.delete(e):pkEdges.add(e);
+  if(hitDot!==null){
+    pkDots=(pkDots===hitDot)?0:hitDot;
+  } else if(inTop&&!inLeft&&!inRight)  { teE(1);
+  } else if(inBottom&&!inLeft&&!inRight){ teE(3);
+  } else if(inRight&&!inTop&&!inBottom) { teE(2);
+  } else if(inLeft&&!inTop&&!inBottom)  { teE(4);
+  } else if(inTop&&inLeft)    { teE(1);teE(4);
+  } else if(inTop&&inRight)   { teE(1);teE(2);
+  } else if(inBottom&&inLeft) { teE(3);teE(4);
+  } else if(inBottom&&inRight){ teE(3);teE(2);
+  }
+
+  pkRefresh();vib(20);
+}
+
+function pkRefresh(){
+  pkDraw();
+  const rev=pkWithCh?PK_CH_REV:PK_NOCH_REV;
+  const key=[...pkEdges].sort((a,b)=>a-b).join(',')+':'+pkDots;
+  const ch=(pkDots>0&&pkEdges.size>0)?rev[key]||null:null;
+  const el=document.getElementById('pk-let');
+  el.textContent=ch||'—';
+  el.style.color=ch?'var(--green)':'var(--t3)';
+}
+
+function pkSetVariant(withCh){
+  pkWithCh=withCh;
+  document.getElementById('pk-btn-noch').classList.toggle('on',!withCh);
+  document.getElementById('pk-btn-ch').classList.toggle('on',withCh);
+  pkRefresh();
+}
+
+function pkAdd(){
+  const l=document.getElementById('pk-let').textContent;
+  if(l==='—')return;
+  pkHist.push(l);pkRenderH();pkReset();vib(40);
+}
+function pkReset(){pkEdges.clear();pkDots=0;pkRefresh();}
+function pkDel(){histDel(pkHist,'pk-hist');}
+function pkRenderH(){histRender('pk-hist',pkHist);}
+
+function initPk(){
+  const cv=document.getElementById('pk-cv');
+  cv.addEventListener('touchstart',pkTap,{passive:false});
+  cv.addEventListener('click',pkTap);
+  pkDraw();
+}
+
+// ═══════════════════════════════════════════════════════════
+// 7-SEGMENT
+// Segments: 1=top, 2=top-right, 3=bottom-right, 4=bottom,
+//           5=bottom-left, 6=top-left, 7=middle
+// ═══════════════════════════════════════════════════════════
+const SEG7MAP={
+  'A':[1,2,3,5,6,7],
+  'B':[3,4,5,6,7],
+  'C':[4,5,7],
+  'D':[2,3,4,5,7],
+  'E':[1,4,5,6,7],
+  'F':[1,5,6,7],
+  'G':[1,3,4,5,6],
+  'H':[3,5,6,7],
+  'I':[5,6],
+  'J':[2,3,4,5],
+  'K':[1,3,5,6,7],
+  'L':[4,5,6],
+  'M':[1,2,3,5,6],
+  'N':[3,5,7],
+  'O':[3,4,5,7],
+  'P':[1,2,5,6,7],
+  'Q':[1,2,3,6,7],
+  'R':[5,7],
+  'S':[1,3,4,6,7],
+  'T':[4,5,6,7],
+  'U':[2,3,4,5,6],
+  'V':[3,4,5],
+  'W':[2,3,4,5,6,7],
+  'X':[2,3,5,6,7],
+  'Y':[2,3,4,6,7],
+  'Z':[1,2,4,5,7],
+  '0':[1,2,3,4,5,6],
+  '1':[2,3],
+  '2':[1,2,4,5,7],
+  '3':[1,2,3,4,7],
+  '4':[2,3,6,7],
+  '5':[1,3,4,6,7],
+  '6':[1,3,4,5,6,7],
+  '7':[1,2,3],
+  '8':[1,2,3,4,5,6,7],
+  '9':[1,2,3,4,6,7]
+};
+
+// Reverse map: key = sorted segment array joined
+const SEG7REV={};
+Object.entries(SEG7MAP).forEach(([ch,segs])=>{
+  const k=JSON.stringify([...segs].sort((a,b)=>a-b));
+  if(!SEG7REV[k]) SEG7REV[k]=[];
+  SEG7REV[k].push(ch);
+});
+
+let segActive=new Set(),segHist=[];
+
+// Segment geometry (relative, 0-1 coords, scaled to canvas)
+// Returns array of polygon points for each segment 1-7
+function segPolygons(W,H,pad,thick){
+  // W,H = total size, pad = outer padding, thick = bar thickness
+  const x0=pad, x1=W-pad;
+  const y0=pad, y2=H-pad, y1=(y0+y2)/2;
+  const t=thick, t2=t*0.55, slope=t*0.45;
+  // Each segment as array of [x,y] points (hexagon caps)
+  return {
+    1:[[x0+t2,y0],[x1-t2,y0],[x1-t2-slope,y0+t],[x0+t2+slope,y0+t]],
+    2:[[x1,y0+t2],[x1,y1-t2],[x1-t,y1-t2-slope],[x1-t,y0+t2+slope]],
+    3:[[x1,y1+t2],[x1,y2-t2],[x1-t,y2-t2-slope],[x1-t,y1+t2+slope]],
+    4:[[x0+t2,y2],[x1-t2,y2],[x1-t2-slope,y2-t],[x0+t2+slope,y2-t]],
+    5:[[x0,y1+t2],[x0,y2-t2],[x0+t,y2-t2-slope],[x0+t,y1+t2+slope]],
+    6:[[x0,y0+t2],[x0,y1-t2],[x0+t,y1-t2-slope],[x0+t,y0+t2+slope]],
+    7:[[x0+t2+slope,y1-t/2],[x1-t2-slope,y1-t/2],[x1-t2,y1],[x1-t2-slope,y1+t/2],[x0+t2+slope,y1+t/2],[x0+t2,y1]]
+  };
+}
+
+function segDrawCanvas(canvasId,active,size){
+  const cv=document.getElementById(canvasId);
+  const dpr=devicePixelRatio||1;
+  const S=size||Math.min(window.innerWidth*0.45,220);
+  cv.width=S*dpr;cv.height=(S*1.8)*dpr;
+  cv.style.width=S+'px';cv.style.height=(S*1.8)+'px';
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+  const W=S,H=S*1.8;
+  const pad=S*0.06,thick=S*0.13;
+  const polys=segPolygons(W,H,pad,thick);
+  ctx.clearRect(0,0,W,H);
+  for(let s=1;s<=7;s++){
+    const on=active.has(s);
+    const pts=polys[s];
+    ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
+    for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+    ctx.closePath();
+    ctx.fillStyle=on?'#34d399':'#1e2a1e';
+    ctx.fill();
+    // segment number label (only when off, for reference)
+    if(!on){
+      const cx2=pts.reduce((s,p)=>s+p[0],0)/pts.length;
+      const cy2=pts.reduce((s,p)=>s+p[1],0)/pts.length;
+      ctx.fillStyle='#3a3a58';
+      ctx.font=`bold ${Math.max(9,S*0.075)}px -apple-system,sans-serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(s,cx2,cy2);
+    }
+  }
+}
+
+function segRefresh(){
+  segDrawCanvas('seg-cv',segActive);
+  const key=JSON.stringify([...segActive].sort((a,b)=>a-b));
+  const matches=SEG7REV[key]||null;
+  const m=document.getElementById('seg-match');
+  const el=document.getElementById('seg-let');
+  if(matches&&matches.length){
+    const display=matches.join('/');
+    // prefer letter over digit for obar, but show all in match area
+    const preferred=matches.find(x=>x>='A'&&x<='Z')||matches[0];
+    m.textContent=display;
+    m.className='seg-match'+(display.length>2?' none':'');
+    el.textContent=preferred;el.style.color='var(--green)';
+  } else {
+    m.textContent=segActive.size?[...segActive].sort((a,b)=>a-b).join(' '):'?';
+    m.className='seg-match none';
+    el.textContent='—';el.style.color='var(--t3)';
+  }
+  document.getElementById('seg-active-label').textContent=
+    segActive.size?'Segmenty: '+[...segActive].sort((a,b)=>a-b).join(', '):'Žádný segment';
+}
+
+function segTap(e){
+  e.preventDefault();
+  const cv=document.getElementById('seg-cv');
+  const rect=cv.getBoundingClientRect();
+  const touch=e.touches?e.touches[0]:e;
+  const px=(touch.clientX-rect.left)/rect.width*cv.width/devicePixelRatio;
+  const py=(touch.clientY-rect.top)/rect.height*cv.height/devicePixelRatio;
+  const W=cv.width/devicePixelRatio,H=cv.height/devicePixelRatio;
+  const pad=W*0.06,thick=W*0.13;
+  const polys=segPolygons(W,H,pad,thick);
+  // Hit test: find closest segment center
+  let best=null,bestD=Infinity;
+  for(let s=1;s<=7;s++){
+    const pts=polys[s];
+    const cx2=pts.reduce((a,p)=>a+p[0],0)/pts.length;
+    const cy2=pts.reduce((a,p)=>a+p[1],0)/pts.length;
+    const d=(px-cx2)**2+(py-cy2)**2;
+    if(d<bestD){bestD=d;best=s;}
+  }
+  if(best){
+    segActive.has(best)?segActive.delete(best):segActive.add(best);
+    segRefresh();vib(20);
+  }
+}
+
+function segAdd(){
+  const l=document.getElementById('seg-let').textContent;
+  if(l==='—')return;
+  segHist.push(l);segRenderH();segReset();vib(40);
+}
+function segReset(){
+  segActive.clear();segRefresh();
+}
+function segDel(){histDel(segHist,'seg-hist');}
+function segRenderH(){histRender('seg-hist',segHist);}
+
+// Attach tap events after DOM ready (called in init)
+function initSeg(){
+  const cv=document.getElementById('seg-cv');
+  cv.addEventListener('touchstart',segTap,{passive:false});
+  cv.addEventListener('click',segTap);
+  segRefresh();
+}
+
+// ═══════════════════════════════════════════════════════════
+// REFERENCE
+// ═══════════════════════════════════════════════════════════
+function buildRefs(){
+  document.getElementById('ref-morse').innerHTML=
+    Object.entries(MMAP).map(([l,m])=>`<div class="rc"><span class="rl">${l}</span><span class="rs">${m}</span></div>`).join('');
+  document.getElementById('ref-brl').innerHTML=
+    Object.entries(BRL).map(([l,d])=>`<div class="rc"><span class="rl">${l}</span><span class="rs">${d.join('')}</span></div>`).join('');
+  document.getElementById('ref-bin').innerHTML=
+    ALPHA.split('').map(l=>`<div class="rc"><span class="rl">${l}</span><span class="rs">${L2BIN[l]}</span></div>`).join('');
+  document.getElementById('ref-ter').innerHTML=
+    ALPHA.split('').map(l=>`<div class="rc"><span class="rl">${l}</span><span class="rs">${L2TER[l]}</span></div>`).join('');
+  document.getElementById('ref-sem').innerHTML=
+    Object.entries(SEM).map(([l,[a,b]])=>`<div class="rc"><span class="rl">${l}</span><span class="rs">${a}–${b}</span></div>`).join('');
+}
+
+// ── SHARED HISTORY HELPERS ─────────────────────────────────
+function histRender(elId,hist){
+  document.getElementById(elId).innerHTML=
+    hist.map(c=>c===' '?'<span class="hl sp">·</span>':`<span class="hl">${c}</span>`).join('');
+}
+function histDel(hist,elId){if(hist.length){hist.pop();histRender(elId,hist);}}
+function histAdd(hist,elId,letter,resetFn){
+  if(!letter||letter==='—'||letter==='?')return false;
+  hist.push(letter);histRender(elId,hist);resetFn();vib(40);return true;
+}
+
+// ── VIBRATION ────────────────────────────────────────────────
+function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
+
+// ── INIT ─────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  buildBrl();buildBin();buildTer();initSeg();initPk();
+  requestAnimationFrame(()=>{semDrawState();semDraw();});
+});
+window.addEventListener('resize',()=>{ setVH(); semDraw(); pkDraw(); segRefresh(); });
+
+// ── SERVICE WORKER ───────────────────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(r => console.log('SW registered:', r.scope))
+      .catch(e => console.warn('SW registration failed:', e));
+  });
+}
+</script>
+</body>
+</html>
