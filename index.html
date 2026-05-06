@@ -337,6 +337,83 @@ nav{
   touch-action:none;flex-shrink:0;
 }
 .pkr-dial canvas{width:100%;height:100%;display:block;}
+
+/* ══════════════════════════════════════════════════════════
+   SVÁTKY
+══════════════════════════════════════════════════════════ */
+.sv-section{ display:flex;flex-direction:column;gap:6px;width:100%; }
+.sv-label{ font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px; }
+
+/* Name search */
+.sv-input-wrap{ position:relative;width:100%; }
+.sv-input{
+  width:100%;padding:11px 14px;
+  background:var(--card);border:1.5px solid var(--border);border-radius:12px;
+  color:var(--t1);font-size:16px;font-weight:500;outline:none;
+  box-sizing:border-box;-webkit-appearance:none;
+}
+.sv-input:focus{ border-color:var(--violet); }
+.sv-suggestions{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:100;
+  background:var(--card2);border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;display:none;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+}
+.sv-suggestions.open{ display:block; }
+.sv-sug-item{
+  padding:11px 14px;font-size:15px;color:var(--t1);cursor:pointer;
+  border-bottom:1px solid var(--border);
+}
+.sv-sug-item:last-child{ border-bottom:none; }
+.sv-sug-item:active{ background:var(--card); }
+
+/* Result bubble */
+.sv-result{
+  padding:13px 16px;background:var(--card);border-radius:12px;
+  min-height:48px;display:flex;align-items:center;gap:10px;
+  border:1.5px solid var(--border);
+}
+.sv-result-icon{ font-size:22px;flex-shrink:0; }
+.sv-result-text{ font-size:15px;font-weight:600;color:var(--t1);line-height:1.4; }
+.sv-result-text.empty{ color:var(--t3);font-weight:400; }
+
+/* Drum pickers */
+.sv-drums{
+  display:flex;gap:8px;align-items:stretch;width:100%;
+}
+.sv-drum-wrap{
+  flex:1;position:relative;height:130px;overflow:hidden;
+  background:var(--card);border:1.5px solid var(--border);border-radius:12px;
+}
+/* Gradient fade top/bottom */
+.sv-drum-wrap::before,.sv-drum-wrap::after{
+  content:'';position:absolute;left:0;right:0;height:38%;z-index:2;pointer-events:none;
+}
+.sv-drum-wrap::before{ top:0;background:linear-gradient(to bottom,var(--card) 0%,transparent 100%); }
+.sv-drum-wrap::after{ bottom:0;background:linear-gradient(to top,var(--card) 0%,transparent 100%); }
+/* Selection highlight */
+.sv-drum-center{
+  position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
+  height:38px;background:rgba(167,139,250,.12);border-top:1px solid var(--violet);
+  border-bottom:1px solid var(--violet);pointer-events:none;z-index:1;
+}
+.sv-drum{
+  height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;padding:46px 0;
+  box-sizing:border-box;
+}
+.sv-drum::-webkit-scrollbar{ display:none; }
+.sv-drum-item{
+  height:38px;display:flex;align-items:center;justify-content:center;
+  scroll-snap-align:center;font-size:15px;font-weight:600;color:var(--t2);
+  user-select:none;-webkit-user-select:none;
+}
+.sv-drum-item.sel{ color:var(--t1);font-size:16px; }
+.sv-drum-label{
+  position:absolute;bottom:4px;left:0;right:0;text-align:center;
+  font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.4px;z-index:3;
+  text-transform:uppercase;
+}
 </style>
 </head>
 <body>
@@ -509,6 +586,54 @@ nav{
   </div>
 </div>
 
+
+<!-- ══ SVÁTKY ═══════════════════════════════════════════════ -->
+<div id="pg-svatky" class="pg">
+  <div class="body" style="gap:18px;padding-top:16px;">
+
+    <!-- Name → Date -->
+    <div class="sv-section">
+      <div class="sv-label">🔍 Jméno → svátek</div>
+      <div class="sv-input-wrap">
+        <input class="sv-input" id="sv-name-input" type="text"
+               placeholder="Zadej jméno…" autocomplete="off" autocorrect="off"
+               oninput="svNameInput(this.value)" onfocus="svNameInput(this.value)"/>
+        <div class="sv-suggestions" id="sv-sugs"></div>
+      </div>
+      <div class="sv-result">
+        <span class="sv-result-icon">🎂</span>
+        <span class="sv-result-text empty" id="sv-name-result">—</span>
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--border);"></div>
+
+    <!-- Date → Names (drum pickers) -->
+    <div class="sv-section">
+      <div class="sv-label">📅 Datum → jméno</div>
+      <div class="sv-drums">
+        <!-- Month drum -->
+        <div class="sv-drum-wrap" style="flex:1.6;">
+          <div class="sv-drum-center"></div>
+          <div class="sv-drum" id="sv-drum-m" onscroll="svDrumScroll()"></div>
+          <div class="sv-drum-label">Měsíc</div>
+        </div>
+        <!-- Day drum -->
+        <div class="sv-drum-wrap" style="flex:1;">
+          <div class="sv-drum-center"></div>
+          <div class="sv-drum" id="sv-drum-d" onscroll="svDrumScroll()"></div>
+          <div class="sv-drum-label">Den</div>
+        </div>
+      </div>
+      <div class="sv-result">
+        <span class="sv-result-icon">🌸</span>
+        <span class="sv-result-text empty" id="sv-date-result">—</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ══ REFERENCE ══════════════════════════════════════════ -->
 
 <!-- ══ NAV ════════════════════════════════════════════════ -->
@@ -587,6 +712,20 @@ nav{
     </svg>
     <span class="lbl">P.Kříž</span>
   </button>
+  <button class="nb" onclick="go('svatky',this)">
+    <svg width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- calendar sheet -->
+      <rect x="1" y="4" width="20" height="20" rx="3" stroke="currentColor" stroke-width="2" fill="none"/>
+      <!-- top rings -->
+      <line x1="7" y1="1" x2="7" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <line x1="15" y1="1" x2="15" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <!-- header line -->
+      <line x1="1" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="1.5"/>
+      <!-- date number "1" -->
+      <text x="11" y="21" font-size="9" font-weight="800" fill="currentColor" font-family="-apple-system,sans-serif" text-anchor="middle">1</text>
+    </svg>
+    <span class="lbl">Svátky</span>
+  </button>
 </nav>
 </div><!-- #app -->
 
@@ -603,6 +742,7 @@ function go(name,btn){
   btn.classList.add('on');
   if(name==='semaphore') requestAnimationFrame(()=>{ setVH(); semDrawState(); semDraw(); });
   if(name==='pkriz') requestAnimationFrame(()=>{ setVH(); pkDraw(); });
+  if(name==='svatky') requestAnimationFrame(()=>{ setVH(); initSvatky(); });
 }
 
 // ── DATA ────────────────────────────────────────────────────
@@ -1039,6 +1179,118 @@ function tReset(){
 function tDel(){histDel(terHist,'t-hist');}
 function tRenderH(){histRender('t-hist',terHist);}
 
+
+// ═══════════════════════════════════════════════════════════
+// SVÁTKY
+// ═══════════════════════════════════════════════════════════
+const SVATKY_N2D={"mečislav": "1. ledna", "karina": "2. ledna", "vasil": "2. ledna", "radmila": "3. ledna", "radomil": "3. ledna", "jenovéfa": "3. ledna", "jenifer": "3. ledna", "diana": "4. ledna", "dajana": "4. ledna", "deana": "4. ledna", "dalimil": "5. ledna", "dylan": "5. ledna", "kašpar": "6. ledna", "melichar": "6. ledna", "baltazar": "6. ledna", "vilma": "7. ledna", "vilemína": "7. ledna", "atila": "7. ledna", "čestmír": "8. ledna", "erhard": "8. ledna", "vladan": "9. ledna", "valtr": "9. ledna", "vlaďka": "9. ledna", "vladana": "9. ledna", "břetislav": "10. ledna", "břetislava": "10. ledna", "bohdana": "11. ledna", "teodora": "11. ledna", "pravoslav": "12. ledna", "pravoslava": "12. ledna", "edita": "13. ledna", "leontýna": "13. ledna", "radovan": "14. ledna", "radovana": "14. ledna", "alice": "15. ledna", "severín": "15. ledna", "ctirad": "16. ledna", "ctislav": "16. ledna", "drahoslav": "17. ledna", "drahoš": "17. ledna", "vladislav": "18. ledna", "vladislava": "18. ledna", "priska": "18. ledna", "doubravka": "19. ledna", "fabián": "19. ledna", "ilona": "20. ledna", "sebastián": "20. ledna", "běla": "21. ledna", "bianka": "21. ledna", "géza": "21. ledna", "slavomír": "22. ledna", "slavomíra": "22. ledna", "slávek": "22. ledna", "zdeněk": "23. ledna", "raimund": "23. ledna", "ramon": "23. ledna", "milena": "24. ledna", "amanda": "24. ledna", "tim": "24. ledna", "miloš": "25. ledna", "miloň": "25. ledna", "zora": "26. ledna", "zoran": "26. ledna", "danica": "26. ledna", "aurora": "26. ledna", "ingrid": "27. ledna", "ingeborg": "27. ledna", "inka": "27. ledna", "otýlie": "28. ledna", "manfréd": "28. ledna", "zdislava": "29. ledna", "zdislav": "29. ledna", "robin": "30. ledna", "erna": "30. ledna", "marika": "31. ledna", "marieta": "31. ledna", "hynek": "1. února", "jasmína": "1. února", "nela": "2. února", "aida": "2. února", "blažej": "3. února", "donald": "3. února", "jarmila": "4. února", "gilbert": "4. února", "dobromila": "5. února", "dobromil": "5. února", "vanda": "6. února", "samanta": "6. února", "veronika": "7. února", "verona": "7. února", "berenika": "7. února", "milada": "8. února", "aranka": "8. února", "mlada": "8. února", "apolena": "9. února", "ronald": "9. února", "mojmír": "10. února", "mojmíra": "10. února", "božena": "11. února", "dezider": "11. února", "slavěna": "12. února", "slávka": "12. února", "glorie": "12. února", "věnceslav": "13. února", "věnceslava": "13. února", "jordan": "13. února", "valentýn": "14. února", "valentýna": "14. února", "jiřina": "15. února", "jorga": "15. února", "jorika": "15. února", "ljuba": "16. února", "luba": "16. února", "danuta": "16. února", "miloslava": "17. února", "grácie": "17. února", "fiona": "17. února", "gizela": "18. února", "flavie": "18. února", "patrik": "19. února", "konrád": "19. února", "oldřich": "20. února", "dorián": "20. února", "lenka": "21. února", "eleonora": "21. února", "lena": "21. února", "petr": "22. února", "etela": "22. února", "svatopluk": "23. února", "svatobor": "23. února", "matěj": "24. února", "matyáš": "24. února", "liliana": "25. února", "valburga": "25. února", "taras": "25. února", "nevena": "25. února", "dorota": "26. února", "dora": "26. února", "doris": "26. února", "božetěch": "26. února", "alexandr": "27. února", "torsten": "27. února", "lumír": "28. února", "lumíra": "28. února", "kira": "28. února", "horymír": "29. února", "bedřich": "1. března", "bedřiška": "1. března", "dětřich": "1. března", "anežka": "2. března", "inéz": "2. března", "inesa": "2. března", "kamil": "3. března", "vladivoj": "3. března", "stela": "4. března", "jadranka": "4. března", "kazimír": "5. března", "kazimíra": "5. března", "miroslav": "6. března", "mirek": "6. března", "fridolín": "6. března", "tomáš": "7. března", "tom": "7. března", "tomislav": "7. března", "gabriela": "8. března", "zoltán": "8. března", "merlin": "8. března", "františka": "9. března", "rebeka": "9. března", "radúz": "9. března", "viktorie": "10. března", "melita": "10. března", "melisa": "10. března", "ildika": "10. března", "anděla": "11. března", "angelika": "11. března", "anděl": "11. března", "řehoř": "12. března", "růžena": "13. března", "roza": "13. března", "rosana": "13. března", "rút": "14. března", "matylda": "14. března", "maud": "14. března", "ida": "15. března", "hilda": "15. března", "longin": "15. března", "elena": "16. března", "herbert": "16. března", "amos": "16. března", "vlastimil": "17. března", "vlastimila": "17. března", "eduard": "18. března", "eduarda": "18. března", "josef": "19. března", "josefa": "19. března", "sibyla": "19. března", "světlana": "20. března", "světla": "20. března", "roxana": "20. března", "radek": "21. března", "radko": "21. března", "leona": "22. března", "lea": "22. března", "leokádie": "22. března", "leonie": "22. března", "ivona": "23. března", "alfons": "23. března", "axel": "23. března", "gabriel": "24. března", "zbyslav": "24. března", "marián": "25. března", "mario": "25. března", "marius": "25. března", "emanuel": "26. března", "emanuela": "26. března", "manuel": "26. března", "manuela": "26. března", "dita": "27. března", "malvína": "27. března", "rupert": "27. března", "soňa": "28. března", "gedeon": "28. března", "taťána": "29. března", "slavomil": "29. března", "slavomila": "29. března", "arnošt": "30. března", "ernest": "30. března", "arnold": "30. března", "arnoštka": "30. března", "arne": "30. března", "arna": "30. března", "kvido": "31. března", "quido": "31. března", "arpád": "31. března", "hugo": "1. dubna", "veleslav": "1. dubna", "velen": "1. dubna", "erika": "2. dubna", "aron": "2. dubna", "richard": "3. dubna", "richarda": "3. dubna", "ivana": "4. dubna", "izidor": "4. dubna", "miroslava": "5. dubna", "mirka": "5. dubna", "mira": "5. dubna", "vendula": "6. dubna", "venuše": "6. dubna", "heřman": "7. dubna", "hermína": "7. dubna", "armin": "7. dubna", "armand": "7. dubna", "mína": "7. dubna", "ema": "8. dubna", "konstantina": "8. dubna", "dušan": "9. dubna", "dušana": "9. dubna", "dustin": "9. dubna", "darja": "10. dubna", "darie": "10. dubna", "izabela": "11. dubna", "ratmír": "11. dubna", "ariel": "11. dubna", "julius": "12. dubna", "julián": "12. dubna", "zenon": "12. dubna", "aleš": "13. dubna", "aleška": "13. dubna", "norma": "13. dubna", "vincenc": "14. dubna", "vincent": "14. dubna", "pravomil": "14. dubna", "pravomila": "14. dubna", "anastázie": "15. dubna", "oktavián": "15. dubna", "irena": "16. dubna", "erina": "16. dubna", "ireneus": "16. dubna", "rudolf": "17. dubna", "rudolfa": "17. dubna", "rolf": "17. dubna", "ralf": "17. dubna", "raul": "17. dubna", "valérie": "18. dubna", "verner": "18. dubna", "valer": "18. dubna", "rostislav": "19. dubna", "rastislav": "19. dubna", "timon": "19. dubna", "marcela": "20. dubna", "odeta": "20. dubna", "celina": "20. dubna", "alexandra": "21. dubna", "selma": "21. dubna", "evženie": "22. dubna", "leonid": "22. dubna", "vojtěch": "23. dubna", "vojtěška": "23. dubna", "gerhard": "23. dubna", "garik": "23. dubna", "jiří": "24. dubna", "fidel": "24. dubna", "marek": "25. dubna", "ervín": "25. dubna", "ervína": "25. dubna", "oto": "26. dubna", "ota": "26. dubna", "uve": "26. dubna", "udo": "26. dubna", "jaroslav": "27. dubna", "jarolím": "27. dubna", "vlastislav": "28. dubna", "vlastislava": "28. dubna", "paris": "28. dubna", "robert": "29. dubna", "roberta": "29. dubna", "roderik": "29. dubna", "roger": "29. dubna", "blahoslav": "30. dubna", "blahoslava": "30. dubna", "blahomír": "30. dubna", "blahomil": "30. dubna", "jeremiáš": "1. května", "pamela": "1. května", "zikmund": "2. května", "atanas": "2. května", "alexej": "3. května", "alexa": "3. května", "alexie": "3. května", "květoslav": "4. května", "florián": "4. května", "klaudie": "5. května", "klaudius": "5. května", "radoslav": "6. května", "radislav": "6. května", "stanislav": "7. května", "stojan": "7. května", "zlatan": "8. května", "zlatko": "8. května", "zlatomír": "8. května", "aurel": "8. května", "ctibor": "9. května", "honoráta": "9. května", "blažena": "10. května", "gordon": "10. května", "svatava": "11. května", "svatoslava": "11. května", "svatomíra": "11. května", "pankrác": "12. května", "vsevolod": "12. května", "servác": "13. května", "ofélie": "13. května", "bonifác": "14. května", "dina": "14. května", "žofie": "15. května", "sofie": "15. května", "harald": "15. května", "přemysl": "16. května", "přemek": "16. května", "přemyslav": "16. května", "aneta": "17. května", "paskal": "17. května", "dětmar": "17. května", "nataša": "18. května", "timea": "18. května", "ivo": "19. května", "celestýn": "19. května", "alvin": "19. května", "zbyšek": "20. května", "monika": "21. května", "emil": "22. května", "rita": "22. května", "emilián": "22. května", "vladimír": "23. května", "vladimíra": "23. května", "želmíra": "23. května", "jana": "24. května", "vanesa": "24. května", "viola": "25. května", "violeta": "25. května", "urban": "25. května", "filip": "26. května", "filipa": "26. května", "filipína": "26. května", "valdemar": "27. května", "vadim": "27. května", "vojslav": "27. května", "vilém": "28. května", "viliam": "28. května", "vilibald": "28. května", "maxmilián": "29. května", "maxim": "29. května", "max": "29. května", "ferdinand": "30. května", "elmar": "30. května", "kamila": "31. května", "nila": "31. května", "laura": "1. června", "lora": "1. června", "loreta": "1. června", "jarmil": "2. června", "jaromil": "2. června", "tamara": "3. června", "kevin": "3. června", "lešek": "3. června", "dalibor": "4. června", "tara": "4. června", "fatima": "4. června", "dobroslav": "5. června", "dobroslava": "5. června", "dobruše": "5. června", "norbert": "6. června", "norman": "6. června", "iveta": "7. června", "slavoj": "7. června", "slavibor": "7. června", "medard": "8. června", "pěva": "8. června", "stanislava": "9. června", "anabela": "9. června", "gita": "10. června", "margita": "10. června", "gréta": "10. června", "bruno": "11. června", "barnabáš": "11. června", "brunhilda": "11. června", "antonie": "12. června", "táňa": "12. června", "antonín": "13. června", "genadij": "13. června", "roland": "14. června", "herta": "14. června", "rolanda": "14. června", "vít": "15. června", "víta": "15. června", "senta": "15. června", "zbyněk": "16. června", "zbyhněv": "16. června", "zbyňka": "16. června", "adolf": "17. června", "adina": "17. června", "adolfina": "17. června", "ada": "17. června", "milan": "18. června", "milana": "18. června", "milíč": "18. června", "leoš": "19. června", "leo": "19. června", "leon": "19. června", "lev": "19. června", "ruslan": "19. června", "květa": "20. června", "květuše": "20. června", "flora": "20. června", "alois": "21. června", "aloisie": "21. června", "lejla": "21. června", "pavla": "22. června", "zaira": "22. června", "arabela": "22. června", "zdeňka": "23. června", "zdena": "23. června", "zdenka": "23. června", "sidonie": "23. června", "jan": "24. června", "jonatan": "24. června", "dejan": "24. června", "ivan": "25. června", "salome": "25. června", "fabrizio": "25. června", "adriana": "26. června", "adrian": "26. června", "ladislav": "27. června", "ladislava": "27. června", "lubomír": "28. června", "lubomíra": "28. června", "lubomil": "28. června", "serena": "28. června", "pavel": "29. června", "esmeralda": "29. června", "šárka": "30. června", "vlastimír": "30. června", "vlastimíra": "30. června", "jaroslava": "1. července", "vesna": "1. července", "patricie": "2. července", "alma": "2. července", "radomír": "3. července", "radomíra": "3. července", "anatol": "3. července", "prokop": "4. července", "ulrich": "4. července", "cyril": "5. července", "metoděj": "5. července", "spytihněv": "6. července", "bohuslava": "7. července", "hostivít": "7. července", "nora": "8. července", "edgar": "8. července", "kilián": "8. července", "drahoslava": "9. července", "drahuše": "9. července", "libuše": "10. července", "amálie": "10. července", "ludoslav": "10. července", "ludoslava": "10. července", "olga": "11. července", "helga": "11. července", "pius": "11. července", "bořek": "12. července", "borislav": "12. července", "markéta": "13. července", "margareta": "13. července", "perla": "13. července", "megan": "13. července", "karolína": "14. července", "larisa": "14. července", "jindřich": "15. července", "egon": "15. července", "luboš": "16. července", "cedrik": "16. července", "carmen": "16. července", "martina": "17. července", "iris": "17. července", "arleta": "17. července", "drahomíra": "18. července", "drahomír": "18. července", "drahomila": "18. července", "drahomil": "18. července", "čeněk": "19. července", "čeňka": "19. července", "ilja": "20. července", "eliáš": "20. července", "eliana": "20. července", "iljana": "20. července", "vítězslav": "21. července", "vítězslava": "21. července", "magdaléna": "22. července", "magda": "22. července", "marlena": "22. července", "rozvita": "22. července", "libor": "23. července", "liboslav": "23. července", "libora": "23. července", "liboslava": "23. července", "kristýna": "24. července", "tina": "24. července", "gleb": "24. července", "jakub": "25. července", "timur": "25. července", "anna": "26. července", "anita": "26. července", "nancy": "26. července", "věroslav": "27. července", "bertold": "27. července", "viktor": "28. července", "alina": "28. července", "inocenc": "28. července", "marta": "29. července", "beatrice": "29. července", "olaf": "29. července", "bořivoj": "30. července", "vojen": "30. července", "ignác": "31. července", "ignát": "31. července", "oskar": "1. srpna", "ludomír": "1. srpna", "medea": "1. srpna", "gustav": "2. srpna", "elfrída": "2. srpna", "gustava": "2. srpna", "miluše": "3. srpna", "nikodém": "3. srpna", "jerguš": "3. srpna", "dominik": "4. srpna", "dominika": "4. srpna", "rainer": "4. srpna", "neda": "4. srpna", "kristián": "5. srpna", "milivoj": "5. srpna", "osvald": "5. srpna", "oldřiška": "6. srpna", "ulrika": "6. srpna", "něhoslav": "6. srpna", "lada": "7. srpna", "kajetán": "7. srpna", "iboja": "7. srpna", "soběslav": "8. srpna", "virginie": "8. srpna", "soběslava": "8. srpna", "roman": "9. srpna", "romeo": "9. srpna", "ratibor": "9. srpna", "ratislav": "9. srpna", "vavřinec": "10. srpna", "lars": "10. srpna", "laurenc": "10. srpna", "zuzana": "11. srpna", "filoména": "11. srpna", "klára": "12. srpna", "jasna": "12. srpna", "jasoň": "12. srpna", "alena": "13. srpna", "sven": "13. srpna", "belinda": "13. srpna", "alan": "14. srpna", "alen": "14. srpna", "hana": "15. srpna", "mirela": "15. srpna", "jáchym": "16. srpna", "abrahám": "16. srpna", "petra": "17. srpna", "petronela": "17. srpna", "petula": "17. srpna", "záviš": "17. srpna", "helena": "18. srpna", "jelena": "18. srpna", "ena": "18. srpna", "ludvík": "19. srpna", "ludvíka": "19. srpna", "luisa": "19. srpna", "bernard": "20. srpna", "bernarda": "20. srpna", "dino": "20. srpna", "bernardina": "20. srpna", "bernardeta": "20. srpna", "johana": "21. srpna", "johanka": "21. srpna", "noemi": "21. srpna", "bohuslav": "22. srpna", "božislav": "22. srpna", "tichomír": "22. srpna", "sandra": "23. srpna", "tekla": "23. srpna", "polyxena": "23. srpna", "bartoloměj": "24. srpna", "natanael": "24. srpna", "radim": "25. srpna", "radima": "25. srpna", "elvíra": "25. srpna", "luděk": "26. srpna", "luďka": "26. srpna", "ludiše": "26. srpna", "otakar": "27. srpna", "otakara": "27. srpna", "augustýn": "28. srpna", "augustýna": "28. srpna", "augusta": "28. srpna", "pelagie": "28. srpna", "evelína": "29. srpna", "miron": "29. srpna", "myron": "29. srpna", "vladěna": "30. srpna", "kim": "30. srpna", "kimberley": "30. srpna", "pavlína": "31. srpna", "bela": "31. srpna", "aris": "31. srpna", "linda": "1. září", "samuel": "1. září", "jiljí": "1. září", "adéla": "2. září", "adelína": "2. září", "bronislav": "3. září", "bronislava": "3. září", "branislav": "3. září", "branislava": "3. září", "jindřiška": "4. září", "rozálie": "4. září", "boris": "5. září", "bojan": "5. září", "bojana": "5. září", "boleslav": "6. září", "boleslava": "6. září", "regína": "7. září", "gina": "7. září", "rea": "7. září", "mariana": "8. září", "mariola": "8. září", "marion": "8. září", "daniela": "9. září", "omar": "9. září", "neklan": "9. září", "gordana": "9. září", "irma": "10. září", "krasava": "10. září", "denisa": "11. září", "denis": "11. září", "diviš": "11. září", "dionýz": "11. září", "bystrík": "11. září", "marie": "12. září", "maja": "12. září", "máša": "12. září", "ria": "12. září", "lubor": "13. září", "melinda": "13. září", "radka": "14. září", "radoslava": "14. září", "jolana": "15. září", "jolanta": "15. září", "dolores": "15. září", "ludmila": "16. září", "lidmila": "16. září", "lola": "16. září", "lolita": "16. září", "kornelie": "16. září", "kornel": "16. září", "naděžda": "17. září", "naďa": "17. září", "lambert": "17. září", "paloma": "17. září", "kryštof": "18. září", "ariana": "18. září", "zita": "19. září", "konstantin": "19. září", "oleg": "20. září", "helmut": "20. září", "eustach": "20. září", "matouš": "21. září", "debora": "21. září", "ruben": "21. září", "darina": "22. září", "moris": "22. září", "mořic": "22. září", "berta": "23. září", "lina": "23. září", "jaromír": "24. září", "jaromíra": "24. září", "mercedes": "24. září", "zlata": "25. září", "zlatuše": "25. září", "andrea": "26. září", "andriana": "26. září", "jonáš": "27. září", "damián": "27. září", "václav": "28. září", "václava": "28. září", "brian": "28. září", "michal": "29. září", "michael": "29. září", "rafael": "29. září", "rafaela": "29. září", "jeroným": "30. září", "ráchel": "30. září", "igor": "1. října", "ivar": "1. října", "ivor": "1. října", "olivie": "2. října", "oliver": "2. října", "olympie": "2. října", "bohumil": "3. října", "bohuš": "3. října", "františek": "4. října", "evald": "4. října", "eliška": "5. října", "elza": "5. října", "dalie": "5. října", "hanuš": "6. října", "hanuše": "6. října", "justýna": "7. října", "sergej": "7. října", "justin": "7. října", "věra": "8. října", "věroslava": "8. října", "taisa": "8. října", "štefan": "9. října", "sára": "9. října", "zara": "9. října", "marina": "10. října", "marin": "10. října", "záboj": "10. října", "bivoj": "10. října", "andrej": "11. října", "andreas": "11. října", "andré": "11. října", "marcel": "12. října", "edvín": "12. října", "serafín": "12. října", "renáta": "13. října", "koloman": "13. října", "gerald": "13. října", "agáta": "14. října", "háta": "14. října", "krasoslav": "14. října", "tereza": "15. října", "terezie": "15. října", "aurélie": "15. října", "havel": "16. října", "galina": "16. října", "hedvika": "17. října", "heda": "17. října", "despina": "17. října", "lukáš": "18. října", "donovan": "18. října", "michaela": "19. října", "michala": "19. října", "joel": "19. října", "vendelín": "20. října", "eunika": "20. října", "kleopatra": "20. října", "vendelína": "20. října", "brigita": "21. října", "uršula": "21. října", "voršila": "21. října", "birgita": "21. října", "brit": "21. října", "brita": "21. října", "sabina": "22. října", "sabrina": "22. října", "korina": "22. října", "kordula": "22. října", "teodor": "23. října", "teo": "23. října", "fedor": "23. října", "nina": "24. října", "narcis": "24. října", "narcisa": "24. října", "beáta": "25. října", "vojmír": "25. října", "kryšpín": "25. října", "erik": "26. října", "erich": "26. října", "šarlota": "27. října", "zoe": "27. října", "zoja": "27. října", "lota": "27. října", "živa": "27. října", "živan": "27. října", "alfréd": "28. října", "alfréda": "28. října", "silvie": "29. října", "sylva": "29. října", "silván": "29. října", "tadeáš": "30. října", "demeter": "30. října", "hvězdoslav": "30. října", "dimitrij": "30. října", "štěpánka": "31. října", "volfgang": "31. října", "felix": "1. listopadu", "felície": "1. listopadu", "tobiáš": "2. listopadu", "jessica": "2. listopadu", "hubert": "3. listopadu", "teofil": "3. listopadu", "karel": "4. listopadu", "karla": "4. listopadu", "skarlet": "4. listopadu", "miriam": "5. listopadu", "emerich": "5. listopadu", "vědunka": "5. listopadu", "zacharíáš": "5. listopadu", "liběna": "6. listopadu", "leonard": "6. listopadu", "saskie": "7. listopadu", "engelbert": "7. listopadu", "bohumír": "8. listopadu", "bohumíra": "8. listopadu", "bohdan": "9. listopadu", "darek": "9. listopadu", "božidar": "9. listopadu", "evžen": "10. listopadu", "orest": "10. listopadu", "noe": "10. listopadu", "lionel": "10. listopadu", "martin": "11. listopadu", "davor": "11. listopadu", "benedikt": "12. listopadu", "beno": "12. listopadu", "astrid": "12. listopadu", "benedikta": "12. listopadu", "vitold": "12. listopadu", "tibor": "13. listopadu", "brenda": "13. listopadu", "sáva": "14. listopadu", "mladen": "14. listopadu", "leopold": "15. listopadu", "leopoldina": "15. listopadu", "otmar": "16. listopadu", "otomar": "16. listopadu", "daisy": "16. listopadu", "mahulena": "17. listopadu", "gertruda": "17. listopadu", "edeltruda": "17. listopadu", "romana": "18. listopadu", "odon": "18. listopadu", "alžběta": "19. listopadu", "běta": "19. listopadu", "ilsa": "19. listopadu", "nikola": "20. listopadu", "nikol": "20. listopadu", "albert": "21. listopadu", "alberta": "21. listopadu", "aldo": "21. listopadu", "cecílie": "22. listopadu", "cindy": "22. listopadu", "klement": "23. listopadu", "klementina": "23. listopadu", "lukrécie": "23. listopadu", "emílie": "24. listopadu", "lothar": "24. listopadu", "kateřina": "25. listopadu", "katrin": "25. listopadu", "rina": "25. listopadu", "artur": "26. listopadu", "kurt": "26. listopadu", "artuš": "26. listopadu", "aram": "26. listopadu", "xenie": "27. listopadu", "oxana": "27. listopadu", "virgil": "27. listopadu", "rené": "28. listopadu", "renát": "28. listopadu", "tristan": "28. listopadu", "zina": "29. listopadu", "zinajda": "29. listopadu", "ondřej": "30. listopadu", "ondřejka": "30. listopadu", "iva": "1. prosince", "edmund": "1. prosince", "blanka": "2. prosince", "bibiana": "2. prosince", "vivien": "2. prosince", "svatoslav": "3. prosince", "svatomír": "3. prosince", "xaver": "3. prosince", "barbora": "4. prosince", "barbara": "4. prosince", "babeta": "4. prosince", "jitka": "5. prosince", "liana": "5. prosince", "abigail": "5. prosince", "mikuláš": "6. prosince", "nikolas": "6. prosince", "nikita": "6. prosince", "ambrož": "7. prosince", "benjamín": "7. prosince", "květoslava": "8. prosince", "květomila": "8. prosince", "vratislav": "9. prosince", "vratislava": "9. prosince", "dalila": "9. prosince", "julie": "10. prosince", "juliána": "10. prosince", "dana": "11. prosince", "danuše": "11. prosince", "simona": "12. prosince", "šimona": "12. prosince", "lucie": "13. prosince", "lucián": "13. prosince", "luciána": "13. prosince", "lýdie": "14. prosince", "livie": "14. prosince", "liv": "14. prosince", "radana": "15. prosince", "radan": "15. prosince", "zdirad": "15. prosince", "albína": "16. prosince", "albín": "16. prosince", "daniel": "17. prosince", "dan": "17. prosince", "lazar": "17. prosince", "chantal": "17. prosince", "miloslav": "18. prosince", "milorad": "18. prosince", "ester": "19. prosince", "darius": "19. prosince", "mstislav": "19. prosince", "dagmar": "20. prosince", "dáša": "20. prosince", "dag": "20. prosince", "natálie": "21. prosince", "rodan": "21. prosince", "šimon": "22. prosince", "simon": "22. prosince", "simeon": "22. prosince", "vlasta": "23. prosince", "nika": "23. prosince", "niké": "23. prosince", "adam": "24. prosince", "eva": "24. prosince", "štěpán": "26. prosince", "žaneta": "27. prosince", "melánie": "27. prosince", "bohumila": "28. prosince", "donika": "28. prosince", "judita": "29. prosince", "natan": "29. prosince", "juta": "29. prosince", "david": "30. prosince", "donát": "30. prosince", "silvestr": "31. prosince", "silvestra": "31. prosince", "horst": "31. prosince", "forest": "31. prosince"};
+const SVATKY_D2N={"1-1": ["Mečislav"], "1-2": ["Karina", "Vasil"], "1-3": ["Radmila", "Radomil", "Jenovéfa", "Jenifer"], "1-4": ["Diana", "Dajana", "Deana"], "1-5": ["Dalimil", "Dylan"], "1-6": ["Kašpar", "Melichar", "Baltazar"], "1-7": ["Vilma", "Vilemína", "Atila"], "1-8": ["Čestmír", "Erhard"], "1-9": ["Vladan", "Valtr", "Vlaďka", "Vladana"], "1-10": ["Břetislav", "Břetislava"], "1-11": ["Bohdana", "Teodora"], "1-12": ["Pravoslav", "Pravoslava"], "1-13": ["Edita", "Leontýna"], "1-14": ["Radovan", "Radovana"], "1-15": ["Alice", "Severín"], "1-16": ["Ctirad", "Ctislav"], "1-17": ["Drahoslav", "Drahoš"], "1-18": ["Vladislav", "Vladislava", "Priska"], "1-19": ["Doubravka", "Fabián"], "1-20": ["Ilona", "Sebastián"], "1-21": ["Běla", "Bianka", "Géza"], "1-22": ["Slavomír", "Slavomíra", "Slávek"], "1-23": ["Zdeněk", "Raimund", "Ramon"], "1-24": ["Milena", "Amanda", "Tim"], "1-25": ["Miloš", "Miloň"], "1-26": ["Zora", "Zoran", "Danica", "Aurora"], "1-27": ["Ingrid", "Ingeborg", "Inka"], "1-28": ["Otýlie", "Manfréd"], "1-29": ["Zdislava", "Zdislav"], "1-30": ["Robin", "Erna"], "1-31": ["Marika", "Marieta"], "2-1": ["Hynek", "Jasmína"], "2-2": ["Nela", "Aida"], "2-3": ["Blažej", "Donald"], "2-4": ["Jarmila", "Gilbert"], "2-5": ["Dobromila", "Dobromil"], "2-6": ["Vanda", "Samanta"], "2-7": ["Veronika", "Verona", "Berenika"], "2-8": ["Milada", "Aranka", "Mlada"], "2-9": ["Apolena", "Ronald"], "2-10": ["Mojmír", "Mojmíra"], "2-11": ["Božena", "Dezider"], "2-12": ["Slavěna", "Slávka", "Glorie"], "2-13": ["Věnceslav", "Věnceslava", "Jordan"], "2-14": ["Valentýn", "Valentýna"], "2-15": ["Jiřina", "Jorga", "Jorika"], "2-16": ["Ljuba", "Luba", "Danuta"], "2-17": ["Miloslava", "Grácie", "Fiona"], "2-18": ["Gizela", "Flavie"], "2-19": ["Patrik", "Konrád"], "2-20": ["Oldřich", "Dorián"], "2-21": ["Lenka", "Eleonora", "Lena"], "2-22": ["Petr", "Etela"], "2-23": ["Svatopluk", "Svatobor"], "2-24": ["Matěj", "Matyáš"], "2-25": ["Liliana", "Valburga", "Taras", "Nevena"], "2-26": ["Dorota", "Dora", "Doris", "Božetěch"], "2-27": ["Alexandr", "Torsten"], "2-28": ["Lumír", "Lumíra", "Kira"], "2-29": ["Horymír"], "3-1": ["Bedřich", "Bedřiška", "Dětřich"], "3-2": ["Anežka", "Inéz", "Inesa"], "3-3": ["Kamil", "Vladivoj"], "3-4": ["Stela", "Jadranka"], "3-5": ["Kazimír", "Kazimíra"], "3-6": ["Miroslav", "Mirek", "Fridolín"], "3-7": ["Tomáš", "Tom", "Tomislav"], "3-8": ["Gabriela", "Zoltán", "Merlin"], "3-9": ["Františka", "Rebeka", "Radúz"], "3-10": ["Viktorie", "Melita", "Melisa", "Ildika"], "3-11": ["Anděla", "Angelika", "Anděl"], "3-12": ["Řehoř"], "3-13": ["Růžena", "Roza", "Rosana"], "3-14": ["Rút", "Matylda", "Maud"], "3-15": ["Ida", "Hilda", "Longin"], "3-16": ["Elena", "Herbert", "Amos"], "3-17": ["Vlastimil", "Vlastimila"], "3-18": ["Eduard", "Eduarda"], "3-19": ["Josef", "Josefa", "Sibyla"], "3-20": ["Světlana", "Světla", "Roxana"], "3-21": ["Radek", "Radko"], "3-22": ["Leona", "Lea", "Leokádie", "Leonie"], "3-23": ["Ivona", "Alfons", "Axel"], "3-24": ["Gabriel", "Zbyslav"], "3-25": ["Marián", "Mario", "Marius"], "3-26": ["Emanuel", "Emanuela", "Manuel", "Manuela"], "3-27": ["Dita", "Malvína", "Rupert"], "3-28": ["Soňa", "Gedeon"], "3-29": ["Taťána", "Slavomil", "Slavomila"], "3-30": ["Arnošt", "Ernest", "Arnold", "Arnoštka", "Arne", "Arna"], "3-31": ["Kvido", "Quido", "Arpád"], "4-1": ["Hugo", "Veleslav", "Velen"], "4-2": ["Erika", "Aron"], "4-3": ["Richard", "Richarda"], "4-4": ["Ivana", "Izidor"], "4-5": ["Miroslava", "Mirka", "Mira"], "4-6": ["Vendula", "Venuše"], "4-7": ["Heřman", "Hermína", "Armin", "Armand", "Mína"], "4-8": ["Ema", "Konstantina"], "4-9": ["Dušan", "Dušana", "Dustin"], "4-10": ["Darja", "Darie"], "4-11": ["Izabela", "Ratmír", "Ariel"], "4-12": ["Julius", "Julián", "Zenon"], "4-13": ["Aleš", "Aleška", "Norma"], "4-14": ["Vincenc", "Vincent", "Pravomil", "Pravomila"], "4-15": ["Anastázie", "Oktavián"], "4-16": ["Irena", "Erina", "Ireneus"], "4-17": ["Rudolf", "Rudolfa", "Rolf", "Ralf", "Raul"], "4-18": ["Valérie", "Verner", "Valer"], "4-19": ["Rostislav", "Rastislav", "Timon"], "4-20": ["Marcela", "Odeta", "Celina"], "4-21": ["Alexandra", "Selma"], "4-22": ["Evženie", "Leonid"], "4-23": ["Vojtěch", "Vojtěška", "Gerhard", "Garik"], "4-24": ["Jiří", "Fidel"], "4-25": ["Marek", "Ervín", "Ervína"], "4-26": ["Oto", "Ota", "Uve", "Udo"], "4-27": ["Jaroslav", "Jarolím"], "4-28": ["Vlastislav", "Vlastislava", "Paris"], "4-29": ["Robert", "Roberta", "Roderik", "Roger"], "4-30": ["Blahoslav", "Blahoslava", "Blahomír", "Blahomil"], "5-1": ["Jeremiáš", "Pamela"], "5-2": ["Zikmund", "Atanas"], "5-3": ["Alexej", "Alexa", "Alexie"], "5-4": ["Květoslav", "Florián"], "5-5": ["Klaudie", "Klaudius"], "5-6": ["Radoslav", "Radislav"], "5-7": ["Stanislav", "Stojan"], "5-8": ["Zlatan", "Zlatko", "Zlatomír", "Aurel"], "5-9": ["Ctibor", "Honoráta"], "5-10": ["Blažena", "Gordon"], "5-11": ["Svatava", "Svatoslava", "Svatomíra"], "5-12": ["Pankrác", "Vsevolod"], "5-13": ["Servác", "Ofélie"], "5-14": ["Bonifác", "Dina"], "5-15": ["Žofie", "Sofie", "Harald"], "5-16": ["Přemysl", "Přemek", "Přemyslav"], "5-17": ["Aneta", "Paskal", "Dětmar"], "5-18": ["Nataša", "Timea"], "5-19": ["Ivo", "Celestýn", "Alvin"], "5-20": ["Zbyšek"], "5-21": ["Monika"], "5-22": ["Emil", "Rita", "Emilián"], "5-23": ["Vladimír", "Vladimíra", "Želmíra"], "5-24": ["Jana", "Vanesa"], "5-25": ["Viola", "Violeta", "Urban"], "5-26": ["Filip", "Filipa", "Filipína"], "5-27": ["Valdemar", "Vadim", "Vojslav"], "5-28": ["Vilém", "Viliam", "Vilibald"], "5-29": ["Maxmilián", "Maxim", "Max"], "5-30": ["Ferdinand", "Elmar"], "5-31": ["Kamila", "Nila"], "6-1": ["Laura", "Lora", "Loreta"], "6-2": ["Jarmil", "Jaromil"], "6-3": ["Tamara", "Kevin", "Lešek"], "6-4": ["Dalibor", "Tara", "Fatima"], "6-5": ["Dobroslav", "Dobroslava", "Dobruše"], "6-6": ["Norbert", "Norman"], "6-7": ["Iveta", "Slavoj", "Slavibor"], "6-8": ["Medard", "Pěva"], "6-9": ["Stanislava", "Anabela"], "6-10": ["Gita", "Margita", "Gréta"], "6-11": ["Bruno", "Barnabáš", "Brunhilda"], "6-12": ["Antonie", "Táňa"], "6-13": ["Antonín", "Genadij"], "6-14": ["Roland", "Herta", "Rolanda"], "6-15": ["Vít", "Víta", "Senta"], "6-16": ["Zbyněk", "Zbyhněv", "Zbyňka"], "6-17": ["Adolf", "Adina", "Adolfina", "Ada"], "6-18": ["Milan", "Milana", "Milíč"], "6-19": ["Leoš", "Leo", "Leon", "Lev", "Ruslan"], "6-20": ["Květa", "Květuše", "Flora"], "6-21": ["Alois", "Aloisie", "Lejla"], "6-22": ["Pavla", "Zaira", "Arabela"], "6-23": ["Zdeňka", "Zdena", "Zdenka", "Sidonie"], "6-24": ["Jan", "Jonatan", "Dejan"], "6-25": ["Ivan", "Salome", "Fabrizio"], "6-26": ["Adriana", "Adrian"], "6-27": ["Ladislav", "Ladislava"], "6-28": ["Lubomír", "Lubomíra", "Lubomil", "Serena"], "6-29": ["Petr", "Pavel", "Esmeralda"], "6-30": ["Šárka", "Vlastimír", "Vlastimíra"], "7-1": ["Jaroslava", "Vesna"], "7-2": ["Patricie", "Alma"], "7-3": ["Radomír", "Radomíra", "Anatol"], "7-4": ["Prokop", "Ulrich"], "7-5": ["Cyril", "Metoděj"], "7-6": ["Spytihněv"], "7-7": ["Bohuslava", "Hostivít"], "7-8": ["Nora", "Edgar", "Kilián"], "7-9": ["Drahoslava", "Drahuše"], "7-10": ["Libuše", "Amálie", "Ludoslav", "Ludoslava"], "7-11": ["Olga", "Helga", "Pius"], "7-12": ["Bořek", "Borislav"], "7-13": ["Markéta", "Margareta", "Perla", "Megan"], "7-14": ["Karolína", "Larisa"], "7-15": ["Jindřich", "Egon"], "7-16": ["Luboš", "Cedrik", "Carmen"], "7-17": ["Martina", "Iris", "Arleta"], "7-18": ["Drahomíra", "Drahomír", "Drahomila", "Drahomil"], "7-19": ["Čeněk", "Čeňka"], "7-20": ["Ilja", "Eliáš", "Eliana", "Iljana"], "7-21": ["Vítězslav", "Vítězslava"], "7-22": ["Magdaléna", "Magda", "Marlena", "Rozvita"], "7-23": ["Libor", "Liboslav", "Libora", "Liboslava"], "7-24": ["Kristýna", "Tina", "Gleb"], "7-25": ["Jakub", "Timur"], "7-26": ["Anna", "Anita", "Nancy"], "7-27": ["Věroslav", "Bertold"], "7-28": ["Viktor", "Alina", "Inocenc"], "7-29": ["Marta", "Beatrice", "Olaf"], "7-30": ["Bořivoj", "Vojen"], "7-31": ["Ignác", "Ignát"], "8-1": ["Oskar", "Ludomír", "Medea"], "8-2": ["Gustav", "Elfrída", "Gustava"], "8-3": ["Miluše", "Nikodém", "Jerguš"], "8-4": ["Dominik", "Dominika", "Rainer", "Neda"], "8-5": ["Kristián", "Milivoj", "Osvald"], "8-6": ["Oldřiška", "Ulrika", "Něhoslav"], "8-7": ["Lada", "Kajetán", "Iboja"], "8-8": ["Soběslav", "Virginie", "Soběslava"], "8-9": ["Roman", "Romeo", "Ratibor", "Ratislav"], "8-10": ["Vavřinec", "Lars", "Laurenc"], "8-11": ["Zuzana", "Filoména"], "8-12": ["Klára", "Jasna", "Jasoň"], "8-13": ["Alena", "Sven", "Belinda"], "8-14": ["Alan", "Alen"], "8-15": ["Hana", "Mirela"], "8-16": ["Jáchym", "Abrahám"], "8-17": ["Petra", "Petronela", "Petula", "Záviš"], "8-18": ["Helena", "Jelena", "Ena"], "8-19": ["Ludvík", "Ludvíka", "Luisa"], "8-20": ["Bernard", "Bernarda", "Dino", "Bernardina", "Bernardeta"], "8-21": ["Johana", "Johanka", "Noemi"], "8-22": ["Bohuslav", "Božislav", "Tichomír"], "8-23": ["Sandra", "Tekla", "Polyxena"], "8-24": ["Bartoloměj", "Natanael"], "8-25": ["Radim", "Radima", "Elvíra"], "8-26": ["Luděk", "Luďka", "Ludiše"], "8-27": ["Otakar", "Otakara"], "8-28": ["Augustýn", "Augustýna", "Augusta", "Pelagie"], "8-29": ["Evelína", "Miron", "Myron"], "8-30": ["Vladěna", "Kim", "Kimberley"], "8-31": ["Pavlína", "Bela", "Aris"], "9-1": ["Linda", "Samuel", "Jiljí"], "9-2": ["Adéla", "Adelína"], "9-3": ["Bronislav", "Bronislava", "Branislav", "Branislava"], "9-4": ["Jindřiška", "Rozálie"], "9-5": ["Boris", "Bojan", "Bojana"], "9-6": ["Boleslav", "Boleslava"], "9-7": ["Regína", "Gina", "Rea"], "9-8": ["Mariana", "Mariola", "Marion"], "9-9": ["Daniela", "Omar", "Neklan", "Gordana"], "9-10": ["Irma", "Krasava"], "9-11": ["Denisa", "Denis", "Diviš", "Dionýz", "Bystrík"], "9-12": ["Marie", "Maja", "Máša", "Ria"], "9-13": ["Lubor", "Melinda"], "9-14": ["Radka", "Radoslava"], "9-15": ["Jolana", "Jolanta", "Dolores"], "9-16": ["Ludmila", "Lidmila", "Lola", "Lolita", "Kornelie", "Kornel"], "9-17": ["Naděžda", "Naďa", "Lambert", "Paloma"], "9-18": ["Kryštof", "Ariana"], "9-19": ["Zita", "Konstantin"], "9-20": ["Oleg", "Helmut", "Eustach"], "9-21": ["Matouš", "Debora", "Ruben"], "9-22": ["Darina", "Moris", "Mořic"], "9-23": ["Berta", "Lina"], "9-24": ["Jaromír", "Jaromíra", "Mercedes"], "9-25": ["Zlata", "Zlatuše"], "9-26": ["Andrea", "Andriana"], "9-27": ["Jonáš", "Damián"], "9-28": ["Václav", "Václava", "Brian"], "9-29": ["Michal", "Michael", "Rafael", "Rafaela"], "9-30": ["Jeroným", "Ráchel"], "10-1": ["Igor", "Ivar", "Ivor"], "10-2": ["Olivie", "Oliver", "Olympie"], "10-3": ["Bohumil", "Bohuš"], "10-4": ["František", "Evald"], "10-5": ["Eliška", "Elza", "Dalie"], "10-6": ["Hanuš", "Hanuše"], "10-7": ["Justýna", "Sergej", "Justin"], "10-8": ["Věra", "Věroslava", "Taisa"], "10-9": ["Štefan", "Sára", "Zara"], "10-10": ["Marina", "Marin", "Záboj", "Bivoj"], "10-11": ["Andrej", "Andreas", "André"], "10-12": ["Marcel", "Edvín", "Serafín"], "10-13": ["Renáta", "Koloman", "Gerald"], "10-14": ["Agáta", "Háta", "Krasoslav"], "10-15": ["Tereza", "Terezie", "Aurélie"], "10-16": ["Havel", "Galina"], "10-17": ["Hedvika", "Heda", "Despina"], "10-18": ["Lukáš", "Donovan"], "10-19": ["Michaela", "Michala", "Joel"], "10-20": ["Vendelín", "Eunika", "Kleopatra", "Vendelína"], "10-21": ["Brigita", "Uršula", "Voršila", "Birgita", "Brit", "Brita"], "10-22": ["Sabina", "Sabrina", "Korina", "Kordula"], "10-23": ["Teodor", "Teo", "Fedor"], "10-24": ["Nina", "Narcis", "Narcisa"], "10-25": ["Beáta", "Vojmír", "Kryšpín"], "10-26": ["Erik", "Erich"], "10-27": ["Šarlota", "Zoe", "Zoja", "Lota", "Živa", "Živan"], "10-28": ["Alfréd", "Alfréda"], "10-29": ["Silvie", "Sylva", "Silván"], "10-30": ["Tadeáš", "Demeter", "Hvězdoslav", "Dimitrij"], "10-31": ["Štěpánka", "Volfgang"], "11-1": ["Felix", "Felície"], "11-2": ["Tobiáš", "Jessica"], "11-3": ["Hubert", "Teofil"], "11-4": ["Karel", "Karla", "Skarlet"], "11-5": ["Miriam", "Emerich", "Vědunka", "Zacharíáš"], "11-6": ["Liběna", "Leonard"], "11-7": ["Saskie", "Engelbert"], "11-8": ["Bohumír", "Bohumíra"], "11-9": ["Bohdan", "Darek", "Božidar"], "11-10": ["Evžen", "Orest", "Noe", "Lionel"], "11-11": ["Martin", "Davor"], "11-12": ["Benedikt", "Beno", "Astrid", "Benedikta", "Vitold"], "11-13": ["Tibor", "Brenda"], "11-14": ["Sáva", "Mladen"], "11-15": ["Leopold", "Leopoldina"], "11-16": ["Otmar", "Otomar", "Daisy"], "11-17": ["Mahulena", "Gertruda", "Edeltruda"], "11-18": ["Romana", "Odon"], "11-19": ["Alžběta", "Běta", "Ilsa"], "11-20": ["Nikola", "Nikol"], "11-21": ["Albert", "Alberta", "Aldo"], "11-22": ["Cecílie", "Cindy"], "11-23": ["Klement", "Klementina", "Lukrécie"], "11-24": ["Emílie", "Lothar"], "11-25": ["Kateřina", "Katrin", "Rina"], "11-26": ["Artur", "Kurt", "Konrád", "Artuš", "Aram"], "11-27": ["Xenie", "Oxana", "Virgil"], "11-28": ["René", "Renát", "Tristan"], "11-29": ["Zina", "Zinajda"], "11-30": ["Ondřej", "Ondřejka"], "12-1": ["Iva", "Edmund"], "12-2": ["Blanka", "Bibiana", "Vivien"], "12-3": ["Svatoslav", "Svatomír", "Xaver"], "12-4": ["Barbora", "Barbara", "Babeta"], "12-5": ["Jitka", "Liana", "Abigail"], "12-6": ["Mikuláš", "Nikolas", "Nikita"], "12-7": ["Ambrož", "Benjamín"], "12-8": ["Květoslava", "Květomila"], "12-9": ["Vratislav", "Vratislava", "Dalila"], "12-10": ["Julie", "Juliána"], "12-11": ["Dana", "Danuše"], "12-12": ["Simona", "Šimona"], "12-13": ["Lucie", "Lucián", "Luciána"], "12-14": ["Lýdie", "Livie", "Liv"], "12-15": ["Radana", "Radan", "Zdirad"], "12-16": ["Albína", "Albín"], "12-17": ["Daniel", "Dan", "Lazar", "Chantal"], "12-18": ["Miloslav", "Milorad"], "12-19": ["Ester", "Darius", "Mstislav"], "12-20": ["Dagmar", "Dáša", "Dag"], "12-21": ["Natálie", "Rodan"], "12-22": ["Šimon", "Simon", "Simeon"], "12-23": ["Vlasta", "Nika", "Niké"], "12-24": ["Adam", "Eva"], "12-26": ["Štěpán"], "12-27": ["Žaneta", "Melánie"], "12-28": ["Bohumila", "Donika"], "12-29": ["Judita", "Natan", "Juta"], "12-30": ["David", "Donát"], "12-31": ["Silvestr", "Silvestra", "Horst", "Forest"]};
+
+const SV_MONTHS=["","Leden","Únor","Březen","Duben","Květen","Červen","Červenec","Srpen","Září","Říjen","Listopad","Prosinec"];
+const SV_DAYS_IN=[0,31,29,31,30,31,30,31,31,30,31,30,31]; // max days per month
+
+let svCurMonth=new Date().getMonth()+1;
+let svCurDay=new Date().getDate();
+let svScrollTimer=null;
+
+function svNameInput(val){
+  const sugs=document.getElementById('sv-sugs');
+  const res=document.getElementById('sv-name-result');
+  const q=val.trim().toLowerCase()
+    .normalize('NFC');
+  if(q.length<2){sugs.classList.remove('open');res.textContent='—';res.className='sv-result-text empty';return;}
+  // Find matches
+  const all=Object.keys(SVATKY_N2D);
+  const matches=all.filter(n=>n.startsWith(q)).slice(0,5);
+  if(matches.length===0){sugs.classList.remove('open');res.textContent='Jméno nenalezeno';res.className='sv-result-text empty';return;}
+  // Exact match?
+  if(SVATKY_N2D[q]){
+    res.textContent=SVATKY_N2D[q];res.className='sv-result-text';
+  } else {res.textContent='—';res.className='sv-result-text empty';}
+  // Show suggestions
+  sugs.innerHTML=matches.map(n=>`<div class="sv-sug-item" ontouchstart="svPickName('${n}')" onclick="svPickName('${n}')">${n.charAt(0).toUpperCase()+n.slice(1)} — ${SVATKY_N2D[n]}</div>`).join('');
+  sugs.classList.add('open');
+}
+
+function svPickName(n){
+  document.getElementById('sv-name-input').value=n.charAt(0).toUpperCase()+n.slice(1);
+  document.getElementById('sv-sugs').classList.remove('open');
+  const res=document.getElementById('sv-name-result');
+  res.textContent=SVATKY_N2D[n];res.className='sv-result-text';
+}
+
+// Close suggestions on outside tap
+document.addEventListener('touchstart',e=>{
+  if(!e.target.closest('.sv-input-wrap'))
+    document.getElementById('sv-sugs').classList.remove('open');
+},{passive:true});
+
+// ── DRUM PICKERS ─────────────────────────────────────────────
+function svBuildDrums(){
+  const dm=document.getElementById('sv-drum-m');
+  const dd=document.getElementById('sv-drum-d');
+  dm.innerHTML=SV_MONTHS.slice(1).map((m,i)=>`<div class="sv-drum-item" data-v="${i+1}">${m}</div>`).join('');
+  svBuildDayDrum(svCurMonth);
+  // Scroll to today
+  requestAnimationFrame(()=>{
+    svScrollTo(dm,svCurMonth-1);
+    svScrollTo(dd,svCurDay-1);
+  });
+}
+
+function svBuildDayDrum(month){
+  const dd=document.getElementById('sv-drum-d');
+  const days=SV_DAYS_IN[month];
+  dd.innerHTML=Array.from({length:days},(_,i)=>`<div class="sv-drum-item" data-v="${i+1}">${i+1}</div>`).join('');
+}
+
+function svScrollTo(drum,idx){
+  drum.scrollTop=idx*38;
+}
+
+function svDrumRead(drum){
+  return Math.round(drum.scrollTop/38);
+}
+
+function svDrumScroll(){
+  clearTimeout(svScrollTimer);
+  svScrollTimer=setTimeout(()=>{
+    const dm=document.getElementById('sv-drum-m');
+    const dd=document.getElementById('sv-drum-d');
+    const mi=svDrumRead(dm);
+    const di=svDrumRead(dd);
+    const month=mi+1;
+    const day=di+1;
+    // Update day drum if month changed
+    if(month!==svCurMonth){
+      svCurMonth=month;
+      const days=SV_DAYS_IN[month];
+      svBuildDayDrum(month);
+      const clampedDay=Math.min(svCurDay,days);
+      requestAnimationFrame(()=>svScrollTo(dd,clampedDay-1));
+    }
+    svCurDay=Math.min(day,SV_DAYS_IN[month]);
+    // Highlight selected items
+    dm.querySelectorAll('.sv-drum-item').forEach((el,i)=>el.classList.toggle('sel',i===mi));
+    dd.querySelectorAll('.sv-drum-item').forEach((el,i)=>el.classList.toggle('sel',i===svCurDay-1));
+    // Look up
+    const key=`${month}-${svCurDay}`;
+    const res=document.getElementById('sv-date-result');
+    const names=SVATKY_D2N[key];
+    if(names&&names.length){
+      res.textContent=names.join(', ');res.className='sv-result-text';
+    } else {
+      res.textContent='Žádný svátek';res.className='sv-result-text empty';
+    }
+  },120);
+}
+
+function initSvatky(){
+  svBuildDrums();
+  // Initial lookup for today
+  setTimeout(svDrumScroll,200);
+}
+
 // ═══════════════════════════════════════════════════════════
 // POLSKÝ KŘÍŽ
 // Edges: 1=top,2=right,3=bottom,4=left  Dots: 1-3
@@ -1429,13 +1681,14 @@ function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 
 // ── INIT ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
-  buildBrl();buildBin();buildTer();initSeg();initPk();
+  buildBrl();buildBin();buildTer();initSeg();initPk();initSvatky();
   requestAnimationFrame(()=>{semDrawState();semDraw();});
 });
 window.addEventListener('resize',()=>{ setVH(); semDraw(); pkDraw(); segRefresh(); });
 
 // ── SERVICE WORKER ───────────────────────────────────────────
-if('serviceWorker' in navigator){
+// Registruj SW jen na vlastním serveru, ne v iframe / Claude.ai
+if('serviceWorker' in navigator && location.hostname !== 'www.claudeusercontent.com'){
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
       .then(r => console.log('SW registered:', r.scope))
