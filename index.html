@@ -35,7 +35,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
   height:100dvh;
   /* fallback for older safari */
   height:calc(var(--vh,1vh)*100);
-  padding-top:calc(var(--safe-t) + var(--safe-t) * 0.5);
+  padding-top:calc(var(--safe-t) * 1.5);
 }
 
 /* ── BOTTOM NAV ─────────────────────────────────────────── */
@@ -414,6 +414,166 @@ nav{
   font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.4px;z-index:3;
   text-transform:uppercase;
 }
+
+/* ══════════════════════════════════════════════════════════
+   KRESLI (MŘÍŽKA)
+══════════════════════════════════════════════════════════ */
+.kr-toolbar{
+  flex:0 0 auto;display:flex;align-items:center;gap:10px;width:100%;
+}
+.kr-controls{
+  display:flex;align-items:center;gap:6px;flex:1;
+}
+.kr-ctrl-group{
+  display:flex;align-items:center;gap:4px;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:4px 8px;
+}
+.kr-ctrl-lbl{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;}
+.kr-btn{
+  width:28px;height:28px;border-radius:7px;border:none;
+  background:var(--card2);color:var(--t1);font-size:16px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background .1s;
+}
+.kr-btn:active{background:var(--border2);}
+.kr-val{font-size:14px;font-weight:800;color:var(--t1);min-width:20px;text-align:center;}
+.kr-clear{
+  height:36px;padding:0 14px;border-radius:10px;border:1px solid var(--border);
+  background:var(--card);color:var(--t2);font-size:12px;font-weight:700;
+  cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+.kr-clear:active{background:var(--card2);}
+
+/* Colour swatches */
+.kr-palette{
+  flex:0 0 auto;display:flex;gap:6px;align-items:center;width:100%;
+  justify-content:center;
+}
+.kr-swatch{
+  width:34px;height:34px;border-radius:50%;cursor:pointer;
+  border:3px solid transparent;transition:transform .1s,border-color .1s;
+  flex-shrink:0;
+}
+.kr-swatch.sel{border-color:#fff;transform:scale(1.18);}
+.kr-swatch:active{transform:scale(0.9);}
+
+/* Grid */
+.kr-grid-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  min-height:0;width:100%;touch-action:none;
+}
+.kr-grid{
+  display:grid;
+  border:1.5px solid var(--border2);border-radius:4px;overflow:hidden;
+  touch-action:none;
+}
+.kr-cell{
+  border:0.5px solid var(--border);
+  box-sizing:border-box;cursor:pointer;
+  transition:background .08s;
+}
+
+/* ══════════════════════════════════════════════════════════
+   GRILLE CIPHER
+══════════════════════════════════════════════════════════ */
+.gr-toolbar{
+  flex:0 0 auto;display:flex;align-items:center;gap:8px;width:100%;
+}
+.gr-size-group{
+  display:flex;align-items:center;gap:4px;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:4px 8px;flex:1;
+}
+.gr-ctrl-lbl{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;}
+.gr-btn{
+  width:28px;height:28px;border-radius:7px;border:none;
+  background:var(--card2);color:var(--t1);font-size:16px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.gr-btn:active{background:var(--border2);}
+.gr-val{font-size:14px;font-weight:800;color:var(--t1);min-width:22px;text-align:center;}
+.gr-clear{
+  height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--border);
+  background:var(--card);color:var(--t2);font-size:12px;font-weight:700;
+  cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+.gr-clear:active{background:var(--card2);}
+
+/* Text input */
+.gr-input{
+  flex:0 0 auto;width:100%;padding:9px 13px;
+  background:var(--card);border:1.5px solid var(--border);border-radius:10px;
+  color:var(--t1);font-size:15px;font-weight:500;outline:none;
+  box-sizing:border-box;-webkit-appearance:none;font-family:inherit;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.gr-input:focus{border-color:var(--violet);}
+
+/* Grid */
+.gr-grid-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  min-height:0;width:100%;
+}
+.gr-grid{
+  display:grid;
+  border:2px solid var(--border2);border-radius:4px;overflow:hidden;
+  touch-action:none;
+}
+.gr-cell{
+  border:0.5px solid var(--border);box-sizing:border-box;
+  position:relative;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;color:var(--t1);font-family:-apple-system,sans-serif;
+  user-select:none;-webkit-user-select:none;
+  transition:background .08s;
+}
+.gr-cell.hole{
+  background:rgba(167,139,250,.22);
+}
+.gr-cell.hole-rot1{background:rgba(251,191,36,.18);}
+.gr-cell.hole-rot2{background:rgba(52,211,153,.18);}
+.gr-cell.hole-rot3{background:rgba(56,189,248,.18);}
+.gr-cell.invalid{background:rgba(251,113,133,.25);}
+/* Hole overlay — shows position number */
+.gr-cell.hole::after,.gr-cell.hole-rot1::after,.gr-cell.hole-rot2::after,.gr-cell.hole-rot3::after{
+  content:'';
+  position:absolute;inset:0;
+  border:2px solid currentColor;
+  opacity:.5;pointer-events:none;
+}
+.gr-cell.hole{color:var(--violet);}
+.gr-cell.hole-rot1{color:var(--amber);}
+.gr-cell.hole-rot2{color:var(--green);}
+.gr-cell.hole-rot3{color:var(--sky);}
+
+/* Result */
+.gr-result{
+  flex:0 0 auto;width:100%;
+  background:var(--card);border:1.5px solid var(--border);border-radius:10px;
+  padding:8px 12px;
+}
+.gr-result-row{
+  display:flex;gap:6px;align-items:baseline;padding:2px 0;
+}
+.gr-rot-lbl{
+  font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;
+  min-width:36px;flex-shrink:0;
+}
+.gr-rot-lbl.r0{color:var(--violet);}
+.gr-rot-lbl.r1{color:var(--amber);}
+.gr-rot-lbl.r2{color:var(--green);}
+.gr-rot-lbl.r3{color:var(--sky);}
+.gr-rot-text{
+  font-size:14px;font-weight:700;color:var(--t1);letter-spacing:.5px;
+  font-family:'SF Mono',monospace;word-break:break-all;
+}
+.gr-full-text{
+  margin-top:4px;padding-top:4px;border-top:1px solid var(--border);
+  font-size:13px;font-weight:700;color:var(--t2);letter-spacing:.3px;
+  font-family:'SF Mono',monospace;word-break:break-all;
+}
+.gr-hint{font-size:10px;color:var(--t3);text-align:center;flex:0 0 auto;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -586,7 +746,6 @@ nav{
   </div>
 </div>
 
-
 <!-- ══ SVÁTKY ═══════════════════════════════════════════════ -->
 <div id="pg-svatky" class="pg">
   <div class="body" style="gap:18px;padding-top:16px;">
@@ -612,14 +771,12 @@ nav{
     <div class="sv-section">
       <div class="sv-label">📅 Datum → jméno</div>
       <div class="sv-drums">
-        <!-- Month drum -->
-        <div class="sv-drum-wrap" style="flex:1.6;">
+          <div class="sv-drum-wrap" style="flex:1.6;">
           <div class="sv-drum-center"></div>
           <div class="sv-drum" id="sv-drum-m" onscroll="svDrumScroll()"></div>
           <div class="sv-drum-label">Měsíc</div>
         </div>
-        <!-- Day drum -->
-        <div class="sv-drum-wrap" style="flex:1;">
+          <div class="sv-drum-wrap" style="flex:1;">
           <div class="sv-drum-center"></div>
           <div class="sv-drum" id="sv-drum-d" onscroll="svDrumScroll()"></div>
           <div class="sv-drum-label">Den</div>
@@ -634,28 +791,93 @@ nav{
   </div>
 </div>
 
+
+
+<!-- ══ GRILLE CIPHER ════════════════════════════════════════ -->
+<div id="pg-grille" class="pg">
+  <div class="body" style="gap:8px;padding:8px 12px;">
+
+    <!-- Toolbar -->
+    <div class="gr-toolbar">
+      <div class="gr-size-group">
+        <span class="gr-ctrl-lbl">Velikost</span>
+        <button class="gr-btn" onclick="grResize(-2)">−</button>
+        <span class="gr-val" id="gr-size-val">4</span>
+        <button class="gr-btn" onclick="grResize(+2)">+</button>
+        <span class="gr-ctrl-lbl" style="margin-left:4px" id="gr-holes-lbl">max 4 otvorů</span>
+      </div>
+      <button class="gr-clear" onclick="grClear()">Vymaž</button>
+    </div>
+
+    <!-- Text input -->
+    <input class="gr-input" id="gr-input" type="text"
+           placeholder="Zadej šifrovaný text…"
+           autocomplete="off" autocorrect="off" autocapitalize="characters"
+           oninput="grUpdate()"/>
+
+    <!-- Grid -->
+    <div class="gr-grid-wrap">
+      <div class="gr-grid" id="gr-grid"></div>
+    </div>
+
+    <!-- Result -->
+    <div class="gr-result" id="gr-result">
+      <div class="gr-hint">Označ otvory mřížky dotykem</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ KRESLI ═══════════════════════════════════════════════ -->
+<div id="pg-kresli" class="pg">
+  <div class="body" style="gap:10px;padding:10px 12px;">
+
+    <!-- Toolbar: grid size controls + clear -->
+    <div class="kr-toolbar">
+      <div class="kr-controls">
+        <div class="kr-ctrl-group">
+          <span class="kr-ctrl-lbl">Sl</span>
+          <button class="kr-btn" onclick="krResize('cols',-1)">−</button>
+          <span class="kr-val" id="kr-cols-val">9</span>
+          <button class="kr-btn" onclick="krResize('cols',+1)">+</button>
+        </div>
+        <div class="kr-ctrl-group">
+          <span class="kr-ctrl-lbl">Řd</span>
+          <button class="kr-btn" onclick="krResize('rows',-1)">−</button>
+          <span class="kr-val" id="kr-rows-val">9</span>
+          <button class="kr-btn" onclick="krResize('rows',+1)">+</button>
+        </div>
+      </div>
+      <button class="kr-clear" onclick="krClear()">Vymaž</button>
+    </div>
+
+    <!-- Colour palette -->
+    <div class="kr-palette" id="kr-palette"></div>
+
+    <!-- Grid -->
+    <div class="kr-grid-wrap">
+      <div class="kr-grid" id="kr-grid"></div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ══ REFERENCE ══════════════════════════════════════════ -->
 
 <!-- ══ NAV ════════════════════════════════════════════════ -->
 <nav>
   <button class="nb on" onclick="go('morse',this)">
     <svg width="26" height="26" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- dot -->
       <circle cx="6" cy="11" r="3" fill="currentColor"/>
-      <!-- dash -->
       <rect x="11" y="9.5" width="8" height="3" rx="1.5" fill="currentColor"/>
     </svg>
     <span class="lbl">Morse</span>
   </button>
   <button class="nb" onclick="go('semaphore',this)">
     <svg width="26" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- head -->
       <circle cx="12" cy="5" r="3" fill="currentColor"/>
-      <!-- body -->
       <line x1="12" y1="8" x2="12" y2="18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-      <!-- N: right arm straight up -->
       <line x1="12" y1="11" x2="12" y2="3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-      <!-- N: left arm down-left -->
       <line x1="12" y1="11" x2="4" y2="18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
     </svg>
     <span class="lbl">Semafor</span>
@@ -685,19 +907,12 @@ nav{
   </button>
   <button class="nb" onclick="go('7seg',this)">
     <svg width="14" height="26" viewBox="0 0 13 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- top -->
       <rect x="2" y="0.5" width="9" height="2" rx="1" fill="currentColor"/>
-      <!-- top-right -->
       <rect x="11" y="1.5" width="2" height="8" rx="1" fill="currentColor"/>
-      <!-- bottom-right -->
       <rect x="11" y="11.5" width="2" height="8" rx="1" fill="currentColor"/>
-      <!-- bottom -->
       <rect x="2" y="21.5" width="9" height="2" rx="1" fill="currentColor"/>
-      <!-- bottom-left -->
       <rect x="0" y="11.5" width="2" height="8" rx="1" fill="currentColor"/>
-      <!-- top-left -->
       <rect x="0" y="1.5" width="2" height="8" rx="1" fill="currentColor"/>
-      <!-- middle -->
       <rect x="2" y="10.5" width="9" height="2" rx="1" fill="currentColor"/>
     </svg>
     <span class="lbl">7-Seg</span>
@@ -714,17 +929,30 @@ nav{
   </button>
   <button class="nb" onclick="go('svatky',this)">
     <svg width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- calendar sheet -->
       <rect x="1" y="4" width="20" height="20" rx="3" stroke="currentColor" stroke-width="2" fill="none"/>
-      <!-- top rings -->
       <line x1="7" y1="1" x2="7" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       <line x1="15" y1="1" x2="15" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      <!-- header line -->
       <line x1="1" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="1.5"/>
-      <!-- date number "1" -->
       <text x="11" y="21" font-size="9" font-weight="800" fill="currentColor" font-family="-apple-system,sans-serif" text-anchor="middle">1</text>
     </svg>
     <span class="lbl">Svátky</span>
+  </button>
+  <button class="nb" onclick="go('grille',this)">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.8" fill="none"/>
+      <rect x="12" y="2" width="8" height="8" rx="1.5" fill="currentColor" opacity=".4"/>
+      <rect x="2" y="12" width="8" height="8" rx="1.5" fill="currentColor" opacity=".4"/>
+      <rect x="12" y="12" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.8" fill="none"/>
+      <circle cx="16" cy="6" r="2" fill="currentColor"/>
+      <circle cx="6" cy="16" r="2" fill="currentColor"/>
+    </svg>
+    <span class="lbl">Grille</span>
+  </button>
+  <button class="nb" onclick="go('kresli',this)">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="14" height="14" rx="2.5" fill="currentColor"/>
+    </svg>
+    <span class="lbl">Kresli</span>
   </button>
 </nav>
 </div><!-- #app -->
@@ -735,14 +963,18 @@ function setVH(){document.documentElement.style.setProperty('--vh',window.innerH
 setVH();window.addEventListener('resize',setVH);
 
 // ── NAV ─────────────────────────────────────────────────────
+let _pages=null,_navBtns=null;
 function go(name,btn){
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  if(!_pages){_pages=[...document.querySelectorAll('.pg')];_navBtns=[...document.querySelectorAll('.nb')];}
+  _pages.forEach(p=>p.classList.remove('on'));
+  _navBtns.forEach(b=>b.classList.remove('on'));
   document.getElementById('pg-'+name).classList.add('on');
   btn.classList.add('on');
-  if(name==='semaphore') requestAnimationFrame(()=>{ setVH(); semDrawState(); semDraw(); });
-  if(name==='pkriz') requestAnimationFrame(()=>{ setVH(); pkDraw(); });
-  if(name==='svatky') requestAnimationFrame(()=>{ setVH(); initSvatky(); });
+  if(name==='semaphore') requestAnimationFrame(()=>{ setVH();semDrawState();semDraw(); });
+  else if(name==='pkriz') requestAnimationFrame(()=>{ setVH();pkDraw(); });
+  else if(name==='svatky') requestAnimationFrame(()=>{ setVH();initSvatky(); });
+  else if(name==='kresli') requestAnimationFrame(()=>{ setVH();krBuildGrid(); });
+  else if(name==='grille') requestAnimationFrame(()=>{ setVH();grBuildGrid(); });
 }
 
 // ── DATA ────────────────────────────────────────────────────
@@ -921,10 +1153,11 @@ function semDraw(){
   }
 }
 
+const _ssL=()=>document.getElementById('ss-l');
+const _ssR=()=>document.getElementById('ss-r');
+const _ssLbl=()=>document.getElementById('ss-lbl');
 function semDrawState(){
-  const lDot=document.getElementById('ss-l');
-  const rDot=document.getElementById('ss-r');
-  const lbl=document.getElementById('ss-lbl');
+  const lDot=_ssL(),rDot=_ssR(),lbl=_ssLbl();
   if(semStep==='L'){
     lDot.className='ssd on';rDot.className='ssd';
     lbl.innerHTML='Vyber polohu <b>lev\u00e9</b> pa\u017ee';
@@ -1179,7 +1412,6 @@ function tReset(){
 function tDel(){histDel(terHist,'t-hist');}
 function tRenderH(){histRender('t-hist',terHist);}
 
-
 // ═══════════════════════════════════════════════════════════
 // SVÁTKY
 // ═══════════════════════════════════════════════════════════
@@ -1227,21 +1459,20 @@ document.addEventListener('touchstart',e=>{
 
 // ── DRUM PICKERS ─────────────────────────────────────────────
 function svBuildDrums(){
-  const dm=document.getElementById('sv-drum-m');
-  const dd=document.getElementById('sv-drum-d');
-  dm.innerHTML=SV_MONTHS.slice(1).map((m,i)=>`<div class="sv-drum-item" data-v="${i+1}">${m}</div>`).join('');
+  _svDm=document.getElementById('sv-drum-m');
+  _svDd=document.getElementById('sv-drum-d');
+  _svDm.innerHTML=SV_MONTHS.slice(1).map((m,i)=>`<div class="sv-drum-item">${m}</div>`).join('');
   svBuildDayDrum(svCurMonth);
-  // Scroll to today
   requestAnimationFrame(()=>{
-    svScrollTo(dm,svCurMonth-1);
-    svScrollTo(dd,svCurDay-1);
+    svScrollTo(_svDm,svCurMonth-1);
+    svScrollTo(_svDd,svCurDay-1);
   });
 }
 
 function svBuildDayDrum(month){
-  const dd=document.getElementById('sv-drum-d');
+  const dd=_svDd||document.getElementById('sv-drum-d');
   const days=SV_DAYS_IN[month];
-  dd.innerHTML=Array.from({length:days},(_,i)=>`<div class="sv-drum-item" data-v="${i+1}">${i+1}</div>`).join('');
+  dd.innerHTML=Array.from({length:days},(_,i)=>`<div class="sv-drum-item">${i+1}</div>`).join('');
 }
 
 function svScrollTo(drum,idx){
@@ -1252,11 +1483,12 @@ function svDrumRead(drum){
   return Math.round(drum.scrollTop/38);
 }
 
+let _svDm=null,_svDd=null;
 function svDrumScroll(){
+  if(!_svDm){_svDm=document.getElementById('sv-drum-m');_svDd=document.getElementById('sv-drum-d');}
   clearTimeout(svScrollTimer);
   svScrollTimer=setTimeout(()=>{
-    const dm=document.getElementById('sv-drum-m');
-    const dd=document.getElementById('sv-drum-d');
+    const dm=_svDm,dd=_svDd;
     const mi=svDrumRead(dm);
     const di=svDrumRead(dd);
     const month=mi+1;
@@ -1289,6 +1521,266 @@ function initSvatky(){
   svBuildDrums();
   // Initial lookup for today
   setTimeout(svDrumScroll,200);
+}
+
+
+
+// ═══════════════════════════════════════════════════════════
+// GRILLE CIPHER
+// NxN grid (N even, 4-8), holes marked by user
+// 4 rotations 90°CW, each reveals different cells
+// ═══════════════════════════════════════════════════════════
+const GR_MIN=4,GR_MAX=8;
+let grN=4,grHoles=new Set(); // holes stored as "r-c" strings
+
+function grRotCW(r,c){return[c,grN-1-r];}
+
+function grAllRotations(r,c){
+  const pos=[];let pr=r,pc=c;
+  for(let i=0;i<4;i++){pos.push(`${pr}-${pc}`);[pr,pc]=grRotCW(pr,pc);}
+  return pos;
+}
+
+function grIsValidHole(r,c){
+  // A new hole is valid if none of its 4 rotations conflict with existing holes
+  const rots=new Set(grAllRotations(r,c));
+  for(const h of grHoles){
+    if(rots.has(h)) return false;
+    const [hr,hc]=h.split('-').map(Number);
+    const hrots=new Set(grAllRotations(hr,hc));
+    if(hrots.has(`${r}-${c}`)) return false;
+  }
+  return true;
+}
+
+function grBuildGrid(){
+  const grid=document.getElementById('gr-grid');
+  const wrap=document.querySelector('.gr-grid-wrap');
+  const avW=wrap.offsetWidth-4;
+  const avH=wrap.offsetHeight-4;
+  const cs=Math.floor(Math.min(avW,avH)/grN);
+  const fontSize=Math.max(10,Math.min(cs*0.52,22));
+
+  grid.style.gridTemplateColumns=`repeat(${grN},${cs}px)`;
+  grid.style.gridTemplateRows=`repeat(${grN},${cs}px)`;
+  grid.style.width=`${cs*grN}px`;
+  grid.style.height=`${cs*grN}px`;
+
+  // Get text for cells
+  const raw=(document.getElementById('gr-input').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const total=grN*grN;
+  const padded=(raw+'·'.repeat(total)).slice(0,total);
+
+  grid.innerHTML='';
+  // Precompute rotation map: for each hole, what positions does it map to at rot 1,2,3?
+  const rotMap={};
+  for(const h of grHoles){
+    const [hr,hc]=h.split('-').map(Number);
+    const rots=grAllRotations(hr,hc);
+    for(let rot=1;rot<4;rot++) rotMap[rots[rot]]=rot;
+  }
+
+  for(let r=0;r<grN;r++){
+    for(let col=0;col<grN;col++){
+      const key=`${r}-${col}`;
+      const cell=document.createElement('div');
+      cell.className='gr-cell';
+      cell.dataset.r=r;cell.dataset.c=col;
+      cell.style.fontSize=fontSize+'px';
+      cell.textContent=padded[r*grN+col];
+
+      if(grHoles.has(key)){
+        cell.classList.add('hole');
+      } else if(rotMap[key]!==undefined){
+        cell.classList.add(`hole-rot${rotMap[key]}`);
+      }
+
+      cell.addEventListener('touchstart',e=>{e.preventDefault();grToggleHole(r,col);},{passive:false});
+      cell.addEventListener('click',()=>grToggleHole(r,col));
+      grid.appendChild(cell);
+    }
+  }
+  document.getElementById('gr-size-val').textContent=grN;
+  document.getElementById('gr-holes-lbl').textContent=`max ${grN*grN/4} otvorů`;
+  grUpdateResult();
+}
+
+function grToggleHole(r,c){
+  const key=`${r}-${c}`;
+  const maxHoles=grN*grN/4;
+  if(grHoles.has(key)){
+    grHoles.delete(key);
+  } else {
+    if(grHoles.size>=maxHoles){vib(70);return;}
+    if(!grIsValidHole(r,c)){vib(70);return;}
+    grHoles.add(key);
+  }
+  vib(20);
+  grBuildGrid();
+}
+
+function grUpdateResult(){
+  const res=document.getElementById('gr-result');
+  if(grHoles.size===0){
+    res.innerHTML='<div class="gr-hint">Označ otvory mřížky dotykem</div>';
+    return;
+  }
+  const raw=(document.getElementById('gr-input').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const total=grN*grN;
+  const padded=(raw+'·'.repeat(total)).slice(0,total);
+  const grid=Array.from({length:grN},(_,r)=>Array.from({length:grN},(_,c)=>padded[r*grN+c]));
+
+  const ROT_LABELS=['0°','90°','180°','270°'];
+  const ROT_COLORS=['r0','r1','r2','r3'];
+  let html='',fullText='';
+
+  for(let rot=0;rot<4;rot++){
+    const positions=[];
+    for(const h of grHoles){
+      const [hr,hc]=h.split('-').map(Number);
+      let pr=hr,pc=hc;
+      for(let i=0;i<rot;i++){[pr,pc]=grRotCW(pr,pc);}
+      positions.push([pr,pc]);
+    }
+    positions.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+    const text=positions.map(([pr,pc])=>grid[pr][pc]).join('');
+    fullText+=text;
+    html+=`<div class="gr-result-row">
+      <span class="gr-rot-lbl ${ROT_COLORS[rot]}">${ROT_LABELS[rot]}</span>
+      <span class="gr-rot-text">${text||'—'}</span>
+    </div>`;
+  }
+  html+=`<div class="gr-full-text">${fullText}</div>`;
+  res.innerHTML=html;
+}
+
+function grUpdate(){grBuildGrid();}
+
+function grResize(delta){
+  const newN=Math.min(GR_MAX,Math.max(GR_MIN,grN+delta));
+  if(newN===grN)return;
+  grN=newN;grHoles.clear();
+  grBuildGrid();vib(15);
+}
+
+function grClear(){
+  grHoles.clear();
+  grBuildGrid();vib(30);
+}
+
+function grInit(){
+  grBuildGrid();
+}
+
+// ═══════════════════════════════════════════════════════════
+// KRESLI (MŘÍŽKA)
+// ═══════════════════════════════════════════════════════════
+const KR_COLORS=['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
+const KR_MIN=9,KR_MAX=12;
+let krCols=9,krRows=9,krSelColor=KR_COLORS[0];
+// Sparse color store: key="r-c" → color string
+let krData={};
+// Paint mode: track touch to paint multiple cells
+let krPainting=false,krErasing=false;
+
+function krInit(){
+  // Build palette
+  const pal=document.getElementById('kr-palette');
+  pal.innerHTML=KR_COLORS.map((col,i)=>
+    `<div class="kr-swatch${i===0?' sel':''}" style="background:${col}"
+     data-col="${col}"
+     ontouchstart="krPickColor(this,event)"
+     onclick="krPickColor(this,event)"></div>`
+  ).join('');
+  krBuildGrid();
+  // Global touch end
+  document.addEventListener('touchend',()=>{krPainting=false;},{passive:true});
+  document.addEventListener('touchcancel',()=>{krPainting=false;},{passive:true});
+}
+
+function krPickColor(el,e){
+  e.stopPropagation();
+  document.querySelectorAll('.kr-swatch').forEach(s=>s.classList.remove('sel'));
+  el.classList.add('sel');
+  krSelColor=el.dataset.col;
+}
+
+function krBuildGrid(){
+  const grid=document.getElementById('kr-grid');
+  // Compute cell size to fill available space
+  const wrap=document.querySelector('.kr-grid-wrap');
+  const avW=wrap.offsetWidth-4;
+  const avH=wrap.offsetHeight-4;
+  const cellW=Math.floor(avW/krCols);
+  const cellH=Math.floor(avH/krRows);
+  const cellSize=Math.min(cellW,cellH,Math.floor((avW<avH?avW:avH)/Math.max(krCols,krRows)));
+
+  grid.style.gridTemplateColumns=`repeat(${krCols},${cellSize}px)`;
+  grid.style.gridTemplateRows=`repeat(${krRows},${cellSize}px)`;
+  grid.style.width=`${cellSize*krCols}px`;
+  grid.style.height=`${cellSize*krRows}px`;
+
+  grid.innerHTML='';
+  for(let r=0;r<krRows;r++){
+    for(let col=0;col<krCols;col++){
+      const cell=document.createElement('div');
+      cell.className='kr-cell';
+      cell.dataset.r=r;cell.dataset.c=col;
+      const key=`${r}-${col}`;
+      if(krData[key]) cell.style.background=krData[key];
+      // Touch events
+      cell.addEventListener('touchstart',e=>{
+        e.preventDefault();
+        krPainting=true;
+        krErasing=krData[key]===krSelColor;
+        krPaintCell(cell,r,col);
+      },{passive:false});
+      cell.addEventListener('touchmove',e=>{
+        if(!krPainting)return;
+        e.preventDefault();
+        const t=e.touches[0];
+        const el=document.elementFromPoint(t.clientX,t.clientY);
+        if(el&&el.classList.contains('kr-cell')){
+          krPaintCell(el,+el.dataset.r,+el.dataset.c);
+        }
+      },{passive:false});
+      cell.addEventListener('click',()=>krPaintCell(cell,r,col));
+      grid.appendChild(cell);
+    }
+  }
+  document.getElementById('kr-cols-val').textContent=krCols;
+  document.getElementById('kr-rows-val').textContent=krRows;
+}
+
+function krPaintCell(cell,r,c){
+  const key=`${r}-${c}`;
+  if(krErasing||krData[key]===krSelColor){
+    delete krData[key];
+    cell.style.background='';
+  } else {
+    krData[key]=krSelColor;
+    cell.style.background=krSelColor;
+  }
+}
+
+function krResize(dim,delta){
+  if(dim==='cols'){
+    krCols=Math.min(KR_MAX,Math.max(KR_MIN,krCols+delta));
+  } else {
+    krRows=Math.min(KR_MAX,Math.max(KR_MIN,krRows+delta));
+  }
+  // Prune out-of-bounds cells from data
+  for(const k of Object.keys(krData)){
+    const [r,c]=k.split('-').map(Number);
+    if(r>=krRows||c>=krCols) delete krData[k];
+  }
+  krBuildGrid();vib(15);
+}
+
+function krClear(){
+  krData={};
+  document.querySelectorAll('.kr-cell').forEach(c=>c.style.background='');
+  vib(30);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1535,13 +2027,14 @@ let segActive=new Set(),segHist=[];
 
 // Segment geometry (relative, 0-1 coords, scaled to canvas)
 // Returns array of polygon points for each segment 1-7
+let _segPolyCache=null,_segPolyCacheKey='';
 function segPolygons(W,H,pad,thick){
-  // W,H = total size, pad = outer padding, thick = bar thickness
+  const ck=`${W},${H},${pad},${thick}`;
+  if(_segPolyCacheKey===ck) return _segPolyCache;
   const x0=pad, x1=W-pad;
   const y0=pad, y2=H-pad, y1=(y0+y2)/2;
   const t=thick, t2=t*0.55, slope=t*0.45;
-  // Each segment as array of [x,y] points (hexagon caps)
-  return {
+  const p={
     1:[[x0+t2,y0],[x1-t2,y0],[x1-t2-slope,y0+t],[x0+t2+slope,y0+t]],
     2:[[x1,y0+t2],[x1,y1-t2],[x1-t,y1-t2-slope],[x1-t,y0+t2+slope]],
     3:[[x1,y1+t2],[x1,y2-t2],[x1-t,y2-t2-slope],[x1-t,y1+t2+slope]],
@@ -1550,6 +2043,7 @@ function segPolygons(W,H,pad,thick){
     6:[[x0,y0+t2],[x0,y1-t2],[x0+t,y1-t2-slope],[x0+t,y0+t2+slope]],
     7:[[x0+t2+slope,y1-t/2],[x1-t2-slope,y1-t/2],[x1-t2,y1],[x1-t2-slope,y1+t/2],[x0+t2+slope,y1+t/2],[x0+t2,y1]]
   };
+  _segPolyCacheKey=ck;_segPolyCache=p;return p;
 }
 
 function segDrawCanvas(canvasId,active,size){
@@ -1649,52 +2143,32 @@ function initSeg(){
   segRefresh();
 }
 
-// ═══════════════════════════════════════════════════════════
-// REFERENCE
-// ═══════════════════════════════════════════════════════════
-function buildRefs(){
-  document.getElementById('ref-morse').innerHTML=
-    Object.entries(MMAP).map(([l,m])=>`<div class="rc"><span class="rl">${l}</span><span class="rs">${m}</span></div>`).join('');
-  document.getElementById('ref-brl').innerHTML=
-    Object.entries(BRL).map(([l,d])=>`<div class="rc"><span class="rl">${l}</span><span class="rs">${d.join('')}</span></div>`).join('');
-  document.getElementById('ref-bin').innerHTML=
-    ALPHA.split('').map(l=>`<div class="rc"><span class="rl">${l}</span><span class="rs">${L2BIN[l]}</span></div>`).join('');
-  document.getElementById('ref-ter').innerHTML=
-    ALPHA.split('').map(l=>`<div class="rc"><span class="rl">${l}</span><span class="rs">${L2TER[l]}</span></div>`).join('');
-  document.getElementById('ref-sem').innerHTML=
-    Object.entries(SEM).map(([l,[a,b]])=>`<div class="rc"><span class="rl">${l}</span><span class="rs">${a}–${b}</span></div>`).join('');
-}
-
 // ── SHARED HISTORY HELPERS ─────────────────────────────────
 function histRender(elId,hist){
   document.getElementById(elId).innerHTML=
     hist.map(c=>c===' '?'<span class="hl sp">·</span>':`<span class="hl">${c}</span>`).join('');
 }
 function histDel(hist,elId){if(hist.length){hist.pop();histRender(elId,hist);}}
-function histAdd(hist,elId,letter,resetFn){
-  if(!letter||letter==='—'||letter==='?')return false;
-  hist.push(letter);histRender(elId,hist);resetFn();vib(40);return true;
-}
-
 // ── VIBRATION ────────────────────────────────────────────────
 function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 
 // ── INIT ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
-  buildBrl();buildBin();buildTer();initSeg();initPk();initSvatky();
+  buildBrl();buildBin();buildTer();initSeg();initPk();initSvatky();krInit();grInit();
   requestAnimationFrame(()=>{semDrawState();semDraw();});
 });
-window.addEventListener('resize',()=>{ setVH(); semDraw(); pkDraw(); segRefresh(); });
+window.addEventListener('resize',()=>{ setVH(); semDraw(); pkDraw(); segRefresh(); if(document.getElementById('pg-kresli').classList.contains('on')) krBuildGrid();
+  if(document.getElementById('pg-grille').classList.contains('on')) grBuildGrid(); });
 
 // ── SERVICE WORKER ───────────────────────────────────────────
-// Registruj SW jen na vlastním serveru, ne v iframe / Claude.ai
-if('serviceWorker' in navigator && location.hostname !== 'www.claudeusercontent.com'){
+if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
       .then(r => console.log('SW registered:', r.scope))
       .catch(e => console.warn('SW registration failed:', e));
   });
 }
+
 </script>
 </body>
 </html>
