@@ -123,21 +123,30 @@ nav{
   margin:10px 12px 0;
   background:var(--card);border:1px solid var(--border);border-radius:var(--r);
   padding:10px 12px;
-  display:flex;align-items:center;gap:10px;
+  display:flex;align-items:flex-start;gap:10px;
+  max-height:110px;overflow:hidden;transition:max-height .2s ease;
+}
+.obar:has(.ohist:not(:empty)){
+  max-height:200px;
+}
+@media(max-width:799px){
+  .obar{ margin-right:62px; }
+  .gr-toolbar{ padding-right:54px; }
+  .kr-toolbar{ padding-right:54px; }
 }
 .olet{
   font-size:36px;font-weight:800;min-width:44px;text-align:center;
-  transition:color .12s;line-height:1;
+  transition:color .12s;line-height:1;flex-shrink:0;align-self:center;
 }
 .olet.pop{animation:pop .16s ease;}
 @keyframes pop{0%{transform:scale(1.4);}100%{transform:scale(1);}}
 .ohist{
-  flex:1;display:flex;flex-wrap:wrap;gap:3px;align-items:center;
-  max-height:50px;overflow:hidden;
+  flex:1;display:flex;flex-wrap:wrap;gap:3px;align-items:flex-start;
+  overflow:hidden;
 }
 .hl{display:inline-block;padding:2px 6px;background:var(--card2);border-radius:6px;font-size:14px;font-weight:700;}
 .hl.sp{background:transparent;color:var(--t3);font-size:10px;}
-.bdel{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;padding:4px 6px;flex-shrink:0;}
+.bdel{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;padding:4px 6px;flex-shrink:0;align-self:center;}
 .bdel:active{color:var(--rose);}
 
 /* ── BODY AREA (fills remaining space) ─────────────────── */
@@ -157,11 +166,11 @@ nav{
 }
 .btn-add:active{opacity:.72;}
 .btn-rst{
-  height:48px;padding:0 18px;border-radius:var(--r);
-  background:var(--card);border:1px solid var(--border);
-  color:var(--t2);font-size:15px;font-weight:700;cursor:pointer;
+  height:48px;padding:0 14px;border-radius:var(--r);
+  background:#3a1a1f;border:1px solid #7a2030;
+  color:#fb7185;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;
 }
-.btn-rst:active{background:var(--card2);}
+.btn-rst:active{background:#4a2028;}
 
 /* ══════════════════════════════════════════════════════════
    MORSE
@@ -679,25 +688,25 @@ nav{
     </div>
     <div class="act-row">
       <button class="btn-add" style="background:var(--violet);color:#fff" onclick="sAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="sClearAll()">✕</button>
+      <button class="btn-rst" onclick="sClearAll()">Smaž vše</button>
     </div>
   </div>
 </div>
 
 <!-- ══ BRAILLE ════════════════════════════════════════════ -->
 <div id="pg-braille" class="pg">
-  <div class="obar">
+  <div class="obar" id="b-obar">
     <div class="olet" id="b-let" style="color:var(--amber)">—</div>
     <div class="ohist" id="b-hist"></div>
     <button class="bdel" onclick="bDel()">⌫</button>
   </div>
-  <div class="body">
+  <div class="body" style="justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="brl-grid" id="brl-grid"></div>
     <div class="brl-match none" id="brl-match">?</div>
     <div class="brl-note">Levý sloupec = body 1 2 3 &nbsp;·&nbsp; Pravý = 4 5 6</div>
     <div class="act-row">
       <button class="btn-add" style="background:var(--amber);color:#1a1000" onclick="bAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="bReset()">✕</button>
+      <button class="btn-rst" onclick="bClearAll()">Smaž vše</button>
     </div>
   </div>
 </div>
@@ -715,7 +724,7 @@ nav{
     <div class="bin-eq" id="bin-eq"></div>
     <div class="act-row">
       <button class="btn-add" style="background:var(--sky);color:#001a2e" onclick="biAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="biReset()">✕</button>
+      <button class="btn-rst" onclick="biClearAll()">Smaž vše</button>
     </div>
     <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
       5 bitů &nbsp;·&nbsp; 00001 = A &nbsp;·&nbsp; 11010 = Z<br>klepni na bity které jsou <b style="color:var(--sky)">1</b>
@@ -725,12 +734,12 @@ nav{
 
 <!-- ══ TERNARY ════════════════════════════════════════════ -->
 <div id="pg-ternary" class="pg">
-  <div class="obar">
+  <div class="obar" id="t-obar">
     <div class="olet" id="t-let" style="color:var(--rose)">—</div>
     <div class="ohist" id="t-hist"></div>
     <button class="bdel" onclick="tDel()">⌫</button>
   </div>
-  <div class="body">
+  <div class="body" style="justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="ter-wrap">
       <div class="ter-row-labels" id="ter-row-labels">
         <span>0</span><span>1</span><span>2</span>
@@ -741,7 +750,7 @@ nav{
     <div class="ter-eq" id="ter-eq"></div>
     <div class="act-row">
       <button class="btn-add" style="background:var(--rose);color:#1a0008" onclick="tAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="tReset()">✕</button>
+      <button class="btn-rst" onclick="tClearAll()">Smaž vše</button>
     </div>
     <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
       3 cifry (základ 3) &nbsp;·&nbsp; 001 = A &nbsp;·&nbsp; 222 = Z<br>
@@ -754,12 +763,12 @@ nav{
 
 <!-- ══ 7-SEGMENT ══════════════════════════════════════════ -->
 <div id="pg-7seg" class="pg">
-  <div class="obar">
+  <div class="obar" id="seg-obar">
     <div class="olet" id="seg-let" style="color:var(--green)">—</div>
     <div class="ohist" id="seg-hist"></div>
     <button class="bdel" onclick="segDel()">⌫</button>
   </div>
-  <div class="body">
+  <div class="body" style="justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="seg-wrap">
       <div class="seg-display-area">
         <canvas id="seg-cv" class="seg-canvas-wrap"></canvas>
@@ -769,7 +778,7 @@ nav{
     </div>
     <div class="act-row">
       <button class="btn-add" style="background:var(--green);color:#001a0d" onclick="segAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="segReset()">✕</button>
+      <button class="btn-rst" onclick="segClearAll()">Smaž vše</button>
     </div>
   </div>
 </div>
@@ -793,7 +802,7 @@ nav{
     </div>
     <div class="act-row">
       <button class="btn-add" style="background:#e8334a;color:#fff" onclick="pkAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="pkReset()">✕</button>
+      <button class="btn-rst" onclick="pkClearAll()">Smaž vše</button>
     </div>
   </div>
 </div>
@@ -842,8 +851,6 @@ nav{
 
   </div>
 </div>
-
-
 
 <!-- ══ GRILLE CIPHER ════════════════════════════════════════ -->
 <div id="pg-grille" class="pg">
@@ -998,7 +1005,7 @@ nav{
       <circle cx="16" cy="6" r="2" fill="currentColor"/>
       <circle cx="6" cy="16" r="2" fill="currentColor"/>
     </svg>
-    <span class="lbl">Grille</span>
+    <span class="lbl">Mřížka</span>
   </button>
   <button class="nb" onclick="go('kresli',this)">
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1067,7 +1074,7 @@ nav{
       <rect x="12" y="12" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.8" fill="none"/>
       <circle cx="16" cy="6" r="2" fill="currentColor"/>
       <circle cx="6" cy="16" r="2" fill="currentColor"/>
-    </svg><span>Grille</span></button>
+    </svg><span>Mřížka</span></button>
   <button class="hbr-item" onclick="hbrGo('kresli',this)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="4" y="4" width="14" height="14" rx="2.5" fill="currentColor"/>
     </svg><span>Kresli</span></button>
@@ -1080,16 +1087,32 @@ function setVH(){document.documentElement.style.setProperty('--vh',window.innerH
 setVH();window.addEventListener('resize',setVH);
 
 // ── NAV ─────────────────────────────────────────────────────
-let _pages=null,_navBtns=null;
+let _pages=null,_navBtns=null,_hbrBtns=null;
 function go(name,btn){
-  if(!_pages){_pages=[...document.querySelectorAll('.pg')];_navBtns=[...document.querySelectorAll('.nb')];}
+  if(!_pages){
+    _pages=[...document.querySelectorAll('.pg')];
+    _navBtns=[...document.querySelectorAll('.nb')];
+    _hbrBtns=[...document.querySelectorAll('.hbr-item')];
+  }
   _pages.forEach(p=>p.classList.remove('on'));
   _navBtns.forEach(b=>b.classList.remove('on'));
+  _hbrBtns.forEach(b=>b.classList.remove('on'));
   document.getElementById('pg-'+name).classList.add('on');
   if(btn&&btn.classList.contains('nb')) btn.classList.add('on');
-  // Sync hamburger active state
-  document.querySelectorAll('.hbr-item').forEach(b=>b.classList.toggle('on',b.getAttribute('onclick')?.includes("'"+name+"'")));
+  else if(btn&&btn.classList.contains('hbr-item')) btn.classList.add('on');
+  // Sync the other nav type
+  const isHbr=btn&&btn.classList.contains('hbr-item');
+  if(isHbr){
+    const nb=_navBtns.find(b=>b.getAttribute('onclick')?.includes("'"+name+"'"));
+    if(nb) nb.classList.add('on');
+  } else {
+    const hb=_hbrBtns.find(b=>b.getAttribute('onclick')?.includes("'"+name+"'"));
+    if(hb) hb.classList.add('on');
+  }
   if(name==='semaphore') requestAnimationFrame(()=>{ setVH();semDrawState();semDraw(); });
+  else if(name==='braille') requestAnimationFrame(()=>{ setVH();applyBrlSize(); });
+  else if(name==='ternary') requestAnimationFrame(()=>{ setVH();applyTerSize(); });
+  else if(name==='7seg') requestAnimationFrame(()=>{ setVH();segRefresh();applySegSize(); });
   else if(name==='pkriz') requestAnimationFrame(()=>{ setVH();pkDraw(); });
   else if(name==='svatky') requestAnimationFrame(()=>{ setVH();initSvatky(); });
   else if(name==='kresli') requestAnimationFrame(()=>{ setVH();krBuildGrid(); });
@@ -1272,11 +1295,10 @@ function semDraw(){
   }
 }
 
-const _ssL=()=>document.getElementById('ss-l');
-const _ssR=()=>document.getElementById('ss-r');
-const _ssLbl=()=>document.getElementById('ss-lbl');
 function semDrawState(){
-  const lDot=_ssL(),rDot=_ssR(),lbl=_ssLbl();
+  const lDot=document.getElementById('ss-l');
+  const rDot=document.getElementById('ss-r');
+  const lbl=document.getElementById('ss-lbl');
   if(semStep==='L'){
     lDot.className='ssd on';rDot.className='ssd';
     lbl.innerHTML='Vyber polohu <b>lev\u00e9</b> pa\u017ee';
@@ -1416,6 +1438,7 @@ function bReset(){
   document.getElementById('brl-match').textContent='?';document.getElementById('brl-match').className='brl-match none';
   document.getElementById('b-let').textContent='—';
 }
+function bClearAll(){bHist=[];histRender('b-hist',bHist);bReset();}
 function bDel(){histDel(bHist,'b-hist');}
 function bRenderH(){histRender('b-hist',bHist);}
 
@@ -1461,6 +1484,7 @@ function biReset(){
   document.getElementById('bin-match').textContent='?';document.getElementById('bin-match').className='bin-match none';
   document.getElementById('bi-let').textContent='—';document.getElementById('bin-eq').textContent='';
 }
+function biClearAll(){biHist=[];histRender('bi-hist',biHist);biReset();}
 function biDel(){histDel(biHist,'bi-hist');}
 function biRenderH(){histRender('bi-hist',biHist);}
 
@@ -1528,6 +1552,7 @@ function tReset(){
   document.getElementById('ter-match').textContent='?';document.getElementById('ter-match').className='ter-match none';
   document.getElementById('t-let').textContent='—';document.getElementById('ter-eq').textContent='';
 }
+function tClearAll(){terHist=[];histRender('t-hist',terHist);tReset();}
 function tDel(){histDel(terHist,'t-hist');}
 function tRenderH(){histRender('t-hist',terHist);}
 
@@ -1577,6 +1602,7 @@ document.addEventListener('touchstart',e=>{
 },{passive:true});
 
 // ── DRUM PICKERS ─────────────────────────────────────────────
+let _svDm=null,_svDd=null;
 function svBuildDrums(){
   _svDm=document.getElementById('sv-drum-m');
   _svDd=document.getElementById('sv-drum-d');
@@ -1602,7 +1628,6 @@ function svDrumRead(drum){
   return Math.round(drum.scrollTop/38);
 }
 
-let _svDm=null,_svDd=null;
 function svDrumScroll(){
   if(!_svDm){_svDm=document.getElementById('sv-drum-m');_svDd=document.getElementById('sv-drum-d');}
   clearTimeout(svScrollTimer);
@@ -1621,9 +1646,11 @@ function svDrumScroll(){
       requestAnimationFrame(()=>svScrollTo(dd,clampedDay-1));
     }
     svCurDay=Math.min(day,SV_DAYS_IN[month]);
-    // Highlight selected items
-    dm.querySelectorAll('.sv-drum-item').forEach((el,i)=>el.classList.toggle('sel',i===mi));
-    dd.querySelectorAll('.sv-drum-item').forEach((el,i)=>el.classList.toggle('sel',i===svCurDay-1));
+    // Highlight selected items (direct child access, avoid forEach)
+    const dmItems=dm.children;
+    for(let i=0;i<dmItems.length;i++) dmItems[i].classList.toggle('sel',i===mi);
+    const ddItems=dd.children;
+    for(let i=0;i<ddItems.length;i++) ddItems[i].classList.toggle('sel',i===svCurDay-1);
     // Look up
     const key=`${month}-${svCurDay}`;
     const res=document.getElementById('sv-date-result');
@@ -1642,8 +1669,6 @@ function initSvatky(){
   setTimeout(svDrumScroll,200);
 }
 
-
-
 // ═══════════════════════════════════════════════════════════
 // GRILLE CIPHER
 // NxN grid (N even, 4-8), holes marked by user
@@ -1661,13 +1686,10 @@ function grAllRotations(r,c){
 }
 
 function grIsValidHole(r,c){
-  // A new hole is valid if none of its 4 rotations conflict with existing holes
   const rots=new Set(grAllRotations(r,c));
   for(const h of grHoles){
+    // If any existing hole is in our rotation set, invalid
     if(rots.has(h)) return false;
-    const [hr,hc]=h.split('-').map(Number);
-    const hrots=new Set(grAllRotations(hr,hc));
-    if(hrots.has(`${r}-${c}`)) return false;
   }
   return true;
 }
@@ -1784,6 +1806,7 @@ function grResize(delta){
 
 function grClear(){
   grHoles.clear();
+  document.getElementById('gr-input').value='';
   grBuildGrid();vib(30);
 }
 
@@ -1795,7 +1818,7 @@ function grInit(){
 // KRESLI (MŘÍŽKA)
 // ═══════════════════════════════════════════════════════════
 const KR_COLORS=['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
-const KR_MIN=9,KR_MAX=12;
+const KR_MIN=9,KR_MAX=14;
 let krCols=9,krRows=9,krSelColor=KR_COLORS[0];
 // Sparse color store: key="r-c" → color string
 let krData={};
@@ -2080,6 +2103,7 @@ function pkAdd(){
   pkHist.push(l);pkRenderH();pkReset();vib(40);
 }
 function pkReset(){pkEdges.clear();pkDots=0;pkRefresh();}
+function pkClearAll(){pkHist=[];histRender('pk-hist',pkHist);pkReset();}
 function pkDel(){histDel(pkHist,'pk-hist');}
 function pkRenderH(){histRender('pk-hist',pkHist);}
 
@@ -2148,7 +2172,7 @@ let segActive=new Set(),segHist=[];
 // Returns array of polygon points for each segment 1-7
 let _segPolyCache=null,_segPolyCacheKey='';
 function segPolygons(W,H,pad,thick){
-  const ck=`${W},${H},${pad},${thick}`;
+  const ck=W+','+H;
   if(_segPolyCacheKey===ck) return _segPolyCache;
   const x0=pad, x1=W-pad;
   const y0=pad, y2=H-pad, y1=(y0+y2)/2;
@@ -2168,7 +2192,10 @@ function segPolygons(W,H,pad,thick){
 function segDrawCanvas(canvasId,active,size){
   const cv=document.getElementById(canvasId);
   const dpr=devicePixelRatio||1;
-  const S=size||Math.min(window.innerWidth*0.45,220);
+  const avH=window.innerHeight-196;
+  const maxFromH=Math.floor(avH/1.8);
+  const maxFromW=Math.floor(window.innerWidth*0.45);
+  const S=size||Math.min(maxFromW,maxFromH,220);
   cv.width=S*dpr;cv.height=(S*1.8)*dpr;
   cv.style.width=S+'px';cv.style.height=(S*1.8)+'px';
   const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
@@ -2251,6 +2278,7 @@ function segAdd(){
 function segReset(){
   segActive.clear();segRefresh();
 }
+function segClearAll(){segHist=[];histRender('seg-hist',segHist);segReset();}
 function segDel(){histDel(segHist,'seg-hist');}
 function segRenderH(){histRender('seg-hist',segHist);}
 
@@ -2274,36 +2302,116 @@ function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 // ── INIT ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
   buildBrl();buildBin();buildTer();initSeg();initPk();initSvatky();krInit();grInit();
+  applyBrlSize();applyTerSize();applySegSize();
   requestAnimationFrame(()=>{semDrawState();semDraw();});
 });
-window.addEventListener('resize',()=>{ setVH(); semDraw(); pkDraw(); segRefresh(); if(document.getElementById('pg-kresli').classList.contains('on')) krBuildGrid();
-  if(document.getElementById('pg-grille').classList.contains('on')) grBuildGrid(); });
-
+window.addEventListener('resize',()=>{
+  setVH();
+  const on=document.querySelector('.pg.on');
+  if(!on) return;
+  const id=on.id;
+  if(id==='pg-semaphore'){semDraw();}
+  else if(id==='pg-braille'){applyBrlSize();}
+  else if(id==='pg-ternary'){applyTerSize();}
+  else if(id==='pg-7seg'){applySegSize();}
+  else if(id==='pg-pkriz'){pkDraw();}
+  else if(id==='pg-kresli'){krBuildGrid();}
+  else if(id==='pg-grille'){grBuildGrid();}
+});
 
 // ── HAMBURGER MENU ───────────────────────────────────────────
+let _hbrBtn=null,_hbrMenu=null;
 function hbrToggle(){
-  const btn=document.getElementById('hbr-btn');
-  const menu=document.getElementById('hbr-menu');
-  const open=!menu.classList.contains('open');
-  btn.classList.toggle('open',open);
-  menu.classList.toggle('open',open);
+  if(!_hbrBtn){_hbrBtn=document.getElementById('hbr-btn');_hbrMenu=document.getElementById('hbr-menu');}
+  const open=!_hbrMenu.classList.contains('open');
+  _hbrBtn.classList.toggle('open',open);
+  _hbrMenu.classList.toggle('open',open);
 }
+let _hbrItems=null;
 function hbrGo(name,item){
-  document.getElementById('hbr-btn').classList.remove('open');
-  document.getElementById('hbr-menu').classList.remove('open');
-  document.querySelectorAll('.hbr-item').forEach(b=>b.classList.remove('on'));
-  item.classList.add('on');
-  // Find matching nb or use item as fallback
-  const nb=document.querySelector(`.nb[onclick*="'${name}'"]`);
-  go(name, nb||item);
+  if(!_hbrBtn){_hbrBtn=document.getElementById('hbr-btn');_hbrMenu=document.getElementById('hbr-menu');}
+  _hbrBtn.classList.remove('open');
+  _hbrMenu.classList.remove('open');
+  go(name,item);
 }
 // Close on outside tap
 document.addEventListener('touchstart',e=>{
   if(!e.target.closest('.hbr-btn')&&!e.target.closest('.hbr-menu')){
-    document.getElementById('hbr-btn').classList.remove('open');
-    document.getElementById('hbr-menu').classList.remove('open');
+    if(_hbrBtn){_hbrBtn.classList.remove('open');_hbrMenu.classList.remove('open');}
   }
 },{passive:true});
+
+// ── RESIZE OBSERVER: přepočítej prvky při změně obar výšky ──
+function applyBrlSize(){
+  const pg=document.getElementById('pg-braille');
+  const obar=document.getElementById('b-obar');
+  const actRow=pg.querySelector('.act-row');
+  const match=document.getElementById('brl-match');
+  const note=pg.querySelector('.brl-note');
+  const avail=pg.offsetHeight
+    -(obar?obar.offsetHeight:80)
+    -(actRow?actRow.offsetHeight:56)
+    -(match?match.offsetHeight:72)
+    -(note?note.offsetHeight:36)
+    -60; // padding + gaps
+  const btnSize=Math.max(36, Math.min(82, Math.floor(avail/3), Math.floor(window.innerWidth*0.18)));
+  document.querySelectorAll('.brd').forEach(b=>{
+    b.style.width=btnSize+'px';b.style.height=btnSize+'px';
+    b.style.fontSize=Math.max(12,Math.floor(btnSize*0.28))+'px';
+  });
+}
+
+function applyTerSize(){
+  const pg=document.getElementById('pg-ternary');
+  const obar=document.getElementById('t-obar');
+  const actRow=pg.querySelector('.act-row');
+  const match=document.getElementById('ter-match');
+  const avail=pg.offsetHeight
+    -(obar?obar.offsetHeight:80)
+    -(actRow?actRow.offsetHeight:56)
+    -(match?match.offsetHeight:72)
+    -80; // eq, hint, gaps
+  const gridSize=Math.max(120, Math.min(340, avail, window.innerWidth-60));
+  const grid=document.getElementById('ter-grid');
+  const wrap=pg.querySelector('.ter-wrap');
+  if(wrap) wrap.style.maxWidth=gridSize+'px';
+  const btnSize=Math.max(32, Math.floor((gridSize-60)/3));
+  document.querySelectorAll('.tbd').forEach(b=>{
+    b.style.fontSize=Math.max(12,Math.floor(btnSize*0.36))+'px';
+  });
+}
+
+function applySegSize(){
+  const pg=document.getElementById('pg-7seg');
+  const obar=document.getElementById('seg-obar');
+  const actRow=pg.querySelector('.act-row');
+  const label=document.getElementById('seg-active-label');
+  const avail=pg.offsetHeight
+    -(obar?obar.offsetHeight:80)
+    -(actRow?actRow.offsetHeight:56)
+    -(label?label.offsetHeight:24)
+    -60;
+  const maxFromH=Math.floor(avail/1.8);
+  const maxFromW=Math.floor(window.innerWidth*0.45);
+  const S=Math.max(80, Math.min(220, maxFromH, maxFromW));
+  segDrawCanvas('seg-cv',segActive,S);
+}
+
+// Single ResizeObserver for all obar elements
+if(window.ResizeObserver){
+  const ro=new ResizeObserver(entries=>{
+    for(const e of entries){
+      const id=e.target.id;
+      if(id==='b-obar') applyBrlSize();
+      else if(id==='t-obar') applyTerSize();
+      else if(id==='seg-obar') applySegSize();
+    }
+  });
+  ['b-obar','t-obar','seg-obar'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) ro.observe(el);
+  });
+}
 
 // ── SERVICE WORKER ───────────────────────────────────────────
 if('serviceWorker' in navigator){
