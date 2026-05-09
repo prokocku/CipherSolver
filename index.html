@@ -35,7 +35,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
   height:100dvh;
   /* fallback for older safari */
   height:calc(var(--vh,1vh)*100);
-  padding-top:calc(var(--safe-t) * 1.5);
 }
 
 /* ── BOTTOM NAV (wide screens) ──────────────────────────── */
@@ -120,14 +119,15 @@ nav{
 /* ── OUTPUT BAR ─────────────────────────────────────────── */
 .obar{
   flex:0 0 auto;
-  margin:10px 12px 0;
+  margin:calc(var(--safe-t) + 6px) 12px 0;
   background:var(--card);border:1px solid var(--border);border-radius:var(--r);
   padding:10px 12px;
   display:flex;align-items:flex-start;gap:10px;
-  max-height:80px;overflow:hidden;transition:max-height .2s ease;
+  max-height:calc(var(--safe-t) + 210px);overflow-y:auto;-webkit-overflow-scrolling:touch;
+  transition:none;
 }
 .obar:has(.ohist:not(:empty)){
-  max-height:200px;
+  max-height:calc(var(--safe-t) + 210px);
 }
 @media(max-width:799px){
   .obar{ margin-right:62px; }
@@ -695,7 +695,6 @@ nav{
   <div class="obar">
     <div class="olet" id="m-let" style="color:var(--violet)">—</div>
     <div class="ohist" id="m-hist"></div>
-    <button class="bdel" onclick="mDel()">⌫</button>
   </div>
   <div class="morse-seq" id="m-seq"></div>
   <div class="body">
@@ -723,7 +722,6 @@ nav{
   <div class="obar" id="sem-obar">
     <div class="olet" id="s-let" style="color:var(--amber)">—</div>
     <div class="ohist" id="s-hist"></div>
-    <button class="bdel" onclick="sDel()">⌫</button>
   </div>
   <div class="body" style="padding:4px 0 4px;gap:4px;">
     <div class="sem-step">
@@ -748,7 +746,6 @@ nav{
   <div class="obar" id="b-obar">
     <div class="olet" id="b-let" style="color:var(--amber)">—</div>
     <div class="ohist" id="b-hist"></div>
-    <button class="bdel" onclick="bDel()">⌫</button>
   </div>
   <div class="body" style="justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="brl-grid" id="brl-grid"></div>
@@ -766,7 +763,6 @@ nav{
   <div class="obar">
     <div class="olet" id="bi-let" style="color:var(--sky)">—</div>
     <div class="ohist" id="bi-hist"></div>
-    <button class="bdel" onclick="biDel()">⌫</button>
   </div>
   <div class="body">
     <div class="bin-display" id="bin-bits"></div>
@@ -787,7 +783,6 @@ nav{
   <div class="obar" id="t-obar">
     <div class="olet" id="t-let" style="color:var(--rose)">—</div>
     <div class="ohist" id="t-hist"></div>
-    <button class="bdel" onclick="tDel()">⌫</button>
   </div>
   <div class="body" style="justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;">
     <div class="ter-wrap">
@@ -816,7 +811,6 @@ nav{
   <div class="obar" id="seg-obar">
     <div class="olet" id="seg-let" style="color:var(--green)">—</div>
     <div class="ohist" id="seg-hist"></div>
-    <button class="bdel" onclick="segDel()">⌫</button>
   </div>
   <div class="body" style="justify-content:center;">
     <div class="seg-wrap">
@@ -838,7 +832,6 @@ nav{
   <div class="obar">
     <div class="olet" id="pk-let" style="color:var(--green)">—</div>
     <div class="ohist" id="pk-hist"></div>
-    <button class="bdel" onclick="pkDel()">⌫</button>
   </div>
   <div class="body" style="gap:10px;">
     <div class="pkr-variant">
