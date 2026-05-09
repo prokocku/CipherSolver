@@ -124,7 +124,7 @@ nav{
   background:var(--card);border:1px solid var(--border);border-radius:var(--r);
   padding:10px 12px;
   display:flex;align-items:flex-start;gap:10px;
-  max-height:110px;overflow:hidden;transition:max-height .2s ease;
+  max-height:80px;overflow:hidden;transition:max-height .2s ease;
 }
 .obar:has(.ohist:not(:empty)){
   max-height:200px;
@@ -133,12 +133,13 @@ nav{
   .obar{ margin-right:62px; }
   .gr-toolbar{ padding-right:54px; }
   .kr-toolbar{ padding-right:54px; }
+  /* Grille result scrollable on small screen */
+  #pg-grille .body{ overflow-y:auto; -webkit-overflow-scrolling:touch; justify-content:flex-start; }
+  .gr-result{ max-height:none; }
+  /* Grille grid wraps nicely */
+  .gr-grid-wrap{ flex:0 0 auto; min-height:120px; }
 }
-.olet{
-  font-size:36px;font-weight:800;min-width:44px;text-align:center;
-  transition:color .12s;line-height:1;flex-shrink:0;align-self:center;
-}
-.olet.pop{animation:pop .16s ease;}
+.olet{ display:none; }
 @keyframes pop{0%{transform:scale(1.4);}100%{transform:scale(1);}}
 .ohist{
   flex:1;display:flex;flex-wrap:wrap;gap:3px;align-items:flex-start;
@@ -230,12 +231,8 @@ nav{
   overflow:hidden;
 }
 .sem-dial{
-  /* Fill width, but shrink to available height between obar+step and act-row */
-  width:100vw;
-  height:100vw;
-  max-width:calc(100 * var(--vh,1vh) - 220px);
-  max-height:calc(100 * var(--vh,1vh) - 220px);
   touch-action:none;flex-shrink:0;
+  width:300px;height:300px; /* overridden by JS */
 }
 .sem-dial canvas{width:100%;height:100%;display:block;}
 
@@ -359,7 +356,7 @@ nav{
 ══════════════════════════════════════════════════════════ */
 .seg-wrap{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:16px;min-height:0;width:100%;
+  gap:12px;min-height:0;width:100%;overflow:hidden;
 }
 .seg-display-area{
   display:flex;align-items:center;gap:20px;flex-shrink:0;
@@ -387,6 +384,14 @@ nav{
   color:var(--t2);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;
 }
 .pkr-variant button.on{background:#e8334a;color:#fff;}
+
+.pkr-match{
+  font-size:min(64px,14vw);font-weight:800;
+  height:min(72px,16vw);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--green);transition:all .15s;flex:0 0 auto;line-height:1;
+}
+.pkr-match.none{font-size:min(18px,5vw);color:var(--t3);}
 
 .pkr-main{
   flex:1;display:flex;align-items:center;justify-content:center;
@@ -566,8 +571,11 @@ nav{
   flex:0 0 auto;width:100%;padding:9px 13px;
   background:var(--card);border:1.5px solid var(--border);border-radius:10px;
   color:var(--t1);font-size:15px;font-weight:500;outline:none;
-  box-sizing:border-box;-webkit-appearance:none;font-family:inherit;
+  box-sizing:border-box;-webkit-appearance:none;font-family:'SF Mono',ui-monospace,monospace;
   text-transform:uppercase;letter-spacing:.5px;
+  resize:none;overflow:hidden;min-height:40px;
+  word-break:break-all;white-space:pre-wrap;
+  line-height:1.5;
 }
 .gr-input:focus{border-color:var(--violet);}
 
@@ -618,21 +626,16 @@ nav{
   display:flex;gap:6px;align-items:baseline;padding:2px 0;
 }
 .gr-rot-lbl{
-  font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;
-  min-width:36px;flex-shrink:0;
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;
+  min-width:40px;flex-shrink:0;
 }
 .gr-rot-lbl.r0{color:var(--violet);}
 .gr-rot-lbl.r1{color:var(--amber);}
 .gr-rot-lbl.r2{color:var(--green);}
 .gr-rot-lbl.r3{color:var(--sky);}
 .gr-rot-text{
-  font-size:14px;font-weight:700;color:var(--t1);letter-spacing:.5px;
-  font-family:'SF Mono',monospace;word-break:break-all;
-}
-.gr-full-text{
-  margin-top:4px;padding-top:4px;border-top:1px solid var(--border);
-  font-size:13px;font-weight:700;color:var(--t2);letter-spacing:.3px;
-  font-family:'SF Mono',monospace;word-break:break-all;
+  font-size:17px;font-weight:700;color:var(--t1);letter-spacing:.8px;
+  font-family:'SF Mono',ui-monospace,monospace;word-break:break-all;line-height:1.4;
 }
 .gr-hint{font-size:10px;color:var(--t3);text-align:center;flex:0 0 auto;line-height:1.6;}
 </style>
@@ -670,7 +673,7 @@ nav{
 
 <!-- ══ SEMAPHORE ══════════════════════════════════════════ -->
 <div id="pg-semaphore" class="pg">
-  <div class="obar">
+  <div class="obar" id="sem-obar">
     <div class="olet" id="s-let" style="color:var(--amber)">—</div>
     <div class="ohist" id="s-hist"></div>
     <button class="bdel" onclick="sDel()">⌫</button>
@@ -768,7 +771,7 @@ nav{
     <div class="ohist" id="seg-hist"></div>
     <button class="bdel" onclick="segDel()">⌫</button>
   </div>
-  <div class="body" style="justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div class="body" style="justify-content:center;">
     <div class="seg-wrap">
       <div class="seg-display-area">
         <canvas id="seg-cv" class="seg-canvas-wrap"></canvas>
@@ -800,6 +803,7 @@ nav{
         <canvas id="pk-cv"></canvas>
       </div>
     </div>
+    <div class="pkr-match none" id="pk-match">—</div>
     <div class="act-row">
       <button class="btn-add" style="background:#e8334a;color:#fff" onclick="pkAdd()">+ Přidat písmeno</button>
       <button class="btn-rst" onclick="pkClearAll()">Smaž vše</button>
@@ -869,10 +873,11 @@ nav{
     </div>
 
     <!-- Text input -->
-    <input class="gr-input" id="gr-input" type="text"
+    <textarea class="gr-input" id="gr-input"
            placeholder="Zadej šifrovaný text…"
            autocomplete="off" autocorrect="off" autocapitalize="characters"
-           oninput="grUpdate()"/>
+           rows="1"
+           oninput="grInputHandler(this)"></textarea>
 
     <!-- Grid -->
     <div class="gr-grid-wrap">
@@ -1109,7 +1114,7 @@ function go(name,btn){
     const hb=_hbrBtns.find(b=>b.getAttribute('onclick')?.includes("'"+name+"'"));
     if(hb) hb.classList.add('on');
   }
-  if(name==='semaphore') requestAnimationFrame(()=>{ setVH();semDrawState();semDraw(); });
+  if(name==='semaphore') requestAnimationFrame(()=>{ setVH();semDrawState();applySemSize(); });
   else if(name==='braille') requestAnimationFrame(()=>{ setVH();applyBrlSize(); });
   else if(name==='ternary') requestAnimationFrame(()=>{ setVH();applyTerSize(); });
   else if(name==='7seg') requestAnimationFrame(()=>{ setVH();segRefresh();applySegSize(); });
@@ -1773,7 +1778,7 @@ function grUpdateResult(){
 
   const ROT_LABELS=['0°','90°','180°','270°'];
   const ROT_COLORS=['r0','r1','r2','r3'];
-  let html='',fullText='';
+  let html='';
 
   for(let rot=0;rot<4;rot++){
     const positions=[];
@@ -1785,17 +1790,34 @@ function grUpdateResult(){
     }
     positions.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
     const text=positions.map(([pr,pc])=>grid[pr][pc]).join('');
-    fullText+=text;
     html+=`<div class="gr-result-row">
       <span class="gr-rot-lbl ${ROT_COLORS[rot]}">${ROT_LABELS[rot]}</span>
       <span class="gr-rot-text">${text||'—'}</span>
     </div>`;
   }
-  html+=`<div class="gr-full-text">${fullText}</div>`;
   res.innerHTML=html;
 }
 
-function grUpdate(){grBuildGrid();}
+function grInputHandler(el){
+  // Uppercase + strip non-alphanumeric
+  let raw=el.value.toUpperCase().replace(/[^A-Z0-9\n]/g,'');
+  // Remove explicit newlines from user input — we handle wrapping visually
+  raw=raw.replace(/\n/g,'');
+  // Limit to 64 chars
+  if(raw.length>64) raw=raw.slice(0,64);
+  // Insert visual line breaks every current-grid-width chars for display
+  // Actually just keep the raw value, CSS word-break handles it
+  if(el.value!==raw) el.value=raw;
+  // Auto-resize
+  el.style.height='auto';
+  el.style.height=el.scrollHeight+'px';
+  grBuildGrid();
+}
+function grUpdate(){
+  const el=document.getElementById('gr-input');
+  if(el) grInputHandler(el);
+  else grBuildGrid();
+}
 
 function grResize(delta){
   const newN=Math.min(GR_MAX,Math.max(GR_MIN,grN+delta));
@@ -1806,11 +1828,15 @@ function grResize(delta){
 
 function grClear(){
   grHoles.clear();
-  document.getElementById('gr-input').value='';
+  const el=document.getElementById('gr-input');
+  el.value='';
+  el.style.height='auto';
   grBuildGrid();vib(30);
 }
 
 function grInit(){
+  const el=document.getElementById('gr-input');
+  if(el){ el.style.height='auto'; el.style.height=el.scrollHeight+'px'; }
   grBuildGrid();
 }
 
@@ -2088,6 +2114,12 @@ function pkRefresh(){
   const el=document.getElementById('pk-let');
   el.textContent=ch||'—';
   el.style.color=ch?'var(--green)':'var(--t3)';
+  const m=document.getElementById('pk-match');
+  if(m){
+    m.textContent=ch||'—';
+    m.className='pkr-match'+(ch?'':' none');
+    m.style.color=ch?'var(--green)':'var(--t3)';
+  }
 }
 
 function pkSetVariant(withCh){
@@ -2303,14 +2335,14 @@ function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 window.addEventListener('DOMContentLoaded',()=>{
   buildBrl();buildBin();buildTer();initSeg();initPk();initSvatky();krInit();grInit();
   applyBrlSize();applyTerSize();applySegSize();
-  requestAnimationFrame(()=>{semDrawState();semDraw();});
+  requestAnimationFrame(()=>{semDrawState();applySemSize();});
 });
 window.addEventListener('resize',()=>{
   setVH();
   const on=document.querySelector('.pg.on');
   if(!on) return;
   const id=on.id;
-  if(id==='pg-semaphore'){semDraw();}
+  if(id==='pg-semaphore'){applySemSize();}
   else if(id==='pg-braille'){applyBrlSize();}
   else if(id==='pg-ternary'){applyTerSize();}
   else if(id==='pg-7seg'){applySegSize();}
@@ -2342,18 +2374,35 @@ document.addEventListener('touchstart',e=>{
 },{passive:true});
 
 // ── RESIZE OBSERVER: přepočítej prvky při změně obar výšky ──
+function applySemSize(){
+  const pg=document.getElementById('pg-semaphore');
+  const obar=document.getElementById('sem-obar');
+  const step=pg.querySelector('.sem-step');
+  const actRow=pg.querySelector('.act-row');
+  const obarH=obar?obar.offsetHeight:80;
+  const stepH=step?step.offsetHeight:30;
+  const actH=actRow?actRow.offsetHeight:56;
+  const avail=pg.offsetHeight-obarH-stepH-actH-32; // gaps/padding
+  const W=Math.min(window.innerWidth-24, avail);
+  const S=Math.max(120,W);
+  const dial=document.getElementById('sem-dial');
+  if(dial){dial.style.width=S+'px';dial.style.height=S+'px';}
+  requestAnimationFrame(()=>{semDraw();});
+}
+
 function applyBrlSize(){
   const pg=document.getElementById('pg-braille');
   const obar=document.getElementById('b-obar');
   const actRow=pg.querySelector('.act-row');
   const match=document.getElementById('brl-match');
   const note=pg.querySelector('.brl-note');
-  const avail=pg.offsetHeight
-    -(obar?obar.offsetHeight:80)
-    -(actRow?actRow.offsetHeight:56)
-    -(match?match.offsetHeight:72)
-    -(note?note.offsetHeight:36)
-    -60; // padding + gaps
+  // Available height = page height minus all fixed elements
+  const pgH=pg.offsetHeight;
+  const obarH=obar?obar.offsetHeight:80;
+  const actH=actRow?actRow.offsetHeight:56;
+  const matchH=match?match.offsetHeight:72;
+  const noteH=note?note.offsetHeight:36;
+  const avail=pgH-obarH-actH-matchH-noteH-60;
   const btnSize=Math.max(36, Math.min(82, Math.floor(avail/3), Math.floor(window.innerWidth*0.18)));
   document.querySelectorAll('.brd').forEach(b=>{
     b.style.width=btnSize+'px';b.style.height=btnSize+'px';
@@ -2381,20 +2430,26 @@ function applyTerSize(){
   });
 }
 
+let _segSizing=false;
 function applySegSize(){
-  const pg=document.getElementById('pg-7seg');
-  const obar=document.getElementById('seg-obar');
-  const actRow=pg.querySelector('.act-row');
-  const label=document.getElementById('seg-active-label');
-  const avail=pg.offsetHeight
-    -(obar?obar.offsetHeight:80)
-    -(actRow?actRow.offsetHeight:56)
-    -(label?label.offsetHeight:24)
-    -60;
-  const maxFromH=Math.floor(avail/1.8);
-  const maxFromW=Math.floor(window.innerWidth*0.45);
-  const S=Math.max(80, Math.min(220, maxFromH, maxFromW));
-  segDrawCanvas('seg-cv',segActive,S);
+  if(_segSizing) return;
+  _segSizing=true;
+  requestAnimationFrame(()=>{
+    const pg=document.getElementById('pg-7seg');
+    const obar=document.getElementById('seg-obar');
+    const actRow=pg.querySelector('.act-row');
+    const label=document.getElementById('seg-active-label');
+    const avail=pg.offsetHeight
+      -(obar?obar.offsetHeight:80)
+      -(actRow?actRow.offsetHeight:56)
+      -(label?label.offsetHeight:24)
+      -60;
+    const maxFromH=Math.floor(avail/1.8);
+    const maxFromW=Math.floor(window.innerWidth*0.45);
+    const S=Math.max(80, Math.min(220, maxFromH, maxFromW));
+    segDrawCanvas('seg-cv',segActive,S);
+    _segSizing=false;
+  });
 }
 
 // Single ResizeObserver for all obar elements
@@ -2402,12 +2457,13 @@ if(window.ResizeObserver){
   const ro=new ResizeObserver(entries=>{
     for(const e of entries){
       const id=e.target.id;
-      if(id==='b-obar') applyBrlSize();
+      if(id==='sem-obar') applySemSize();
+      else if(id==='b-obar') applyBrlSize();
       else if(id==='t-obar') applyTerSize();
       else if(id==='seg-obar') applySegSize();
     }
   });
-  ['b-obar','t-obar','seg-obar'].forEach(id=>{
+  ['sem-obar','b-obar','t-obar','seg-obar'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) ro.observe(el);
   });
