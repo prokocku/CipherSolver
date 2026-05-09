@@ -2130,14 +2130,25 @@ function krBuildGrid(){
           krDragging=true;
           krDragOrigin={r,c:col};
           krDragGhost={r,c:col};
-        } else {
-          // Check: tap on cell of same color as selected (if no sel active) → select shape
-          // OR paint
-          if(krSel&&!isSel){krDeselect();}
-          krPainting=true;
-          krErasing=(color===krSelColor)||(krSelColor===KR_EMPTY&&!color);
-          krPaintCell(cell,r,col,selKeys);
+          return;
         }
+        // Tap on a cell whose color matches the selected palette color → select shape
+        // (or deselect if already selected)
+        const cellColor=krData[key];
+        if(krSelColor&&krSelColor!==KR_EMPTY&&cellColor===krSelColor){
+          if(krSel&&selKeys.has(key)){
+            krDeselect();
+          } else {
+            if(krSel) krDeselect();
+            krSelectShape(r,col);
+          }
+          return; // don't paint
+        }
+        // Otherwise: paint mode
+        if(krSel) krDeselect();
+        krPainting=true;
+        krErasing=(krSelColor===KR_EMPTY);
+        krPaintCell(cell,r,col,new Set());
       },{passive:false});
 
       cell.addEventListener('touchmove',e=>{
@@ -2151,18 +2162,18 @@ function krBuildGrid(){
           krDragGhost={r:nr,c:nc};
           krRenderGridDrag(selKeys,nr,nc);
         } else if(krPainting){
-          krPaintCell(el,nr,nc,selKeys);
+          krPaintCell(el,nr,nc,new Set());
         }
       },{passive:false});
 
       cell.addEventListener('click',()=>{
         if(krDragging) return;
         const cellColor=krData[key];
-        // If tapping a cell whose color matches currently selected color → select shape
         if(krSelColor&&krSelColor!==KR_EMPTY&&cellColor===krSelColor){
           if(krSel&&selKeys.has(key)){
             krDeselect();
           } else {
+            if(krSel) krDeselect();
             krSelectShape(r,col);
           }
         } else {
@@ -2209,12 +2220,7 @@ function krRenderGridDrag(selKeys,ghostR,ghostC){
 function krPaintCell(cell,r,c,selKeys){
   if(selKeys&&selKeys.has(`${r}-${c}`)) return;
   const key=`${r}-${c}`;
-  const curColor=krData[key];
-  if(krSelColor===KR_EMPTY){
-    // Empty tool: erase
-    delete krData[key];
-    cell.style.background='';
-  } else if(krErasing||curColor===krSelColor){
+  if(krSelColor===KR_EMPTY||krErasing){
     delete krData[key];
     cell.style.background='';
   } else {
