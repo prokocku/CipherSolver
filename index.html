@@ -485,7 +485,7 @@ nav{
    KRESLI (MŘÍŽKA)
 ══════════════════════════════════════════════════════════ */
 .kr-toolbar{
-  flex:0 0 auto;display:flex;align-items:center;gap:10px;width:100%;
+  flex:0 0 auto;display:flex;align-items:center;gap:6px;width:100%;flex-wrap:wrap;
 }
 .kr-controls{
   display:flex;align-items:center;gap:6px;flex:1;
@@ -505,39 +505,86 @@ nav{
 .kr-btn:active{background:var(--border2);}
 .kr-val{font-size:14px;font-weight:800;color:var(--t1);min-width:20px;text-align:center;}
 .kr-clear{
-  height:36px;padding:0 14px;border-radius:10px;border:1px solid var(--border);
+  height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--border);
   background:var(--card);color:var(--t2);font-size:12px;font-weight:700;
   cursor:pointer;white-space:nowrap;flex-shrink:0;
 }
 .kr-clear:active{background:var(--card2);}
 
+/* Shape action bar — shown when a shape is selected */
+.kr-action-bar{
+  flex:0 0 auto;display:none;align-items:center;gap:6px;width:100%;
+  background:var(--card);border:1px solid var(--border2);border-radius:10px;
+  padding:6px 8px;
+}
+.kr-action-bar.visible{display:flex;}
+.kr-act-lbl{
+  font-size:10px;font-weight:800;color:var(--t2);text-transform:uppercase;
+  letter-spacing:.3px;white-space:nowrap;margin-right:2px;
+}
+.kr-act-btn{
+  height:32px;padding:0 10px;border-radius:8px;border:none;
+  background:var(--card2);color:var(--t1);font-size:12px;font-weight:700;
+  cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .1s;display:flex;align-items:center;gap:4px;
+}
+.kr-act-btn:active{background:var(--border2);}
+.kr-act-btn.desel{color:var(--rose);background:rgba(251,113,133,.1);}
+.kr-act-btn.desel:active{background:rgba(251,113,133,.2);}
+.kr-move-hint{
+  font-size:10px;color:var(--t3);flex:1;text-align:right;white-space:nowrap;
+}
+
 /* Colour swatches */
 .kr-palette{
-  flex:0 0 auto;display:flex;gap:6px;align-items:center;width:100%;
-  justify-content:center;
+  flex:0 0 auto;display:flex;gap:5px;align-items:center;width:100%;
+  justify-content:center;flex-wrap:wrap;
 }
 .kr-swatch{
-  width:34px;height:34px;border-radius:50%;cursor:pointer;
+  width:30px;height:30px;border-radius:50%;cursor:pointer;
   border:3px solid transparent;transition:transform .1s,border-color .1s;
-  flex-shrink:0;
+  flex-shrink:0;position:relative;
 }
 .kr-swatch.sel{border-color:#fff;transform:scale(1.18);}
 .kr-swatch:active{transform:scale(0.9);}
+/* Empty swatch — dashed border, transparent fill */
+.kr-swatch.empty-sw{
+  background:transparent !important;
+  border:2px dashed var(--border2);
+}
+.kr-swatch.empty-sw.sel{border-color:#fff;border-style:dashed;}
+/* White swatch needs dark border to show */
+.kr-swatch.white-sw{
+  border-color:var(--border2);
+}
+.kr-swatch.white-sw.sel{border-color:var(--violet);}
 
 /* Grid */
 .kr-grid-wrap{
   flex:1;display:flex;align-items:center;justify-content:center;
-  min-height:0;width:100%;touch-action:none;
+  min-height:0;width:100%;touch-action:none;overflow:auto;
+  -webkit-overflow-scrolling:touch;
 }
 .kr-grid{
   display:grid;
   border:1.5px solid var(--border2);border-radius:4px;overflow:hidden;
-  touch-action:none;
+  touch-action:none;flex-shrink:0;
 }
 .kr-cell{
   border:0.5px solid var(--border);
   box-sizing:border-box;cursor:pointer;
-  transition:background .08s;
+  transition:background .06s;position:relative;
+}
+.kr-cell.selected{
+  outline:2px solid #fff;outline-offset:-2px;
+  z-index:2;
+}
+.kr-cell.sel-moving{
+  outline:2px solid var(--amber);outline-offset:-2px;
+  z-index:2;opacity:.75;
+}
+/* Drop target highlight */
+.kr-cell.drop-target{
+  background:rgba(167,139,250,.25) !important;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -894,7 +941,7 @@ nav{
 
 <!-- ══ KRESLI ═══════════════════════════════════════════════ -->
 <div id="pg-kresli" class="pg">
-  <div class="body" style="gap:10px;padding:10px 12px;">
+  <div class="body" style="gap:7px;padding:8px 10px;">
 
     <!-- Toolbar: grid size controls + clear -->
     <div class="kr-toolbar">
@@ -913,6 +960,15 @@ nav{
         </div>
       </div>
       <button class="kr-clear" onclick="krClear()">Vymaž</button>
+    </div>
+
+    <!-- Shape action bar (visible when shape selected) -->
+    <div class="kr-action-bar" id="kr-action-bar">
+      <span class="kr-act-lbl" id="kr-act-lbl">Tvar</span>
+      <button class="kr-act-btn" onclick="krRotate90()" title="Otočit o 90°">↻ 90°</button>
+      <button class="kr-act-btn" onclick="krFlipH()" title="Překlopit horizontálně">⇄ Flip</button>
+      <button class="kr-act-btn desel" onclick="krDeselect()">✕</button>
+      <span class="kr-move-hint">přesuň tažením</span>
     </div>
 
     <!-- Colour palette -->
@@ -1843,45 +1899,210 @@ function grInit(){
 // ═══════════════════════════════════════════════════════════
 // KRESLI (MŘÍŽKA)
 // ═══════════════════════════════════════════════════════════
-const KR_COLORS=['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
-const KR_MIN=9,KR_MAX=14;
+const KR_COLORS=[
+  '#ef4444','#f97316','#eab308','#22c55e',
+  '#3b82f6','#8b5cf6','#ec4899',
+  '#06b6d4','#a3e635','#f43f5e',
+  '#ffffff' // white — last before empty
+];
+const KR_EMPTY=null; // null = empty cell
+const KR_MIN=3,KR_MAX=20;
 let krCols=9,krRows=9,krSelColor=KR_COLORS[0];
-// Sparse color store: key="r-c" → color string
-let krData={};
-// Paint mode: track touch to paint multiple cells
+let krData={}; // key="r-c" → color string | null means empty
 let krPainting=false,krErasing=false;
+
+// Selection state
+let krSel=null; // null or {cells:[{r,c}], color, dr, dc} (dr/dc = drag offset)
+let krDragging=false;
+let krDragOrigin=null; // {r,c} cell where drag started
+let krDragGhost=null;  // current drag-over {r,c}
+
+// BFS: find connected component of same color touching (r,c)
+function krGetShape(r0,c0){
+  const col=krData[`${r0}-${c0}`];
+  if(!col) return null;
+  const visited=new Set();
+  const queue=[{r:r0,c:c0}];
+  visited.add(`${r0}-${c0}`);
+  while(queue.length){
+    const {r,c}=queue.shift();
+    for(const [dr,dc] of [[-1,0],[1,0],[0,-1],[0,1]]){
+      const nr=r+dr,nc=c+dc;
+      const k=`${nr}-${nc}`;
+      if(!visited.has(k)&&nr>=0&&nr<krRows&&nc>=0&&nc<krCols&&krData[k]===col){
+        visited.add(k);queue.push({r:nr,c:nc});
+      }
+    }
+  }
+  return {cells:[...visited].map(k=>{const[r,c]=k.split('-').map(Number);return{r,c};}),color:col};
+}
+
+function krDeselect(){
+  krSel=null;krDragging=false;krDragOrigin=null;krDragGhost=null;
+  document.getElementById('kr-action-bar').classList.remove('visible');
+  krRenderGrid();
+}
+
+function krSelectShape(r,c){
+  const shape=krGetShape(r,c);
+  if(!shape) return;
+  krSel=shape;
+  document.getElementById('kr-action-bar').classList.add('visible');
+  document.getElementById('kr-act-lbl').textContent=`${shape.cells.length} buněk`;
+  krRenderGrid();
+}
+
+// Rotate selected shape 90° CW around its bounding box center
+// Try to find the smallest (dr,dc) offset so that `candidate` cells
+// don't overlap cells of a different color (ignoring `selKeys`).
+// Searches offsets in order of increasing Chebyshev distance.
+// Returns {cells, ok} — ok=false if no free spot found within limit.
+function krResolveCollision(candidate, selKeys, maxPush){
+  const limit = maxPush || Math.max(krRows, krCols);
+  // Generate offsets sorted by Chebyshev distance
+  for(let d=0; d<=limit; d++){
+    const offsets=[];
+    for(let dr=-d;dr<=d;dr++){
+      for(let dc=-d;dc<=d;dc++){
+        if(Math.max(Math.abs(dr),Math.abs(dc))===d) offsets.push([dr,dc]);
+      }
+    }
+    for(const [dr,dc] of offsets){
+      const shifted=candidate.map(({r,c})=>({r:r+dr,c:c+dc}));
+      // Must stay inside grid
+      if(shifted.some(({r,c})=>r<0||r>=krRows||c<0||c>=krCols)) continue;
+      // Must not collide with foreign cells
+      let ok=true;
+      for(const {r,c} of shifted){
+        const k=`${r}-${c}`;
+        if(!selKeys.has(k)&&krData[k]&&krData[k]!==krSel.color){ok=false;break;}
+      }
+      if(ok) return {cells:shifted,ok:true};
+    }
+  }
+  return {cells:candidate,ok:false};
+}
+
+function krRotate90(){
+  if(!krSel) return;
+  const cells=krSel.cells;
+  const minR=Math.min(...cells.map(c=>c.r));
+  const maxR=Math.max(...cells.map(c=>c.r));
+  const minC=Math.min(...cells.map(c=>c.c));
+  const H=maxR-minR;
+  const rotated=cells.map(({r,c})=>({
+    r:minR+(c-minC),
+    c:minC+(H-(r-minR))
+  }));
+  // Clamp inside grid first
+  const nMinR=Math.min(...rotated.map(c=>c.r));
+  const nMinC=Math.min(...rotated.map(c=>c.c));
+  const nMaxR=Math.max(...rotated.map(c=>c.r));
+  const nMaxC=Math.max(...rotated.map(c=>c.c));
+  const offR=nMinR<0?-nMinR:(nMaxR>=krRows?krRows-1-nMaxR:0);
+  const offC=nMinC<0?-nMinC:(nMaxC>=krCols?krCols-1-nMaxC:0);
+  const clamped=rotated.map(({r,c})=>({r:r+offR,c:c+offC}));
+  const selKeys=new Set(cells.map(({r,c})=>`${r}-${c}`));
+  const {cells:placed,ok}=krResolveCollision(clamped,selKeys);
+  if(!ok){vib([40,30,40]);return;}
+  cells.forEach(({r,c})=>delete krData[`${r}-${c}`]);
+  placed.forEach(({r,c})=>{krData[`${r}-${c}`]=krSel.color;});
+  krSel.cells=placed;
+  krRenderGrid();vib(20);
+}
+
+function krFlipH(){
+  if(!krSel) return;
+  const cells=krSel.cells;
+  const minC=Math.min(...cells.map(c=>c.c));
+  const maxC=Math.max(...cells.map(c=>c.c));
+  const flipped=cells.map(({r,c})=>({r,c:minC+(maxC-c)}));
+  const selKeys=new Set(cells.map(({r,c})=>`${r}-${c}`));
+  const {cells:placed,ok}=krResolveCollision(flipped,selKeys);
+  if(!ok){vib([40,30,40]);return;}
+  cells.forEach(({r,c})=>delete krData[`${r}-${c}`]);
+  placed.forEach(({r,c})=>{krData[`${r}-${c}`]=krSel.color;});
+  krSel.cells=placed;
+  krRenderGrid();vib(20);
+}
+
+// Move selected shape by (dr,dc)
+function krMoveShape(dr,dc){
+  if(!krSel) return;
+  const cells=krSel.cells;
+  const newR=cells.map(({r})=>r+dr);
+  const newC=cells.map(({c})=>c+dc);
+  if(newR.some(r=>r<0||r>=krRows)) return;
+  if(newC.some(c=>c<0||c>=krCols)) return;
+  // Check for collision with non-selected cells of different color
+  const selKeys=new Set(cells.map(({r,c})=>`${r}-${c}`));
+  for(let i=0;i<cells.length;i++){
+    const nr=cells[i].r+dr,nc=cells[i].c+dc;
+    const k=`${nr}-${nc}`;
+    if(!selKeys.has(k)&&krData[k]&&krData[k]!==krSel.color) return; // blocked
+  }
+  cells.forEach(({r,c})=>delete krData[`${r}-${c}`]);
+  const moved=cells.map(({r,c})=>({r:r+dr,c:c+dc}));
+  moved.forEach(({r,c})=>{krData[`${r}-${c}`]=krSel.color;});
+  krSel.cells=moved;
+  krRenderGrid();vib(15);
+}
 
 function krInit(){
   // Build palette
   const pal=document.getElementById('kr-palette');
-  pal.innerHTML=KR_COLORS.map((col,i)=>
-    `<div class="kr-swatch${i===0?' sel':''}" style="background:${col}"
+  // Colors + white + empty
+  const swatches=KR_COLORS.map((col,i)=>{
+    const isWhite=col==='#ffffff';
+    return `<div class="kr-swatch${i===0?' sel':''}${isWhite?' white-sw':''}" style="background:${col}"
      data-col="${col}"
      ontouchstart="krPickColor(this,event)"
-     onclick="krPickColor(this,event)"></div>`
-  ).join('');
+     onclick="krPickColor(this,event)"></div>`;
+  });
+  // Empty swatch
+  swatches.push(`<div class="kr-swatch empty-sw" style="background:transparent"
+    data-col="__empty__"
+    ontouchstart="krPickColor(this,event)"
+    onclick="krPickColor(this,event)"></div>`);
+  pal.innerHTML=swatches.join('');
   krBuildGrid();
-  // Global touch end
-  document.addEventListener('touchend',()=>{krPainting=false;},{passive:true});
-  document.addEventListener('touchcancel',()=>{krPainting=false;},{passive:true});
+  document.addEventListener('touchend',()=>{
+    if(krDragging&&krDragGhost&&krSel){
+      // Commit move
+      const cells=krSel.cells;
+      const minR=Math.min(...cells.map(c=>c.r));
+      const minC=Math.min(...cells.map(c=>c.c));
+      const dr=krDragGhost.r-krDragOrigin.r;
+      const dc=krDragGhost.c-krDragOrigin.c;
+      krMoveShape(dr,dc);
+    }
+    krDragging=false;krDragOrigin=null;krDragGhost=null;
+    krPainting=false;
+    krRenderGrid();
+  },{passive:true});
+  document.addEventListener('touchcancel',()=>{
+    krPainting=false;krDragging=false;krDragOrigin=null;krDragGhost=null;
+    krRenderGrid();
+  },{passive:true});
 }
 
 function krPickColor(el,e){
   e.stopPropagation();
+  krDeselect();
   document.querySelectorAll('.kr-swatch').forEach(s=>s.classList.remove('sel'));
   el.classList.add('sel');
-  krSelColor=el.dataset.col;
+  const v=el.dataset.col;
+  krSelColor=(v==='__empty__')?KR_EMPTY:v;
 }
 
 function krBuildGrid(){
   const grid=document.getElementById('kr-grid');
-  // Compute cell size to fill available space
   const wrap=document.querySelector('.kr-grid-wrap');
   const avW=wrap.offsetWidth-4;
   const avH=wrap.offsetHeight-4;
   const cellW=Math.floor(avW/krCols);
   const cellH=Math.floor(avH/krRows);
-  const cellSize=Math.min(cellW,cellH,Math.floor((avW<avH?avW:avH)/Math.max(krCols,krRows)));
+  const cellSize=Math.max(10,Math.min(cellW,cellH));
 
   grid.style.gridTemplateColumns=`repeat(${krCols},${cellSize}px)`;
   grid.style.gridTemplateRows=`repeat(${krRows},${cellSize}px)`;
@@ -1889,30 +2110,66 @@ function krBuildGrid(){
   grid.style.height=`${cellSize*krRows}px`;
 
   grid.innerHTML='';
+  const selKeys=krSel?new Set(krSel.cells.map(({r,c})=>`${r}-${c}`)):new Set();
+
   for(let r=0;r<krRows;r++){
     for(let col=0;col<krCols;col++){
       const cell=document.createElement('div');
       cell.className='kr-cell';
       cell.dataset.r=r;cell.dataset.c=col;
       const key=`${r}-${col}`;
-      if(krData[key]) cell.style.background=krData[key];
-      // Touch events
+      const color=krData[key];
+      if(color) cell.style.background=color;
+      if(selKeys.has(key)) cell.classList.add('selected');
+
       cell.addEventListener('touchstart',e=>{
         e.preventDefault();
-        krPainting=true;
-        krErasing=krData[key]===krSelColor;
-        krPaintCell(cell,r,col);
+        const isSel=selKeys.has(key);
+        if(isSel){
+          // Start drag of selected shape
+          krDragging=true;
+          krDragOrigin={r,c:col};
+          krDragGhost={r,c:col};
+        } else {
+          // Check: tap on cell of same color as selected (if no sel active) → select shape
+          // OR paint
+          if(krSel&&!isSel){krDeselect();}
+          krPainting=true;
+          krErasing=(color===krSelColor)||(krSelColor===KR_EMPTY&&!color);
+          krPaintCell(cell,r,col,selKeys);
+        }
       },{passive:false});
+
       cell.addEventListener('touchmove',e=>{
-        if(!krPainting)return;
+        if(!krPainting&&!krDragging) return;
         e.preventDefault();
         const t=e.touches[0];
         const el=document.elementFromPoint(t.clientX,t.clientY);
-        if(el&&el.classList.contains('kr-cell')){
-          krPaintCell(el,+el.dataset.r,+el.dataset.c);
+        if(!el||!el.classList.contains('kr-cell')) return;
+        const nr=+el.dataset.r,nc=+el.dataset.c;
+        if(krDragging){
+          krDragGhost={r:nr,c:nc};
+          krRenderGridDrag(selKeys,nr,nc);
+        } else if(krPainting){
+          krPaintCell(el,nr,nc,selKeys);
         }
       },{passive:false});
-      cell.addEventListener('click',()=>krPaintCell(cell,r,col));
+
+      cell.addEventListener('click',()=>{
+        if(krDragging) return;
+        const cellColor=krData[key];
+        // If tapping a cell whose color matches currently selected color → select shape
+        if(krSelColor&&krSelColor!==KR_EMPTY&&cellColor===krSelColor){
+          if(krSel&&selKeys.has(key)){
+            krDeselect();
+          } else {
+            krSelectShape(r,col);
+          }
+        } else {
+          if(krSel) krDeselect();
+          krPaintCell(cell,r,col,new Set());
+        }
+      });
       grid.appendChild(cell);
     }
   }
@@ -1920,9 +2177,44 @@ function krBuildGrid(){
   document.getElementById('kr-rows-val').textContent=krRows;
 }
 
-function krPaintCell(cell,r,c){
+// Lightweight re-render without full DOM rebuild
+function krRenderGrid(){
+  const cells=document.querySelectorAll('.kr-cell');
+  const selKeys=krSel?new Set(krSel.cells.map(({r,c})=>`${r}-${c}`)):new Set();
+  cells.forEach(cell=>{
+    const r=+cell.dataset.r,c=+cell.dataset.c;
+    const key=`${r}-${c}`;
+    const color=krData[key];
+    cell.style.background=color||'';
+    cell.classList.toggle('selected',selKeys.has(key));
+    cell.classList.remove('sel-moving','drop-target');
+  });
+}
+
+function krRenderGridDrag(selKeys,ghostR,ghostC){
+  if(!krSel||!krDragOrigin) return;
+  const dr=ghostR-krDragOrigin.r;
+  const dc=ghostC-krDragOrigin.c;
+  const cells=document.querySelectorAll('.kr-cell');
+  const ghostKeys=new Set(krSel.cells.map(({r,c})=>`${r+dr}-${c+dc}`));
+  cells.forEach(cell=>{
+    const r=+cell.dataset.r,c=+cell.dataset.c;
+    const key=`${r}-${c}`;
+    cell.classList.remove('sel-moving','drop-target','selected');
+    if(selKeys.has(key)) cell.classList.add('sel-moving');
+    else if(ghostKeys.has(key)) cell.classList.add('drop-target');
+  });
+}
+
+function krPaintCell(cell,r,c,selKeys){
+  if(selKeys&&selKeys.has(`${r}-${c}`)) return;
   const key=`${r}-${c}`;
-  if(krErasing||krData[key]===krSelColor){
+  const curColor=krData[key];
+  if(krSelColor===KR_EMPTY){
+    // Empty tool: erase
+    delete krData[key];
+    cell.style.background='';
+  } else if(krErasing||curColor===krSelColor){
     delete krData[key];
     cell.style.background='';
   } else {
@@ -1932,12 +2224,9 @@ function krPaintCell(cell,r,c){
 }
 
 function krResize(dim,delta){
-  if(dim==='cols'){
-    krCols=Math.min(KR_MAX,Math.max(KR_MIN,krCols+delta));
-  } else {
-    krRows=Math.min(KR_MAX,Math.max(KR_MIN,krRows+delta));
-  }
-  // Prune out-of-bounds cells from data
+  krDeselect();
+  if(dim==='cols') krCols=Math.min(KR_MAX,Math.max(KR_MIN,krCols+delta));
+  else krRows=Math.min(KR_MAX,Math.max(KR_MIN,krRows+delta));
   for(const k of Object.keys(krData)){
     const [r,c]=k.split('-').map(Number);
     if(r>=krRows||c>=krCols) delete krData[k];
@@ -1946,8 +2235,9 @@ function krResize(dim,delta){
 }
 
 function krClear(){
+  krDeselect();
   krData={};
-  document.querySelectorAll('.kr-cell').forEach(c=>c.style.background='');
+  document.querySelectorAll('.kr-cell').forEach(c=>{c.style.background='';});
   vib(30);
 }
 
