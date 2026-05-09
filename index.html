@@ -734,9 +734,11 @@ nav{
         <canvas id="sem-cv"></canvas>
       </div>
     </div>
-    <div class="act-row">
-      <button class="btn-add" style="background:var(--violet);color:#fff" onclick="sAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="sClearAll()">Smaž vše</button>
+    <div class="morse-actions">
+      <button class="ma" onclick="sBackspace()">⌫ Zpět</button>
+      <button class="ma ok" style="color:var(--violet)" onclick="sAdd()">✓ Písmeno</button>
+      <button class="ma" onclick="sSpace()">␣ Mezera</button>
+      <button class="ma" onclick="sClearAll()" style="color:var(--rose)">✕ Vše</button>
     </div>
   </div>
 </div>
@@ -751,9 +753,11 @@ nav{
     <div class="brl-grid" id="brl-grid"></div>
     <div class="brl-match none" id="brl-match">?</div>
     <div class="brl-note">Levý sloupec = body 1 2 3 &nbsp;·&nbsp; Pravý = 4 5 6</div>
-    <div class="act-row">
-      <button class="btn-add" style="background:var(--amber);color:#1a1000" onclick="bAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="bClearAll()">Smaž vše</button>
+    <div class="morse-actions">
+      <button class="ma" onclick="bBackspace()">⌫ Zpět</button>
+      <button class="ma ok" style="color:var(--amber)" onclick="bAdd()">✓ Písmeno</button>
+      <button class="ma" onclick="bSpace()">␣ Mezera</button>
+      <button class="ma" onclick="bClearAll()" style="color:var(--rose)">✕ Vše</button>
     </div>
   </div>
 </div>
@@ -768,9 +772,11 @@ nav{
     <div class="bin-display" id="bin-bits"></div>
     <div class="bin-match none" id="bin-match">?</div>
     <div class="bin-eq" id="bin-eq"></div>
-    <div class="act-row">
-      <button class="btn-add" style="background:var(--sky);color:#001a2e" onclick="biAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="biClearAll()">Smaž vše</button>
+    <div class="morse-actions">
+      <button class="ma" onclick="biBackspace()">⌫ Zpět</button>
+      <button class="ma ok" style="color:var(--sky)" onclick="biAdd()">✓ Písmeno</button>
+      <button class="ma" onclick="biSpace()">␣ Mezera</button>
+      <button class="ma" onclick="biClearAll()" style="color:var(--rose)">✕ Vše</button>
     </div>
     <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
       5 bitů &nbsp;·&nbsp; 00001 = A &nbsp;·&nbsp; 11010 = Z<br>klepni na bity které jsou <b style="color:var(--sky)">1</b>
@@ -793,9 +799,11 @@ nav{
     </div>
     <div class="ter-match none" id="ter-match">?</div>
     <div class="ter-eq" id="ter-eq"></div>
-    <div class="act-row">
-      <button class="btn-add" style="background:var(--rose);color:#1a0008" onclick="tAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="tClearAll()">Smaž vše</button>
+    <div class="morse-actions">
+      <button class="ma" onclick="tBackspace()">⌫ Zpět</button>
+      <button class="ma ok" style="color:var(--rose)" onclick="tAdd()">✓ Písmeno</button>
+      <button class="ma" onclick="tSpace()">␣ Mezera</button>
+      <button class="ma" onclick="tClearAll()" style="color:var(--rose)">✕ Vše</button>
     </div>
     <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
       3 cifry (základ 3) &nbsp;·&nbsp; 001 = A &nbsp;·&nbsp; 222 = Z<br>
@@ -820,9 +828,11 @@ nav{
       </div>
       <div class="seg-segs-label" id="seg-active-label">Žádný segment</div>
     </div>
-    <div class="act-row">
-      <button class="btn-add" style="background:var(--green);color:#001a0d" onclick="segAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="segClearAll()">Smaž vše</button>
+    <div class="morse-actions">
+      <button class="ma" onclick="segBackspace()">⌫ Zpět</button>
+      <button class="ma ok" style="color:var(--green)" onclick="segAdd()">✓ Písmeno</button>
+      <button class="ma" onclick="segSpace()">␣ Mezera</button>
+      <button class="ma" onclick="segClearAll()" style="color:var(--rose)">✕ Vše</button>
     </div>
   </div>
 </div>
@@ -844,9 +854,11 @@ nav{
       </div>
     </div>
     <div class="pkr-match none" id="pk-match">—</div>
-    <div class="act-row">
-      <button class="btn-add" style="background:#e8334a;color:#fff" onclick="pkAdd()">+ Přidat písmeno</button>
-      <button class="btn-rst" onclick="pkClearAll()">Smaž vše</button>
+    <div class="morse-actions">
+      <button class="ma" onclick="pkBackspace()">⌫ Zpět</button>
+      <button class="ma ok" style="color:#e8334a" onclick="pkAdd()">✓ Písmeno</button>
+      <button class="ma" onclick="pkSpace()">␣ Mezera</button>
+      <button class="ma" onclick="pkClearAll()" style="color:var(--rose)">✕ Vše</button>
     </div>
   </div>
 </div>
@@ -1431,6 +1443,8 @@ function sAdd(){
   semDrawState();semDraw();vib(40);
 }
 function sDel(){histDel(semHist,'s-hist');}
+function sBackspace(){sDel();}
+function sSpace(){semHist.push(' ');sRender();}
 function sClearAll(){semHist=[];sRender();semA={L:null,R:null};semStep='L';document.getElementById('s-let').textContent='\u2014';document.getElementById('s-let').style.color='var(--amber)';semDrawState();semDraw();}
 function sRender(){histRender('s-hist',semHist);}
 
@@ -1494,6 +1508,8 @@ function bReset(){
 }
 function bClearAll(){bHist=[];histRender('b-hist',bHist);bReset();}
 function bDel(){histDel(bHist,'b-hist');}
+function bBackspace(){bDel();}
+function bSpace(){bHist.push(' ');bRenderH();}
 function bRenderH(){histRender('b-hist',bHist);}
 
 // ═══════════════════════════════════════════════════════════
@@ -1540,6 +1556,8 @@ function biReset(){
 }
 function biClearAll(){biHist=[];histRender('bi-hist',biHist);biReset();}
 function biDel(){histDel(biHist,'bi-hist');}
+function biBackspace(){biDel();}
+function biSpace(){biHist.push(' ');biRenderH();}
 function biRenderH(){histRender('bi-hist',biHist);}
 
 // ═══════════════════════════════════════════════════════════
@@ -1608,6 +1626,8 @@ function tReset(){
 }
 function tClearAll(){terHist=[];histRender('t-hist',terHist);tReset();}
 function tDel(){histDel(terHist,'t-hist');}
+function tBackspace(){tDel();}
+function tSpace(){terHist.push(' ');tRenderH();}
 function tRenderH(){histRender('t-hist',terHist);}
 
 // ═══════════════════════════════════════════════════════════
@@ -1852,8 +1872,8 @@ function grInputHandler(el){
   let raw=el.value.toUpperCase().replace(/[^A-Z0-9\n]/g,'');
   // Remove explicit newlines from user input — we handle wrapping visually
   raw=raw.replace(/\n/g,'');
-  // Limit to 64 chars
-  if(raw.length>64) raw=raw.slice(0,64);
+  // Limit to current grid cell count
+  if(raw.length>grN*grN) raw=raw.slice(0,grN*grN);
   // Insert visual line breaks every current-grid-width chars for display
   // Actually just keep the raw value, CSS word-break handles it
   if(el.value!==raw) el.value=raw;
@@ -1872,6 +1892,13 @@ function grResize(delta){
   const newN=Math.min(GR_MAX,Math.max(GR_MIN,grN+delta));
   if(newN===grN)return;
   grN=newN;grHoles.clear();
+  // Trim input to new cell count
+  const el=document.getElementById('gr-input');
+  if(el&&el.value.length>grN*grN){
+    el.value=el.value.slice(0,grN*grN);
+    el.style.height='auto';
+    el.style.height=el.scrollHeight+'px';
+  }
   grBuildGrid();vib(15);
 }
 
@@ -2470,6 +2497,8 @@ function pkAdd(){
 function pkReset(){pkEdges.clear();pkDots=0;pkRefresh();}
 function pkClearAll(){pkHist=[];histRender('pk-hist',pkHist);pkReset();}
 function pkDel(){histDel(pkHist,'pk-hist');}
+function pkBackspace(){pkDel();}
+function pkSpace(){pkHist.push(' ');pkRenderH();}
 function pkRenderH(){histRender('pk-hist',pkHist);}
 
 function initPk(){
@@ -2645,6 +2674,8 @@ function segReset(){
 }
 function segClearAll(){segHist=[];histRender('seg-hist',segHist);segReset();}
 function segDel(){histDel(segHist,'seg-hist');}
+function segBackspace(){segDel();}
+function segSpace(){segHist.push(' ');segRenderH();}
 function segRenderH(){histRender('seg-hist',segHist);}
 
 // Attach tap events after DOM ready (called in init)
