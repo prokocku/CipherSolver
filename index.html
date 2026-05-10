@@ -157,21 +157,40 @@ nav{
   padding:10px 12px;gap:10px;min-height:0;overflow:hidden;
 }
 
-/* ── SHARED: ADD / CLEAR BUTTON ROW ────────────────────── */
-.act-row{
-  display:flex;gap:8px;width:100%;max-width:420px;flex-shrink:0;
+/* ── SHARED CONTROLS (toolbar buttons, groups, labels) ─────── */
+.ctrl-group{
+  display:flex;align-items:center;gap:4px;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:4px 8px;
 }
-.btn-add{
-  flex:1;padding:0;height:48px;border:none;border-radius:var(--r);
-  font-size:15px;font-weight:700;cursor:pointer;transition:opacity .12s;
+.ctrl-lbl{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;}
+.ctrl-btn{
+  width:28px;height:28px;border-radius:7px;border:none;
+  background:var(--card2);color:var(--t1);font-size:16px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background .1s;
 }
-.btn-add:active{opacity:.72;}
-.btn-rst{
-  height:48px;padding:0 14px;border-radius:var(--r);
-  background:#3a1a1f;border:1px solid #7a2030;
-  color:#fb7185;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;
+.ctrl-btn:active{background:var(--border2);}
+.ctrl-val{font-size:14px;font-weight:800;color:var(--t1);min-width:20px;text-align:center;}
+.ctrl-clear{
+  height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--border);
+  background:var(--card);color:var(--t2);font-size:12px;font-weight:700;
+  cursor:pointer;white-space:nowrap;flex-shrink:0;
 }
-.btn-rst:active{background:#4a2028;}
+.ctrl-clear:active{background:var(--card2);}
+
+/* ── SHARED: cipher match display ─────────────────────────── */
+.cipher-match{
+  font-size:min(72px,16vw);font-weight:800;
+  height:min(80px,18vw);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex:0 0 auto;
+}
+.cipher-match.none{font-size:min(20px,5vw);color:var(--t3);}
+.cipher-eq{
+  font-size:12px;color:var(--t2);font-family:'SF Mono',monospace;
+  text-align:center;flex:0 0 auto;min-height:18px;
+}
 
 /* ══════════════════════════════════════════════════════════
    MORSE
@@ -257,13 +276,7 @@ nav{
 .brd.on{background:var(--amber);border-color:var(--amber);color:#1a1000;box-shadow:0 0 20px rgba(251,191,36,.3);}
 .brd:active{transform:scale(.9);}
 
-.brl-match{
-  font-size:min(72px,16vw);font-weight:800;
-  height:min(80px,18vw);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--amber);transition:all .15s;flex:0 0 auto;
-}
-.brl-match.none{font-size:min(20px,5vw);color:var(--t3);}
+.brl-match{color:var(--amber);}  /* extends .cipher-match */
 .brl-note{font-size:11px;color:var(--t3);text-align:center;line-height:1.7;flex:0 0 auto;}
 
 /* ══════════════════════════════════════════════════════════
@@ -284,18 +297,8 @@ nav{
 .bin-bit.on{background:var(--sky);border-color:var(--sky);color:#001a2e;box-shadow:0 0 18px rgba(56,189,248,.3);}
 .bin-bit:active{transform:scale(.9);}
 
-.bin-match{
-  font-size:min(72px,16vw);font-weight:800;
-  height:min(80px,18vw);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--sky);transition:all .15s;flex:0 0 auto;
-}
-.bin-match.none{font-size:min(20px,5vw);color:var(--t3);}
-
-.bin-eq{
-  font-size:12px;color:var(--t2);font-family:'SF Mono',monospace;
-  text-align:center;flex:0 0 auto;min-height:18px;
-}
+.bin-match{color:var(--sky);}  /* extends .cipher-match */
+.bin-eq{} /* extends .cipher-eq */
 
 /* ══════════════════════════════════════════════════════════
    TERNARY
@@ -331,14 +334,8 @@ nav{
 
 .ter-wrap{display:flex;gap:6px;align-items:stretch;width:100%;max-width:340px;}
 
-.ter-match{
-  font-size:min(72px,16vw);font-weight:800;
-  height:min(80px,18vw);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--rose);transition:all .15s;flex:0 0 auto;
-}
-.ter-match.none{font-size:min(20px,5vw);color:var(--t3);}
-.ter-eq{font-size:12px;color:var(--t2);font-family:'SF Mono',monospace;text-align:center;flex:0 0 auto;min-height:18px;}
+.ter-match{color:var(--rose);}  /* extends .cipher-match */
+.ter-eq{} /* extends .cipher-eq */
 
 /* ══════════════════════════════════════════════════════════
    REFERENCE
@@ -490,26 +487,6 @@ nav{
 .kr-controls{
   display:flex;align-items:center;gap:6px;flex:1;
 }
-.kr-ctrl-group{
-  display:flex;align-items:center;gap:4px;
-  background:var(--card);border:1px solid var(--border);border-radius:10px;
-  padding:4px 8px;
-}
-.kr-ctrl-lbl{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;}
-.kr-btn{
-  width:28px;height:28px;border-radius:7px;border:none;
-  background:var(--card2);color:var(--t1);font-size:16px;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;transition:background .1s;
-}
-.kr-btn:active{background:var(--border2);}
-.kr-val{font-size:14px;font-weight:800;color:var(--t1);min-width:20px;text-align:center;}
-.kr-clear{
-  height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--border);
-  background:var(--card);color:var(--t2);font-size:12px;font-weight:700;
-  cursor:pointer;white-space:nowrap;flex-shrink:0;
-}
-.kr-clear:active{background:var(--card2);}
 
 /* Shape action bar — shown when a shape is selected */
 .kr-action-bar{
@@ -593,25 +570,7 @@ nav{
 .gr-toolbar{
   flex:0 0 auto;display:flex;align-items:center;gap:8px;width:100%;
 }
-.gr-size-group{
-  display:flex;align-items:center;gap:4px;
-  background:var(--card);border:1px solid var(--border);border-radius:10px;
-  padding:4px 8px;flex:1;
-}
-.gr-ctrl-lbl{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;}
-.gr-btn{
-  width:28px;height:28px;border-radius:7px;border:none;
-  background:var(--card2);color:var(--t1);font-size:16px;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.gr-btn:active{background:var(--border2);}
-.gr-val{font-size:14px;font-weight:800;color:var(--t1);min-width:22px;text-align:center;}
-.gr-clear{
-  height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--border);
-  background:var(--card);color:var(--t2);font-size:12px;font-weight:700;
-  cursor:pointer;white-space:nowrap;flex-shrink:0;
-}
-.gr-clear:active{background:var(--card2);}
+.gr-size-group{flex:1;} /* extends .ctrl-group */
 
 /* Text input */
 .gr-input{
@@ -752,7 +711,7 @@ nav{
   <div class="body">
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;width:100%;gap:10px;">
       <div class="brl-grid" id="brl-grid"></div>
-      <div class="brl-match none" id="brl-match">?</div>
+      <div class="cipher-match brl-match none" id="brl-match">?</div>
       <div class="brl-note">Levý sloupec = body 1 2 3 &nbsp;·&nbsp; Pravý = 4 5 6</div>
     </div>
     <div class="morse-actions">
@@ -773,7 +732,7 @@ nav{
   <div class="body">
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;width:100%;gap:10px;">
       <div class="bin-display" id="bin-bits"></div>
-      <div class="bin-match none" id="bin-match">?</div>
+      <div class="cipher-match bin-match none" id="bin-match">?</div>
       <div class="bin-eq" id="bin-eq"></div>
       <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
         5 bitů &nbsp;·&nbsp; 00001 = A &nbsp;·&nbsp; 11010 = Z<br>klepni na bity které jsou <b style="color:var(--sky)">1</b>
@@ -802,7 +761,7 @@ nav{
         </div>
         <div class="ter-grid" id="ter-grid"></div>
       </div>
-      <div class="ter-match none" id="ter-match">?</div>
+      <div class="cipher-match ter-match none" id="ter-match">?</div>
       <div class="ter-eq" id="ter-eq"></div>
       <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
         3 cifry (základ 3) &nbsp;·&nbsp; 001 = A &nbsp;·&nbsp; 222 = Z<br>
@@ -920,14 +879,14 @@ nav{
 
     <!-- Toolbar -->
     <div class="gr-toolbar">
-      <div class="gr-size-group">
-        <span class="gr-ctrl-lbl">Velikost</span>
-        <button class="gr-btn" onclick="grResize(-2)">−</button>
-        <span class="gr-val" id="gr-size-val">4</span>
-        <button class="gr-btn" onclick="grResize(+2)">+</button>
-        <span class="gr-ctrl-lbl" style="margin-left:4px" id="gr-holes-lbl">max 4 otvorů</span>
+      <div class="ctrl-group gr-size-group">
+        <span class="ctrl-lbl">Velikost</span>
+        <button class="ctrl-btn" onclick="grResize(-2)">−</button>
+        <span class="ctrl-val" id="gr-size-val">4</span>
+        <button class="ctrl-btn" onclick="grResize(+2)">+</button>
+        <span class="ctrl-lbl" style="margin-left:4px" id="gr-holes-lbl">max 4 otvorů</span>
       </div>
-      <button class="gr-clear" onclick="grClear()">Vymaž</button>
+      <button class="ctrl-clear" onclick="grClear()">Vymaž</button>
     </div>
 
     <!-- Text input -->
@@ -957,20 +916,20 @@ nav{
     <!-- Toolbar: grid size controls + clear -->
     <div class="kr-toolbar">
       <div class="kr-controls">
-        <div class="kr-ctrl-group">
-          <span class="kr-ctrl-lbl">Sl</span>
-          <button class="kr-btn" onclick="krResize('cols',-1)">−</button>
-          <span class="kr-val" id="kr-cols-val">9</span>
-          <button class="kr-btn" onclick="krResize('cols',+1)">+</button>
+        <div class="ctrl-group">
+          <span class="ctrl-lbl">Sl</span>
+          <button class="ctrl-btn" onclick="krResize('cols',-1)">−</button>
+          <span class="ctrl-val" id="kr-cols-val">9</span>
+          <button class="ctrl-btn" onclick="krResize('cols',+1)">+</button>
         </div>
-        <div class="kr-ctrl-group">
-          <span class="kr-ctrl-lbl">Řd</span>
-          <button class="kr-btn" onclick="krResize('rows',-1)">−</button>
-          <span class="kr-val" id="kr-rows-val">9</span>
-          <button class="kr-btn" onclick="krResize('rows',+1)">+</button>
+        <div class="ctrl-group">
+          <span class="ctrl-lbl">Řd</span>
+          <button class="ctrl-btn" onclick="krResize('rows',-1)">−</button>
+          <span class="ctrl-val" id="kr-rows-val">9</span>
+          <button class="ctrl-btn" onclick="krResize('rows',+1)">+</button>
         </div>
       </div>
-      <button class="kr-clear" onclick="krClear()">Vymaž</button>
+      <button class="ctrl-clear" onclick="krClear()">Vymaž</button>
     </div>
 
     <!-- Shape action bar (visible when shape selected) -->
@@ -1160,6 +1119,19 @@ setVH();window.addEventListener('resize',setVH);
 
 // ── NAV ─────────────────────────────────────────────────────
 let _pages=null,_navBtns=null,_hbrBtns=null;
+
+// Per-page activation callbacks (called once page is visible)
+const PAGE_INIT={
+  semaphore: ()=>{ semDrawState(); applySemSize(); },
+  braille:   ()=>{ applyBrlSize(); },
+  ternary:   ()=>{ applyTerSize(); },
+  '7seg':    ()=>{ segRefresh(); applySegSize(); },
+  pkriz:     ()=>{ pkDraw(); },
+  svatky:    ()=>{ initSvatky(); },
+  kresli:    ()=>{ krBuildGrid(); },
+  grille:    ()=>{ grBuildGrid(); },
+};
+
 function go(name,btn){
   if(!_pages){
     _pages=[...document.querySelectorAll('.pg')];
@@ -1170,25 +1142,15 @@ function go(name,btn){
   _navBtns.forEach(b=>b.classList.remove('on'));
   _hbrBtns.forEach(b=>b.classList.remove('on'));
   document.getElementById('pg-'+name).classList.add('on');
-  if(btn&&btn.classList.contains('nb')) btn.classList.add('on');
-  else if(btn&&btn.classList.contains('hbr-item')) btn.classList.add('on');
+  if(btn?.classList.contains('nb')) btn.classList.add('on');
+  else if(btn?.classList.contains('hbr-item')) btn.classList.add('on');
   // Sync the other nav type
-  const isHbr=btn&&btn.classList.contains('hbr-item');
-  if(isHbr){
-    const nb=_navBtns.find(b=>b.getAttribute('onclick')?.includes("'"+name+"'"));
-    if(nb) nb.classList.add('on');
-  } else {
-    const hb=_hbrBtns.find(b=>b.getAttribute('onclick')?.includes("'"+name+"'"));
-    if(hb) hb.classList.add('on');
-  }
-  if(name==='semaphore') requestAnimationFrame(()=>{ setVH();semDrawState();applySemSize(); });
-  else if(name==='braille') requestAnimationFrame(()=>{ setVH();applyBrlSize(); });
-  else if(name==='ternary') requestAnimationFrame(()=>{ setVH();applyTerSize(); });
-  else if(name==='7seg') requestAnimationFrame(()=>{ setVH();segRefresh();applySegSize(); });
-  else if(name==='pkriz') requestAnimationFrame(()=>{ setVH();pkDraw(); });
-  else if(name==='svatky') requestAnimationFrame(()=>{ setVH();initSvatky(); });
-  else if(name==='kresli') requestAnimationFrame(()=>{ setVH();krBuildGrid(); });
-  else if(name==='grille') requestAnimationFrame(()=>{ setVH();grBuildGrid(); });
+  const sel = btn?.classList.contains('hbr-item')
+    ? _navBtns.find(b=>b.getAttribute('onclick')?.includes("'"+name+"'"))
+    : _hbrBtns.find(b=>b.getAttribute('onclick')?.includes("'"+name+"'"));
+  sel?.classList.add('on');
+  const cb=PAGE_INIT[name];
+  if(cb) requestAnimationFrame(()=>{ setVH(); cb(); });
 }
 
 // ── DATA ────────────────────────────────────────────────────
@@ -1219,8 +1181,11 @@ const BRL={
   'řec.mal.':[4,5],'řec.vel.':[4,6],
   'čísl.znak':[3,4,5,6],'plný znak':[1,2,3,4,5,6]
 };
-
-// 1=nahoru, po směru hod. ručiček: 2=vpravo-nahoru, 3=vpravo, 4=vpravo-dolů, 5=dolů, 6=vlevo-dolů, 7=vlevo, 8=vlevo-nahoru
+// Reverse map: dot-key → letter (built once at load)
+const BRL_REV={};
+for(const[l,dots] of Object.entries(BRL)){
+  BRL_REV[JSON.stringify([...dots].sort((a,b)=>a-b))]=l;
+} // 2=vpravo-nahoru, 3=vpravo, 4=vpravo-dolů, 5=dolů, 6=vlevo-dolů, 7=vlevo, 8=vlevo-nahoru
 const SEM={
   A:[5,6],B:[5,7],C:[5,8],D:[5,1],E:[5,2],F:[5,3],G:[5,4],
   H:[6,7],I:[6,8],J:[1,3],K:[6,1],L:[6,2],M:[6,3],N:[6,4],
@@ -1235,8 +1200,10 @@ ALPHA.split('').forEach((l,i)=>{const b=((i+1)>>>0).toString(2).padStart(5,'0');
 
 // Ternary: A=1=001 … Z=26=222 (base-3, 3 digits)
 const TER2L={}, L2TER={};
-ALPHA.split('').forEach((l,i)=>{const t=toBase3(i+1,3);TER2L[t]=l;L2TER[l]=t;});
-function toBase3(n,digits){let s='';for(let i=digits-1;i>=0;i--){s+=Math.floor(n/Math.pow(3,i))%3;}return s;}
+ALPHA.split('').forEach((l,i)=>{
+  const t=(i+1).toString(3).padStart(3,'0');
+  TER2L[t]=l;L2TER[l]=t;
+});
 
 // ═══════════════════════════════════════════════════════════
 // MORSE
@@ -1264,9 +1231,7 @@ function mConfirm(){
   clearTimeout(mTimer);if(!mSeq.length)return;
   const l=MREV[mSeq.join('')]||'?';
   mHist.push(l);mSeq=[];
-  document.getElementById('m-seq').innerHTML='';
-  document.getElementById('m-let').textContent='—';
-  document.getElementById('m-let').style.color='var(--violet)';
+  mResetObar();
   mRender();vib(40);
 }
 function mSpace(){mConfirm();mHist.push(' ');mRender();}
@@ -1276,7 +1241,12 @@ function mBackspace(){
   else if(mHist.length){mHist.pop();mRender();}
 }
 function mDel(){histDel(mHist,'m-hist');}
-function mClearAll(){clearTimeout(mTimer);mSeq=[];mHist=[];document.getElementById('m-seq').innerHTML='';document.getElementById('m-let').textContent='—';document.getElementById('m-let').style.color='var(--violet)';mRender();}
+function mResetObar(){
+  document.getElementById('m-seq').innerHTML='';
+  const el=document.getElementById('m-let');
+  el.textContent='—';el.style.color='var(--violet)';
+}
+function mClearAll(){clearTimeout(mTimer);mSeq=[];mHist=[];mResetObar();mRender();}
 function mRender(){histRender('m-hist',mHist);}
 
 // Attach morse buttons — touchstart + mousedown fallback
@@ -1292,7 +1262,7 @@ attachMorse('mb-dash','-');
 // ═══════════════════════════════════════════════════════════
 // SEMAPHORE
 // ═══════════════════════════════════════════════════════════
-let semA={L:null,R:null},semStep='L',semHist=[];
+let semA={L:null,R:null},semStep='L',semHist={v:[]};
 
 function semDraw(){
   const cv=document.getElementById('sem-cv');
@@ -1436,28 +1406,23 @@ semCv.addEventListener('touchstart',semTap,{passive:false});
 semCv.addEventListener('click',semTap);
 
 function semFind(l,r){
-  for(const[lt,[lp,rp]]of Object.entries(SEM))if((lp===l&&rp===r)||(lp===r&&rp===l))return lt;
+  for(const[lt,[lp,rp]]of Object.entries(SEM))
+    if((lp===l&&rp===r)||(lp===r&&rp===l))return lt;
   return null;
 }
-function sAdd(){
-  const l=document.getElementById('s-let').textContent;
-  if(l==='—'||l==='?')return;
-  semHist.push(l);sRender();
+function sReset(){
   semA={L:null,R:null};semStep='L';
-  document.getElementById('s-let').textContent='—';
-  document.getElementById('s-let').style.color='var(--amber)';
-  semDrawState();semDraw();vib(40);
+  const el=document.getElementById('s-let');
+  el.textContent='—';el.style.color='var(--amber)';
+  semDrawState();semDraw();
 }
-function sDel(){histDel(semHist,'s-hist');}
-function sBackspace(){sDel();}
-function sSpace(){semHist.push(' ');sRender();}
-function sClearAll(){semHist=[];sRender();semA={L:null,R:null};semStep='L';document.getElementById('s-let').textContent='\u2014';document.getElementById('s-let').style.color='var(--amber)';semDrawState();semDraw();}
-function sRender(){histRender('s-hist',semHist);}
+makeCipher('s',semHist,'s-hist','s-let',sReset,(l=>l!=='—'&&l!=='?'));
+function sRender(){histRender('s-hist',semHist.v);}
 
 // ═══════════════════════════════════════════════════════════
 // BRAILLE
 // ═══════════════════════════════════════════════════════════
-let bAct=new Set(),bHist=[];
+let bAct=new Set(),bHist={v:[]};
 function buildBrl(){
   const g=document.getElementById('brl-grid');g.innerHTML='';
   [1,4,2,5,3,6].forEach(d=>{
@@ -1475,53 +1440,34 @@ function bToggle(d){
   bRefresh();vib(20);
 }
 function bRefresh(){
-  const a=[...bAct].sort((x,y)=>x-y);
-  const key=JSON.stringify(a);
-  const matches=[];
-  for(const[l,dots]of Object.entries(BRL)){
-    if(JSON.stringify([...dots].sort((x,y)=>x-y))===key) matches.push(l);
-  }
-  let found=null;
-  if(matches.length){
-    matches.sort((a,b)=>a.length-b.length);
-    found=matches[0];
-    const lower=matches.find(m=>m.length===1&&m===m.toLowerCase()&&m!==m.toUpperCase());
-    if(lower) found=lower;
-  }
+  const sorted=[...bAct].sort((a,b)=>a-b);
+  const found=BRL_REV[JSON.stringify(sorted)]||null;
   const m=document.getElementById('brl-match');
   const el=document.getElementById('b-let');
   if(found){
     const isSpecial=found.length>1;
-    m.innerHTML=isSpecial
-      ? '<span style="font-size:min(22px,5vw);color:var(--t2)">'+found+'</span>'
-      : found;
-    m.className='brl-match'+(isSpecial?' none':'');
+    m.innerHTML=isSpecial?`<span style="font-size:min(22px,5vw);color:var(--t2)">${found}</span>`:found;
+    m.className='cipher-match brl-match'+(isSpecial?' none':'');
     el.textContent=found;el.style.color='var(--green)';
   } else {
-    m.textContent=a.length?a.join(' '):'?';
-    m.className='brl-match none';
+    m.textContent=sorted.length?sorted.join(' '):'?';
+    m.className='cipher-match brl-match none';
     el.textContent='—';el.style.color='var(--amber)';
   }
 }
-function bAdd(){
-  const l=document.getElementById('b-let').textContent;if(l==='—')return;
-  bHist.push(l);bRenderH();bReset();vib(40);
-}
 function bReset(){
-  bAct.clear();document.querySelectorAll('.brd').forEach(b=>b.classList.remove('on'));
-  document.getElementById('brl-match').textContent='?';document.getElementById('brl-match').className='brl-match none';
+  bAct.clear();
+  document.querySelectorAll('.brd').forEach(b=>b.classList.remove('on'));
+  const m=document.getElementById('brl-match');
+  m.textContent='?';m.className='cipher-match brl-match none';
   document.getElementById('b-let').textContent='—';
 }
-function bClearAll(){bHist=[];histRender('b-hist',bHist);bReset();}
-function bDel(){histDel(bHist,'b-hist');}
-function bBackspace(){bDel();}
-function bSpace(){bHist.push(' ');bRenderH();}
-function bRenderH(){histRender('b-hist',bHist);}
+makeCipher('b',bHist,'b-hist','b-let',bReset);
 
 // ═══════════════════════════════════════════════════════════
 // BINARY
 // ═══════════════════════════════════════════════════════════
-let biState=[0,0,0,0,0],biHist=[];
+let biState=[0,0,0,0,0],biHist={v:[]};
 function buildBin(){
   const g=document.getElementById('bin-bits');g.innerHTML='';
   for(let i=0;i<5;i++){
@@ -1545,38 +1491,33 @@ function biRefresh(){
   const val=parseInt(code,2);
   const m=document.getElementById('bin-match');
   m.textContent=l||(!biState.some(b=>b)?'?':val);
-  m.className='bin-match'+(l?'':' none');
+  m.className='cipher-match bin-match'+(l?'':' none');
   const el=document.getElementById('bi-let');
   el.textContent=l||'—';el.style.color=l?'var(--green)':'var(--sky)';
-  document.getElementById('bin-eq').textContent=l?`${code}₂ = ${val}₁₀ = ${l}`:(biState.some(b=>b)?`${code}₂ = ${val}₁₀`:'');
-}
-function biAdd(){
-  const l=document.getElementById('bi-let').textContent;if(l==='—')return;
-  biHist.push(l);biRenderH();biReset();vib(40);
+  document.getElementById('bin-eq').textContent=
+    l?`${code}₂ = ${val}₁₀ = ${l}`:biState.some(b=>b)?`${code}₂ = ${val}₁₀`:'';
 }
 function biReset(){
   biState=[0,0,0,0,0];
-  for(let i=0;i<5;i++){const b=document.getElementById('bb-'+i);b.textContent='0';b.classList.remove('on');}
-  document.getElementById('bin-match').textContent='?';document.getElementById('bin-match').className='bin-match none';
-  document.getElementById('bi-let').textContent='—';document.getElementById('bin-eq').textContent='';
+  for(let i=0;i<5;i++){
+    const b=document.getElementById('bb-'+i);
+    b.textContent='0';b.classList.remove('on');
+  }
+  const m=document.getElementById('bin-match');
+  m.textContent='?';m.className='cipher-match bin-match none';
+  document.getElementById('bi-let').textContent='—';
+  document.getElementById('bin-eq').textContent='';
 }
-function biClearAll(){biHist=[];histRender('bi-hist',biHist);biReset();}
-function biDel(){histDel(biHist,'bi-hist');}
-function biBackspace(){biDel();}
-function biSpace(){biHist.push(' ');biRenderH();}
-function biRenderH(){histRender('bi-hist',biHist);}
+makeCipher('bi',biHist,'bi-hist','bi-let',biReset);
 
 // ═══════════════════════════════════════════════════════════
 // TERNARY
 // ═══════════════════════════════════════════════════════════
-// Grid: 3 rows × 3 cols. Row 0 = digit value 0, row 1 = 1, row 2 = 2.
-// Each col = one of 3 digit positions (hundreds/tens/units).
-// User selects one cell per column (= the digit value for that position).
-let terSel=[null,null,null],terHist=[];
+// Grid: 3 rows × 3 cols. Row = digit value (0,1,2). Col = digit position.
+let terSel=[null,null,null],terHist={v:[]};
 
 function buildTer(){
   const g=document.getElementById('ter-grid');g.innerHTML='';
-  // Layout: rows=digit value (0,1,2), cols=position (0,1,2)
   for(let row=0;row<3;row++){
     for(let col=0;col<3;col++){
       const btn=document.createElement('button');
@@ -1588,11 +1529,8 @@ function buildTer(){
     }
   }
 }
-
 function terTap(col,val){
-  // toggle: if already selected, deselect
-  terSel[col]= terSel[col]===val ? null : val;
-  // update button states for this column
+  terSel[col]=terSel[col]===val?null:val;
   for(let v=0;v<3;v++){
     const btn=document.getElementById(`tb-${col}-${v}`);
     const active=terSel[col]===v;
@@ -1602,39 +1540,30 @@ function terTap(col,val){
   }
   terRefresh();vib(20);
 }
-
 function terRefresh(){
   const complete=terSel.every(v=>v!==null);
-  let code=null,l=null;
-  if(complete){
-    code=terSel.join('');
-    l=TER2L[code]||null;
-  }
+  const code=complete?terSel.join(''):null;
+  const l=code?TER2L[code]||null:null;
+  const val=complete?terSel[0]*9+terSel[1]*3+terSel[2]:null;
   const m=document.getElementById('ter-match');
-  if(l){m.textContent=l;m.className='ter-match';}
-  else if(!complete){m.textContent='?';m.className='ter-match none';}
-  else{const val=terSel[0]*9+terSel[1]*3+terSel[2];m.textContent=val;m.className='ter-match none';}
+  if(l)      {m.textContent=l;m.className='cipher-match ter-match';}
+  else if(!complete){m.textContent='?';m.className='cipher-match ter-match none';}
+  else       {m.textContent=val;m.className='cipher-match ter-match none';}
   const el=document.getElementById('t-let');
   el.textContent=l||'—';el.style.color=l?'var(--green)':'var(--rose)';
-  if(complete){const val=terSel[0]*9+terSel[1]*3+terSel[2];document.getElementById('ter-eq').textContent=l?`${terSel.join('')}₃ = ${val}₁₀ = ${l}`:`${terSel.join('')}₃ = ${val}₁₀`;}
-  else document.getElementById('ter-eq').textContent='';
-}
-
-function tAdd(){
-  const l=document.getElementById('t-let').textContent;if(l==='—')return;
-  terHist.push(l);tRenderH();tReset();vib(40);
+  document.getElementById('ter-eq').textContent=
+    complete?(l?`${code}₃ = ${val}₁₀ = ${l}`:`${code}₃ = ${val}₁₀`):'';
 }
 function tReset(){
   terSel=[null,null,null];
-  for(let c=0;c<3;c++)for(let v=0;v<3;v++){const b=document.getElementById(`tb-${c}-${v}`);b.classList.remove('on','v0','v1','v2');}
-  document.getElementById('ter-match').textContent='?';document.getElementById('ter-match').className='ter-match none';
-  document.getElementById('t-let').textContent='—';document.getElementById('ter-eq').textContent='';
+  for(let c=0;c<3;c++)for(let v=0;v<3;v++)
+    document.getElementById(`tb-${c}-${v}`).classList.remove('on','v0','v1','v2');
+  const m=document.getElementById('ter-match');
+  m.textContent='?';m.className='cipher-match ter-match none';
+  document.getElementById('t-let').textContent='—';
+  document.getElementById('ter-eq').textContent='';
 }
-function tClearAll(){terHist=[];histRender('t-hist',terHist);tReset();}
-function tDel(){histDel(terHist,'t-hist');}
-function tBackspace(){tDel();}
-function tSpace(){terHist.push(' ');tRenderH();}
-function tRenderH(){histRender('t-hist',terHist);}
+makeCipher('t',terHist,'t-hist','t-let',tReset);
 
 // ═══════════════════════════════════════════════════════════
 // SVÁTKY
@@ -2356,7 +2285,7 @@ function pkBuildRev(map){
 const PK_NOCH_REV=pkBuildRev(PK_NOCH);
 const PK_CH_REV=pkBuildRev(PK_CH);
 
-let pkEdges=new Set(),pkDots=0,pkWithCh=false,pkHist=[];
+let pkEdges=new Set(),pkDots=0,pkWithCh=false,pkHist={v:[]};
 
 function pkDraw(){
   const cv=document.getElementById('pk-cv');
@@ -2495,17 +2424,8 @@ function pkSetVariant(withCh){
   pkRefresh();
 }
 
-function pkAdd(){
-  const l=document.getElementById('pk-let').textContent;
-  if(l==='—')return;
-  pkHist.push(l);pkRenderH();pkReset();vib(40);
-}
 function pkReset(){pkEdges.clear();pkDots=0;pkRefresh();}
-function pkClearAll(){pkHist=[];histRender('pk-hist',pkHist);pkReset();}
-function pkDel(){histDel(pkHist,'pk-hist');}
-function pkBackspace(){pkDel();}
-function pkSpace(){pkHist.push(' ');pkRenderH();}
-function pkRenderH(){histRender('pk-hist',pkHist);}
+makeCipher('pk',pkHist,'pk-hist','pk-let',pkReset);
 
 function initPk(){
   const cv=document.getElementById('pk-cv');
@@ -2566,7 +2486,7 @@ Object.entries(SEG7MAP).forEach(([ch,segs])=>{
   SEG7REV[k].push(ch);
 });
 
-let segActive=new Set(),segHist=[];
+let segActive=new Set(),segHist={v:[]};
 
 // Segment geometry (relative, 0-1 coords, scaled to canvas)
 // Returns array of polygon points for each segment 1-7
@@ -2670,19 +2590,8 @@ function segTap(e){
   }
 }
 
-function segAdd(){
-  const l=document.getElementById('seg-let').textContent;
-  if(l==='—')return;
-  segHist.push(l);segRenderH();segReset();vib(40);
-}
-function segReset(){
-  segActive.clear();segRefresh();
-}
-function segClearAll(){segHist=[];histRender('seg-hist',segHist);segReset();}
-function segDel(){histDel(segHist,'seg-hist');}
-function segBackspace(){segDel();}
-function segSpace(){segHist.push(' ');segRenderH();}
-function segRenderH(){histRender('seg-hist',segHist);}
+function segReset(){segActive.clear();segRefresh();}
+makeCipher('seg',segHist,'seg-hist','seg-let',segReset);
 
 // Attach tap events after DOM ready (called in init)
 function initSeg(){
@@ -2698,6 +2607,31 @@ function histRender(elId,hist){
     hist.map(c=>c===' '?'<span class="hl sp">·</span>':`<span class="hl">${c}</span>`).join('');
 }
 function histDel(hist,elId){if(hist.length){hist.pop();histRender(elId,hist);}}
+
+/**
+ * Factory: creates standard Add/Del/Backspace/Space/ClearAll/RenderH
+ * functions for a cipher and assigns them to the global scope.
+ * @param {string} prefix  - function prefix (e.g. 's' → sAdd, sDel…)
+ * @param {Array}  hist    - history array reference holder {v:[]}
+ * @param {string} histId  - DOM id of the ohist element
+ * @param {string} letId   - DOM id of the current-letter element
+ * @param {Function} resetFn - called after Add/ClearAll to reset state
+ * @param {Function} [validate] - optional fn(letText)→bool; default: l!=='—'&&l!=='?'
+ */
+function makeCipher(prefix, hist, histId, letId, resetFn, validate){
+  const ok = validate || (l=>l!=='—'&&l!=='?');
+  const renderH = ()=>histRender(histId, hist.v);
+  window[prefix+'RenderH']  = renderH;
+  window[prefix+'Add']      = ()=>{
+    const l=document.getElementById(letId).textContent;
+    if(!ok(l)) return;
+    hist.v.push(l); renderH(); resetFn(); vib(40);
+  };
+  window[prefix+'Del']      = ()=>histDel(hist.v, histId);
+  window[prefix+'Backspace']= ()=>histDel(hist.v, histId);
+  window[prefix+'Space']    = ()=>{ hist.v.push(' '); renderH(); };
+  window[prefix+'ClearAll'] = ()=>{ hist.v=[]; renderH(); resetFn(); };
+}
 // ── VIBRATION ────────────────────────────────────────────────
 function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 
@@ -2711,14 +2645,17 @@ window.addEventListener('resize',()=>{
   setVH();
   const on=document.querySelector('.pg.on');
   if(!on) return;
-  const id=on.id;
-  if(id==='pg-semaphore'){applySemSize();}
-  else if(id==='pg-braille'){applyBrlSize();}
-  else if(id==='pg-ternary'){applyTerSize();}
-  else if(id==='pg-7seg'){applySegSize();}
-  else if(id==='pg-pkriz'){pkDraw();}
-  else if(id==='pg-kresli'){krBuildGrid();}
-  else if(id==='pg-grille'){grBuildGrid();}
+  const RESIZE_FN={
+    'pg-semaphore': applySemSize,
+    'pg-braille':   applyBrlSize,
+    'pg-ternary':   applyTerSize,
+    'pg-7seg':      applySegSize,
+    'pg-pkriz':     pkDraw,
+    'pg-kresli':    krBuildGrid,
+    'pg-grille':    grBuildGrid,
+  };
+  const fn=RESIZE_FN[on.id];
+  if(fn) fn();
 });
 
 // ── HAMBURGER MENU ───────────────────────────────────────────
@@ -2729,11 +2666,9 @@ function hbrToggle(){
   _hbrBtn.classList.toggle('open',open);
   _hbrMenu.classList.toggle('open',open);
 }
-let _hbrItems=null;
 function hbrGo(name,item){
   if(!_hbrBtn){_hbrBtn=document.getElementById('hbr-btn');_hbrMenu=document.getElementById('hbr-menu');}
-  _hbrBtn.classList.remove('open');
-  _hbrMenu.classList.remove('open');
+  _hbrBtn.classList.remove('open');_hbrMenu.classList.remove('open');
   go(name,item);
 }
 // Close on outside tap
@@ -2824,16 +2759,19 @@ function applySegSize(){
 
 // Single ResizeObserver for all obar elements
 if(window.ResizeObserver){
+  const OBAR_RESIZE={
+    'sem-obar': applySemSize,
+    'b-obar':   applyBrlSize,
+    't-obar':   applyTerSize,
+    'seg-obar': applySegSize,
+  };
   const ro=new ResizeObserver(entries=>{
     for(const e of entries){
-      const id=e.target.id;
-      if(id==='sem-obar') applySemSize();
-      else if(id==='b-obar') applyBrlSize();
-      else if(id==='t-obar') applyTerSize();
-      else if(id==='seg-obar') applySegSize();
+      const fn=OBAR_RESIZE[e.target.id];
+      if(fn) fn();
     }
   });
-  ['sem-obar','b-obar','t-obar','seg-obar'].forEach(id=>{
+  Object.keys(OBAR_RESIZE).forEach(id=>{
     const el=document.getElementById(id);
     if(el) ro.observe(el);
   });
