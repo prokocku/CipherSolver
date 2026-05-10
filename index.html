@@ -749,10 +749,12 @@ nav{
     <div class="olet" id="b-let" style="color:var(--amber)">—</div>
     <div class="ohist" id="b-hist"></div>
   </div>
-  <div class="body" style="justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;">
-    <div class="brl-grid" id="brl-grid"></div>
-    <div class="brl-match none" id="brl-match">?</div>
-    <div class="brl-note">Levý sloupec = body 1 2 3 &nbsp;·&nbsp; Pravý = 4 5 6</div>
+  <div class="body">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;width:100%;gap:10px;">
+      <div class="brl-grid" id="brl-grid"></div>
+      <div class="brl-match none" id="brl-match">?</div>
+      <div class="brl-note">Levý sloupec = body 1 2 3 &nbsp;·&nbsp; Pravý = 4 5 6</div>
+    </div>
     <div class="morse-actions">
       <button class="ma" onclick="bBackspace()">⌫ Zpět</button>
       <button class="ma ok" style="color:var(--amber)" onclick="bAdd()">✓ Písmeno</button>
@@ -769,17 +771,19 @@ nav{
     <div class="ohist" id="bi-hist"></div>
   </div>
   <div class="body">
-    <div class="bin-display" id="bin-bits"></div>
-    <div class="bin-match none" id="bin-match">?</div>
-    <div class="bin-eq" id="bin-eq"></div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;width:100%;gap:10px;">
+      <div class="bin-display" id="bin-bits"></div>
+      <div class="bin-match none" id="bin-match">?</div>
+      <div class="bin-eq" id="bin-eq"></div>
+      <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
+        5 bitů &nbsp;·&nbsp; 00001 = A &nbsp;·&nbsp; 11010 = Z<br>klepni na bity které jsou <b style="color:var(--sky)">1</b>
+      </div>
+    </div>
     <div class="morse-actions">
       <button class="ma" onclick="biBackspace()">⌫ Zpět</button>
       <button class="ma ok" style="color:var(--sky)" onclick="biAdd()">✓ Písmeno</button>
       <button class="ma" onclick="biSpace()">␣ Mezera</button>
       <button class="ma" onclick="biClearAll()" style="color:var(--rose)">✕ Vše</button>
-    </div>
-    <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
-      5 bitů &nbsp;·&nbsp; 00001 = A &nbsp;·&nbsp; 11010 = Z<br>klepni na bity které jsou <b style="color:var(--sky)">1</b>
     </div>
   </div>
 </div>
@@ -790,26 +794,28 @@ nav{
     <div class="olet" id="t-let" style="color:var(--rose)">—</div>
     <div class="ohist" id="t-hist"></div>
   </div>
-  <div class="body" style="justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;">
-    <div class="ter-wrap">
-      <div class="ter-row-labels" id="ter-row-labels">
-        <span>0</span><span>1</span><span>2</span>
+  <div class="body">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;width:100%;gap:10px;">
+      <div class="ter-wrap">
+        <div class="ter-row-labels" id="ter-row-labels">
+          <span>0</span><span>1</span><span>2</span>
+        </div>
+        <div class="ter-grid" id="ter-grid"></div>
       </div>
-      <div class="ter-grid" id="ter-grid"></div>
+      <div class="ter-match none" id="ter-match">?</div>
+      <div class="ter-eq" id="ter-eq"></div>
+      <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
+        3 cifry (základ 3) &nbsp;·&nbsp; 001 = A &nbsp;·&nbsp; 222 = Z<br>
+        <span style="color:#4b5563">■</span> = 0 &nbsp;
+        <span style="color:var(--violet)">■</span> = 1 &nbsp;
+        <span style="color:var(--rose)">■</span> = 2
+      </div>
     </div>
-    <div class="ter-match none" id="ter-match">?</div>
-    <div class="ter-eq" id="ter-eq"></div>
     <div class="morse-actions">
       <button class="ma" onclick="tBackspace()">⌫ Zpět</button>
       <button class="ma ok" style="color:var(--rose)" onclick="tAdd()">✓ Písmeno</button>
       <button class="ma" onclick="tSpace()">␣ Mezera</button>
       <button class="ma" onclick="tClearAll()" style="color:var(--rose)">✕ Vše</button>
-    </div>
-    <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
-      3 cifry (základ 3) &nbsp;·&nbsp; 001 = A &nbsp;·&nbsp; 222 = Z<br>
-      <span style="color:#4b5563">■</span> = 0 &nbsp;
-      <span style="color:var(--violet)">■</span> = 1 &nbsp;
-      <span style="color:var(--rose)">■</span> = 2
     </div>
   </div>
 </div>
@@ -946,7 +952,7 @@ nav{
 
 <!-- ══ KRESLI ═══════════════════════════════════════════════ -->
 <div id="pg-kresli" class="pg">
-  <div class="body" style="gap:7px;padding:8px 10px;">
+  <div class="body" style="gap:7px;padding:calc(var(--safe-t) + 14px) 10px 8px;">
 
     <!-- Toolbar: grid size controls + clear -->
     <div class="kr-toolbar">
@@ -2757,16 +2763,15 @@ function applySemSize(){
 function applyBrlSize(){
   const pg=document.getElementById('pg-braille');
   const obar=document.getElementById('b-obar');
-  const actRow=pg.querySelector('.act-row');
-  const match=document.getElementById('brl-match');
+  const actRow=pg.querySelector('.morse-actions');
   const note=pg.querySelector('.brl-note');
-  // Available height = page height minus all fixed elements
+  const match=document.getElementById('brl-match');
   const pgH=pg.offsetHeight;
   const obarH=obar?obar.offsetHeight:80;
   const actH=actRow?actRow.offsetHeight:56;
-  const matchH=match?match.offsetHeight:72;
-  const noteH=note?note.offsetHeight:36;
-  const avail=pgH-obarH-actH-matchH-noteH-60;
+  const noteH=note?note.offsetHeight:24;
+  const matchH=match?match.offsetHeight:50;
+  const avail=pgH-obarH-actH-noteH-matchH-60;
   const btnSize=Math.max(36, Math.min(82, Math.floor(avail/3), Math.floor(window.innerWidth*0.18)));
   document.querySelectorAll('.brd').forEach(b=>{
     b.style.width=btnSize+'px';b.style.height=btnSize+'px';
@@ -2777,15 +2782,16 @@ function applyBrlSize(){
 function applyTerSize(){
   const pg=document.getElementById('pg-ternary');
   const obar=document.getElementById('t-obar');
-  const actRow=pg.querySelector('.act-row');
+  const actRow=pg.querySelector('.morse-actions');
   const match=document.getElementById('ter-match');
+  const note=pg.querySelector('[style*="font-size:11px"]');
   const avail=pg.offsetHeight
     -(obar?obar.offsetHeight:80)
     -(actRow?actRow.offsetHeight:56)
     -(match?match.offsetHeight:72)
-    -80; // eq, hint, gaps
+    -(note?note.offsetHeight:36)
+    -60; // eq, gaps
   const gridSize=Math.max(120, Math.min(340, avail, window.innerWidth-60));
-  const grid=document.getElementById('ter-grid');
   const wrap=pg.querySelector('.ter-wrap');
   if(wrap) wrap.style.maxWidth=gridSize+'px';
   const btnSize=Math.max(32, Math.floor((gridSize-60)/3));
