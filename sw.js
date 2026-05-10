@@ -1,6 +1,6 @@
 // Service Worker pro Šifry PWA
 // Verze cache — změň číslo při každém nasazení nové verze
-const CACHE = 'sifry-v10';
+const CACHE = 'sifry-v10.1';
 
 const ASSETS = [
   './index.html',
