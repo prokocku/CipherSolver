@@ -220,6 +220,25 @@ nav{
 .mb .sym{font-size:min(52px,10vw);line-height:1;}
 .mb .lbl{font-size:11px;font-weight:700;letter-spacing:.6px;color:var(--t2);}
 
+/* ── CIPHER LOOKUP (reverse encode) ─────────────────────── */
+.cipher-lookup{
+  flex:0 0 auto;display:flex;align-items:center;gap:8px;
+  padding:4px 12px 0;
+}
+.cipher-lookup-label{
+  font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;
+  letter-spacing:.4px;white-space:nowrap;
+}
+.cipher-lookup-input{
+  width:52px;height:36px;border-radius:10px;
+  border:1.5px solid var(--border);background:var(--card);
+  color:var(--t1);font-size:20px;font-weight:800;text-align:center;
+  text-transform:uppercase;outline:none;-webkit-appearance:none;
+  caret-color:transparent;
+}
+.cipher-lookup-input:focus{border-color:var(--violet);}
+.cipher-lookup-input::placeholder{color:var(--t3);font-size:14px;font-weight:400;}
+
 .morse-actions{
   flex:0 0 auto;display:flex;gap:8px;width:100%;max-width:420px;
 }
@@ -667,6 +686,11 @@ nav{
         <span class="lbl">ČÁRKA</span>
       </button>
     </div>
+    <div class="cipher-lookup">
+      <span class="cipher-lookup-label">Zakóduj</span>
+      <input class="cipher-lookup-input" id="lookup-m" maxlength="2" placeholder="A" autocomplete="off" autocorrect="off" autocapitalize="characters" oninput="cipherLookup('m',this)">
+      <span id="lookup-m-code" style="font-family:'SF Mono',ui-monospace,monospace;font-size:18px;font-weight:700;color:var(--violet);letter-spacing:3px;min-width:60px;"></span>
+    </div>
     <div class="morse-actions">
       <button class="ma" onclick="mBackspace()">⌫ Zpět</button>
       <button class="ma ok" onclick="mConfirm()">✓ Písmeno</button>
@@ -693,6 +717,10 @@ nav{
         <canvas id="sem-cv"></canvas>
       </div>
     </div>
+    <div class="cipher-lookup">
+      <span class="cipher-lookup-label">Zakóduj</span>
+      <input class="cipher-lookup-input" id="lookup-s" maxlength="1" placeholder="A" autocomplete="off" autocorrect="off" autocapitalize="characters" oninput="cipherLookup('s',this)">
+    </div>
     <div class="morse-actions">
       <button class="ma" onclick="sBackspace()">⌫ Zpět</button>
       <button class="ma ok" style="color:var(--violet)" onclick="sAdd()">✓ Písmeno</button>
@@ -713,6 +741,10 @@ nav{
       <div class="brl-grid" id="brl-grid"></div>
       <div class="cipher-match brl-match none" id="brl-match">?</div>
       <div class="brl-note">Levý sloupec = body 1 2 3 &nbsp;·&nbsp; Pravý = 4 5 6</div>
+    </div>
+    <div class="cipher-lookup">
+      <span class="cipher-lookup-label">Zakóduj</span>
+      <input class="cipher-lookup-input" id="lookup-b" maxlength="1" placeholder="A" autocomplete="off" autocorrect="off" autocapitalize="characters" oninput="cipherLookup('b',this)">
     </div>
     <div class="morse-actions">
       <button class="ma" onclick="bBackspace()">⌫ Zpět</button>
@@ -737,6 +769,10 @@ nav{
       <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
         5 bitů &nbsp;·&nbsp; 00001 = A &nbsp;·&nbsp; 11010 = Z<br>klepni na bity které jsou <b style="color:var(--sky)">1</b>
       </div>
+    </div>
+    <div class="cipher-lookup">
+      <span class="cipher-lookup-label">Zakóduj</span>
+      <input class="cipher-lookup-input" id="lookup-bi" maxlength="1" placeholder="A" autocomplete="off" autocorrect="off" autocapitalize="characters" oninput="cipherLookup('bi',this)">
     </div>
     <div class="morse-actions">
       <button class="ma" onclick="biBackspace()">⌫ Zpět</button>
@@ -770,6 +806,10 @@ nav{
         <span style="color:var(--rose)">■</span> = 2
       </div>
     </div>
+    <div class="cipher-lookup">
+      <span class="cipher-lookup-label">Zakóduj</span>
+      <input class="cipher-lookup-input" id="lookup-t" maxlength="1" placeholder="A" autocomplete="off" autocorrect="off" autocapitalize="characters" oninput="cipherLookup('t',this)">
+    </div>
     <div class="morse-actions">
       <button class="ma" onclick="tBackspace()">⌫ Zpět</button>
       <button class="ma ok" style="color:var(--rose)" onclick="tAdd()">✓ Písmeno</button>
@@ -792,6 +832,10 @@ nav{
         <div class="seg-match none" id="seg-match">?</div>
       </div>
       <div class="seg-segs-label" id="seg-active-label">Žádný segment</div>
+    </div>
+    <div class="cipher-lookup">
+      <span class="cipher-lookup-label">Zakóduj</span>
+      <input class="cipher-lookup-input" id="lookup-seg" maxlength="1" placeholder="A" autocomplete="off" autocorrect="off" autocapitalize="characters" oninput="cipherLookup('seg',this)">
     </div>
     <div class="morse-actions">
       <button class="ma" onclick="segBackspace()">⌫ Zpět</button>
@@ -819,6 +863,10 @@ nav{
       </div>
     </div>
     <div class="pkr-match none" id="pk-match">—</div>
+    <div class="cipher-lookup">
+      <span class="cipher-lookup-label">Zakóduj</span>
+      <input class="cipher-lookup-input" id="lookup-pk" maxlength="2" placeholder="A" autocomplete="off" autocorrect="off" autocapitalize="characters" oninput="cipherLookup('pk',this)">
+    </div>
     <div class="morse-actions">
       <button class="ma" onclick="pkBackspace()">⌫ Zpět</button>
       <button class="ma ok" style="color:#e8334a" onclick="pkAdd()">✓ Písmeno</button>
@@ -1237,6 +1285,7 @@ function mBackspace(){
   clearTimeout(mTimer);
   if(mSeq.length){mSeq.pop();document.getElementById('m-seq').lastChild?.remove();mRefresh();}
   else if(mHist.length){mHist.pop();mRender();}
+  clearLookup('m');
 }
 function mDel(){histDel(mHist,'m-hist');}
 function mResetObar(){
@@ -1244,7 +1293,7 @@ function mResetObar(){
   const el=document.getElementById('m-let');
   el.textContent='—';el.style.color='var(--violet)';
 }
-function mClearAll(){clearTimeout(mTimer);mSeq=[];mHist=[];mResetObar();mRender();}
+function mClearAll(){clearTimeout(mTimer);mSeq=[];mHist=[];mResetObar();mRender();clearLookup('m');}
 function mRender(){histRender('m-hist',mHist);}
 
 // Attach morse buttons — touchstart + mousedown fallback
@@ -2615,6 +2664,120 @@ function histDel(hist,elId){if(hist.length){hist.pop();histRender(elId,hist);}}
  * @param {Function} resetFn - called after Add/ClearAll to reset state
  * @param {Function} [validate] - optional fn(letText)→bool; default: l!=='—'&&l!=='?'
  */
+// ═══════════════════════════════════════════════════════════
+// CIPHER LOOKUP — reverse encode: letter → set cipher state
+// ═══════════════════════════════════════════════════════════
+function cipherLookup(prefix, input){
+  const raw=input.value.toUpperCase().replace(/[^A-ZČŠŽŘĎŤŇ]/g,'');
+  input.value=raw;
+  if(!raw) return;
+  // Special: detect "CH" digraph for polsky kriz
+  if(prefix==='pk'){
+    lookupPk(raw);
+    return;
+  }
+  const ch=raw.slice(-1);
+  switch(prefix){
+    case 'm':   lookupM(raw.length>=2&&raw.slice(-2)==='CH'?'CH':ch); break;
+    case 's':   lookupSem(ch); break;
+    case 'b':   lookupBrl(ch); break;
+    case 'bi':  lookupBin(ch); break;
+    case 't':   lookupTer(ch); break;
+    case 'seg': lookupSeg(ch); break;
+  }
+}
+
+function lookupM(ch){
+  // Support Ch digraph (morse ---- )
+  const key=(ch.length===2&&ch==='CH')?'Ch':ch;
+  const code=MMAP[key];
+  const codeEl=document.getElementById('lookup-m-code');
+  if(code){
+    codeEl.textContent=code.replace(/\./g,'·').replace(/-/g,'—');
+    mSeq=code.split('');
+    mTimer&&clearTimeout(mTimer);
+    mRefresh();
+  } else {
+    codeEl.textContent='';
+  }
+}
+
+function lookupSem(ch){
+  const entry=SEM[ch];
+  if(!entry) return;
+  semA={L:entry[0],R:entry[1]};semStep='R'; // both arms set
+  semDrawState();semDraw();
+  const el=document.getElementById('s-let');
+  el.textContent=ch;el.style.color='var(--green)';
+}
+
+function lookupBrl(ch){
+  const dots=BRL[ch];
+  if(!dots) return;
+  bAct=new Set(dots);
+  document.querySelectorAll('.brd').forEach(b=>{
+    const d=+b.textContent;
+    b.classList.toggle('on',bAct.has(d));
+  });
+  bRefresh();
+}
+
+function lookupBin(ch){
+  const code=L2BIN[ch];
+  if(!code) return;
+  biState=code.split('').map(Number);
+  for(let i=0;i<5;i++){
+    const b=document.getElementById('bb-'+i);
+    b.textContent=biState[i];b.classList.toggle('on',!!biState[i]);
+  }
+  biRefresh();
+}
+
+function lookupTer(ch){
+  const code=L2TER[ch];
+  if(!code) return;
+  const digits=code.split('').map(Number);
+  terSel=digits;
+  for(let c=0;c<3;c++){
+    for(let v=0;v<3;v++){
+      const btn=document.getElementById(`tb-${c}-${v}`);
+      const active=terSel[c]===v;
+      btn.classList.toggle('on',active);
+      btn.classList.remove('v0','v1','v2');
+      if(active) btn.classList.add('v'+v);
+    }
+  }
+  terRefresh();
+}
+
+function lookupSeg(ch){
+  const segs=SEG7MAP[ch];
+  if(!segs) return;
+  segActive=new Set(segs);
+  segRefresh();
+}
+
+function lookupPk(raw){
+  const map=pkWithCh?PK_CH:PK_NOCH;
+  // Try "Ch" digraph first (only relevant in CH mode), then single char
+  const ch=(pkWithCh&&raw.length>=2&&raw.slice(-2)==='CH')?'Ch':raw.slice(-1);
+  const entry=map[ch];
+  if(!entry) return;
+  const [edges,dots]=entry;
+  pkEdges=new Set(edges);pkDots=dots;
+  pkRefresh();
+}
+
+// Clear the lookup input field for the current cipher page
+function clearLookup(prefix){
+  const el=document.getElementById('lookup-'+prefix);
+  if(el) el.value='';
+  if(prefix==='m'){
+    const c=document.getElementById('lookup-m-code');
+    if(c) c.textContent='';
+  }
+}
+
 function makeCipher(prefix, hist, histId, letId, resetFn, validate){
   const ok = validate || (l=>l!=='—'&&l!=='?');
   const renderH = ()=>histRender(histId, hist.v);
@@ -2624,10 +2787,10 @@ function makeCipher(prefix, hist, histId, letId, resetFn, validate){
     if(!ok(l)) return;
     hist.v.push(l); renderH(); resetFn(); vib(40);
   };
-  window[prefix+'Del']      = ()=>histDel(hist.v, histId);
-  window[prefix+'Backspace']= ()=>histDel(hist.v, histId);
+  window[prefix+'Del']      = ()=>{ histDel(hist.v, histId); clearLookup(prefix); };
+  window[prefix+'Backspace']= ()=>{ histDel(hist.v, histId); clearLookup(prefix); };
   window[prefix+'Space']    = ()=>{ hist.v.push(' '); renderH(); };
-  window[prefix+'ClearAll'] = ()=>{ hist.v=[]; renderH(); resetFn(); };
+  window[prefix+'ClearAll'] = ()=>{ hist.v=[]; renderH(); resetFn(); clearLookup(prefix); };
 }
 // ── VIBRATION ────────────────────────────────────────────────
 function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
