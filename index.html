@@ -1254,10 +1254,16 @@ ALPHA.split('').forEach((l,i)=>{
 // ═══════════════════════════════════════════════════════════
 // MORSE
 // ═══════════════════════════════════════════════════════════
-let mSeq=[],mHist=[],mTimer=null;
+let mSeq=[],mHist=[],mTimer=null,mFromLookup=false;
 
 function mAdd(sym){
   clearTimeout(mTimer);
+  if(mFromLookup){
+    // First tap after lookup → start fresh sequence
+    mSeq=[];
+    document.getElementById('m-seq').innerHTML='';
+    mFromLookup=false;
+  }
   mSeq.push(sym);
   const el=document.getElementById('m-seq');
   const sp=document.createElement('span');
@@ -1283,6 +1289,7 @@ function mConfirm(){
 function mSpace(){mConfirm();mHist.push(' ');mRender();}
 function mBackspace(){
   clearTimeout(mTimer);
+  mFromLookup=false;
   if(mSeq.length){mSeq.pop();document.getElementById('m-seq').lastChild?.remove();mRefresh();}
   else if(mHist.length){mHist.pop();mRender();}
   clearLookup('m');
@@ -1293,7 +1300,7 @@ function mResetObar(){
   const el=document.getElementById('m-let');
   el.textContent='—';el.style.color='var(--violet)';
 }
-function mClearAll(){clearTimeout(mTimer);mSeq=[];mHist=[];mResetObar();mRender();clearLookup('m');}
+function mClearAll(){clearTimeout(mTimer);mSeq=[];mHist=[];mFromLookup=false;mResetObar();mRender();clearLookup('m');}
 function mRender(){histRender('m-hist',mHist);}
 
 // Attach morse buttons — touchstart + mousedown fallback
@@ -1731,7 +1738,7 @@ function initSvatky(){
 // 4 rotations 90°CW, each reveals different cells
 // ═══════════════════════════════════════════════════════════
 const GR_MIN=4,GR_MAX=8;
-let grN=4,grHoles=new Set(); // holes stored as "r-c" strings
+let grN=4,grHoles=new Set(),grTextFirst=false; // holes stored as "r-c" strings
 
 function grRotCW(r,c){return[c,grN-1-r];}
 
@@ -1763,13 +1770,39 @@ function grBuildGrid(){
   grid.style.width=`${cs*grN}px`;
   grid.style.height=`${cs*grN}px`;
 
-  // Get text for cells
   const raw=(document.getElementById('gr-input').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
-  const total=grN*grN;
-  const padded=(raw+'·'.repeat(total)).slice(0,total);
+
+  // Build display grid: linear fill (text-first / dešifrování) or grille-order fill (holes-first / šifrování)
+  const displayGrid=Array.from({length:grN},()=>Array(grN).fill('·'));
+
+  if(grHoles.size>0 && !grTextFirst){
+    // Holes-first (šifrování): distribute text into holes in grille order
+    const orderedPositions=[];
+    for(let rot=0;rot<4;rot++){
+      const positions=[];
+      for(const h of grHoles){
+        const [hr,hc]=h.split('-').map(Number);
+        let pr=hr,pc=hc;
+        for(let i=0;i<rot;i++){[pr,pc]=grRotCW(pr,pc);}
+        positions.push([pr,pc]);
+      }
+      positions.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+      orderedPositions.push(...positions);
+    }
+    orderedPositions.forEach(([r,c],i)=>{
+      displayGrid[r][c]=i<raw.length?raw[i]:'·';
+    });
+  } else {
+    // Text-first (dešifrování) or no holes: linear fill
+    const total=grN*grN;
+    const padded=(raw+'·'.repeat(total)).slice(0,total);
+    for(let r=0;r<grN;r++)
+      for(let c=0;c<grN;c++)
+        displayGrid[r][c]=padded[r*grN+c];
+  }
 
   grid.innerHTML='';
-  // Precompute rotation map: for each hole, what positions does it map to at rot 1,2,3?
+  // Precompute rotation map for hole coloring
   const rotMap={};
   for(const h of grHoles){
     const [hr,hc]=h.split('-').map(Number);
@@ -1784,7 +1817,7 @@ function grBuildGrid(){
       cell.className='gr-cell';
       cell.dataset.r=r;cell.dataset.c=col;
       cell.style.fontSize=fontSize+'px';
-      cell.textContent=padded[r*grN+col];
+      cell.textContent=displayGrid[r][col];
 
       if(grHoles.has(key)){
         cell.classList.add('hole');
@@ -1823,14 +1856,38 @@ function grUpdateResult(){
     return;
   }
   const raw=(document.getElementById('gr-input').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
-  const total=grN*grN;
-  const padded=(raw+'·'.repeat(total)).slice(0,total);
-  const grid=Array.from({length:grN},(_,r)=>Array.from({length:grN},(_,c)=>padded[r*grN+c]));
+
+  // Build displayGrid same way as grBuildGrid
+  const displayGrid=Array.from({length:grN},()=>Array(grN).fill('·'));
+  if(!grTextFirst){
+    // Holes-first: grille-order fill
+    const orderedPositions=[];
+    for(let rot=0;rot<4;rot++){
+      const positions=[];
+      for(const h of grHoles){
+        const [hr,hc]=h.split('-').map(Number);
+        let pr=hr,pc=hc;
+        for(let i=0;i<rot;i++){[pr,pc]=grRotCW(pr,pc);}
+        positions.push([pr,pc]);
+      }
+      positions.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+      orderedPositions.push(...positions);
+    }
+    orderedPositions.forEach(([r,c],i)=>{
+      displayGrid[r][c]=i<raw.length?raw[i]:'·';
+    });
+  } else {
+    // Text-first: linear fill
+    const total=grN*grN;
+    const padded=(raw+'·'.repeat(total)).slice(0,total);
+    for(let r=0;r<grN;r++)
+      for(let c=0;c<grN;c++)
+        displayGrid[r][c]=padded[r*grN+c];
+  }
 
   const ROT_LABELS=['0°','90°','180°','270°'];
   const ROT_COLORS=['r0','r1','r2','r3'];
   let html='';
-
   for(let rot=0;rot<4;rot++){
     const positions=[];
     for(const h of grHoles){
@@ -1840,7 +1897,7 @@ function grUpdateResult(){
       positions.push([pr,pc]);
     }
     positions.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
-    const text=positions.map(([pr,pc])=>grid[pr][pc]).join('');
+    const text=positions.map(([pr,pc])=>displayGrid[pr][pc]).join('');
     html+=`<div class="gr-result-row">
       <span class="gr-rot-lbl ${ROT_COLORS[rot]}">${ROT_LABELS[rot]}</span>
       <span class="gr-rot-text">${text||'—'}</span>
@@ -1850,16 +1907,13 @@ function grUpdateResult(){
 }
 
 function grInputHandler(el){
-  // Uppercase + strip non-alphanumeric
   let raw=el.value.toUpperCase().replace(/[^A-Z0-9\n]/g,'');
-  // Remove explicit newlines from user input — we handle wrapping visually
   raw=raw.replace(/\n/g,'');
-  // Limit to current grid cell count
   if(raw.length>grN*grN) raw=raw.slice(0,grN*grN);
-  // Insert visual line breaks every current-grid-width chars for display
-  // Actually just keep the raw value, CSS word-break handles it
   if(el.value!==raw) el.value=raw;
-  // Auto-resize
+  // If user types text while no holes selected yet → text-first mode (dešifrování)
+  if(raw.length>0 && grHoles.size===0) grTextFirst=true;
+  if(raw.length===0) grTextFirst=false;
   el.style.height='auto';
   el.style.height=el.scrollHeight+'px';
   grBuildGrid();
@@ -1873,7 +1927,7 @@ function grUpdate(){
 function grResize(delta){
   const newN=Math.min(GR_MAX,Math.max(GR_MIN,grN+delta));
   if(newN===grN)return;
-  grN=newN;grHoles.clear();
+  grN=newN;grHoles.clear();grTextFirst=false;
   // Trim input to new cell count
   const el=document.getElementById('gr-input');
   if(el&&el.value.length>grN*grN){
@@ -1886,6 +1940,7 @@ function grResize(delta){
 
 function grClear(){
   grHoles.clear();
+  grTextFirst=false;
   const el=document.getElementById('gr-input');
   el.value='';
   el.style.height='auto';
@@ -2695,7 +2750,16 @@ function lookupM(ch){
   if(code){
     codeEl.textContent=code.replace(/\./g,'·').replace(/-/g,'—');
     mSeq=code.split('');
-    mTimer&&clearTimeout(mTimer);
+    mFromLookup=true;
+    clearTimeout(mTimer);
+    // Show the sequence visually in m-seq
+    const el=document.getElementById('m-seq');
+    el.innerHTML='';
+    mSeq.forEach(sym=>{
+      const sp=document.createElement('span');
+      sp.className='ms';sp.style.color=sym==='.'?'var(--violet)':'var(--amber)';
+      sp.textContent=sym==='.'?'·':'—';el.appendChild(sp);
+    });
     mRefresh();
   } else {
     codeEl.textContent='';
