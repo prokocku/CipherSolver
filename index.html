@@ -143,7 +143,7 @@ nav{
 @keyframes pop{0%{transform:scale(1.4);}100%{transform:scale(1);}}
 .ohist{
   flex:1;display:flex;flex-wrap:wrap;gap:0;align-items:flex-start;
-  overflow:hidden;
+  overflow:hidden;min-height:24px;
 }
 .hl{display:inline-block;padding:2px 3px;background:var(--card2);border-radius:4px;font-size:14px;font-weight:700;margin:1px 0;}
 .hl.sp{background:transparent;color:var(--t3);font-size:10px;padding:2px 1px;}
@@ -917,13 +917,11 @@ nav{
     <div class="kr-toolbar">
       <div class="kr-controls">
         <div class="ctrl-group">
-          <!--<span class="ctrl-lbl">Sl</span>-->
           <button class="ctrl-btn" onclick="krResize('cols',-1)">−</button>
           <span class="ctrl-val" id="kr-cols-val">9</span>
           <button class="ctrl-btn" onclick="krResize('cols',+1)">+</button>
         </div>
         <div class="ctrl-group">
-          <!--<span class="ctrl-lbl">Řd</span>-->
           <button class="ctrl-btn" onclick="krResize('rows',-1)">−</button>
           <span class="ctrl-val" id="kr-rows-val">9</span>
           <button class="ctrl-btn" onclick="krResize('rows',+1)">+</button>
@@ -2523,46 +2521,45 @@ function segDrawCanvas(canvasId,active,size){
   const pad=S*0.06,thick=S*0.13;
   const polys=segPolygons(W,H,pad,thick);
   ctx.clearRect(0,0,W,H);
+  const fontSize=Math.max(9,S*0.085);
+  ctx.font=`bold ${fontSize}px -apple-system,sans-serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
   for(let s=1;s<=7;s++){
     const on=active.has(s);
     const pts=polys[s];
     ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
     for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
     ctx.closePath();
-    ctx.fillStyle=on?'#34d399':'#1e2a1e';
+    ctx.fillStyle=on?'#34d399':'#2a2a3e';
     ctx.fill();
-    // segment number label (only when off, for reference)
-    if(!on){
-      const cx2=pts.reduce((s,p)=>s+p[0],0)/pts.length;
-      const cy2=pts.reduce((s,p)=>s+p[1],0)/pts.length;
-      ctx.fillStyle='#3a3a58';
-      ctx.font=`bold ${Math.max(9,S*0.075)}px -apple-system,sans-serif`;
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(s,cx2,cy2);
-    }
+    // segment number — always visible, high contrast
+    const cx=pts.reduce((a,p)=>a+p[0],0)/pts.length;
+    const cy=pts.reduce((a,p)=>a+p[1],0)/pts.length;
+    ctx.fillStyle=on?'#052e16':'#8080a0';
+    ctx.fillText(s,cx,cy);
   }
 }
 
 function segRefresh(){
-  segDrawCanvas('seg-cv',segActive);
   const key=JSON.stringify([...segActive].sort((a,b)=>a-b));
   const matches=SEG7REV[key]||null;
   const m=document.getElementById('seg-match');
   const el=document.getElementById('seg-let');
   if(matches&&matches.length){
     const display=matches.join('/');
-    // prefer letter over digit for obar, but show all in match area
     const preferred=matches.find(x=>x>='A'&&x<='Z')||matches[0];
     m.textContent=display;
-    m.className='seg-match'+(display.length>2?' none':'');
+    // Show large green even for dual matches like S/5 or Z/2
+    m.className='seg-match';
     el.textContent=preferred;el.style.color='var(--green)';
   } else {
-    m.textContent=segActive.size?[...segActive].sort((a,b)=>a-b).join(' '):'?';
+    m.textContent='';
     m.className='seg-match none';
     el.textContent='—';el.style.color='var(--t3)';
   }
   document.getElementById('seg-active-label').textContent=
     segActive.size?'Segmenty: '+[...segActive].sort((a,b)=>a-b).join(', '):'Žádný segment';
+  segRedraw();
 }
 
 function segTap(e){
@@ -2742,7 +2739,7 @@ function applySegSize(){
   requestAnimationFrame(()=>{
     const pg=document.getElementById('pg-7seg');
     const obar=document.getElementById('seg-obar');
-    const actRow=pg.querySelector('.act-row');
+    const actRow=pg.querySelector('.morse-actions');
     const label=document.getElementById('seg-active-label');
     const avail=pg.offsetHeight
       -(obar?obar.offsetHeight:80)
@@ -2755,6 +2752,10 @@ function applySegSize(){
     segDrawCanvas('seg-cv',segActive,S);
     _segSizing=false;
   });
+}
+// Lightweight redraw at current canvas size (no layout recalculation)
+function segRedraw(){
+  segDrawCanvas('seg-cv',segActive);
 }
 
 // Single ResizeObserver for all obar elements
