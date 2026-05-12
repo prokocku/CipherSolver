@@ -1,8 +1,6 @@
 # Šifry
 
-Progresivní webová aplikace (PWA) pro mobilní telefony určená skautům, šifrérům a všem, kdo pracují s kódováním zpráv. Umožňuje interaktivně zadávat a dešifrovat symboly deseti různých šifrovacích soustav přímo na dotykovém displeji.
-
-> Optimalizováno pro iOS Safari a Android Chrome. Funguje offline po přidání na plochu.
+Vibecodovaná webová aplikace (https://prokocku.github.io/CipherSolver/) pro řešení běžných šifer jako morse, semafor, Braille, binárka, trojkovka, polský kříž, svátky a šifrovací mřížka, s možností volného kreslení do čtvrečkované sítě s manipulací (otočení, překlopení, přesun) objektů stejné barvy. Na iOS je možné ji v Safari, pomocí nabídky sdílet, uložit na plochu a tím z ní udělat plnohodnotnou aplikaci s ikonou, která bude fungovat offline, viz https://support.apple.com/cs-cz/guide/iphone/iphea86e5236/26/ios/26. Inspirace šifrovací pomůcky Absolutno https://github.com/vasekp/sifry
 
 ---
 
@@ -10,9 +8,9 @@ Progresivní webová aplikace (PWA) pro mobilní telefony určená skautům, ši
 
 ### 🔴 Morseova abeceda
 
-Interaktivní zadávání morseovy abecedy pomocí tlačítek tečka (·) a čárka (—). Po uplynutí 1,4 s bez vstupu se sekvence automaticky potvrdí jako písmeno. Podporuje celou českou abecedu včetně digrafu **Ch** (----). Zobrazuje aktuální sekvenci symbolů a rozpoznané písmeno v reálném čase.
+Interaktivní zadávání morseovy abecedy pomocí tlačítek tečka (·) a čárka (-). Po krátkém čase bez vstupu se sekvence automaticky potvrdí jako písmeno. Podporuje celou českou abecedu včetně **Ch** (----). Zobrazuje aktuální sekvenci symbolů a rozpoznané písmeno v reálném čase.
 
-Pole **Zakóduj** umožňuje zadat libovolné písmeno a zobrazit jeho morse kód — sekvence se načte do zadávacího pole a lze ji ihned přidat do výstupu nebo dále upravovat.
+Pole **Zakóduj** umožňuje zadat libovolné písmeno a zobrazit jeho morse kód - sekvence se načte do zadávacího pole a lze ji ihned přidat do výstupu.
 
 ---
 
@@ -42,7 +40,7 @@ Pole **Zakóduj** nastaví bity pro zadané písmeno.
 
 ### 🔴 Trojková soustava
 
-Kódování abecedy v číselné soustavě o základu 3 (A = 001₃, Z = 222₃). Zadávání pomocí mřížky 3 × 3 — každý sloupec odpovídá jedné cifře (hodnoty 0, 1, 2). Zobrazuje trojkový zápis, desetinnou hodnotu a písmeno.
+Kódování abecedy v číselné soustavě o základu 3 (A = 001₃, Z = 222₃). Zadávání pomocí mřížky 3 × 3 - každý sloupec odpovídá jedné cifře (hodnoty 0, 1, 2). Zobrazuje trojkový zápis, desetinnou hodnotu a písmeno.
 
 Pole **Zakóduj** nastaví správnou trojici číslic pro zadané písmeno.
 
@@ -50,7 +48,7 @@ Pole **Zakóduj** nastaví správnou trojici číslic pro zadané písmeno.
 
 ### 🟢 Sedmisegmentový displej
 
-Interaktivní zobrazení číslic a písmen na sedmisegmentovém displeji. Klepnutím na segmenty přímo v canvasu se označují aktivní segmenty. Čísla segmentů jsou vždy viditelná — bílá na tmavém pozadí, tmavá na osvíceném segmentu. Rozpoznává písmena i číslice, u nejednoznačných kombinací (S/5, Z/2) zobrazí obě varianty.
+Interaktivní zobrazení číslic a písmen na sedmisegmentovém displeji. Klepnutím se označují aktivní segmenty. Rozpoznává písmena i číslice, u nejednoznačných kombinací (S/5, Z/2) zobrazí obě varianty.
 
 Pole **Zakóduj** aktivuje segmenty odpovídající zadanému písmenu nebo číslici.
 
@@ -58,11 +56,11 @@ Pole **Zakóduj** aktivuje segmenty odpovídající zadanému písmenu nebo čí
 
 ### 🔴 Polský kříž
 
-Grafická šifra používaná ve skautingu. Interaktivní kolo se čtyřmi hranami a středovými tečkami. Klepnutím se aktivují hrany (4 směry) a tečky (0–3). Aplikace rozpoznává znak a zobrazuje ho v reálném čase.
+Klepnutím se aktivují hrany (nahoře, vpravo, dole, vlevo) a tečky (1–3). Klepnutím do rohu se aktivují přilehlé hrany. Aplikace rozpoznává znak a zobrazuje ho v reálném čase. 
 
 Dva režimy přepínatelné tlačítkem:
-- **Bez CH** — 25 písmen české abecedy bez digrafu Ch
-- **S CH** — 26 znaků včetně Ch jako samostatného znaku
+- **Bez CH** - 25 písmen české abecedy bez Ch
+- **S CH** - 26 znaků včetně Ch jako samostatného znaku
 
 Pole **Zakóduj** automaticky nastaví hrany a tečky pro zadané písmeno. Detekuje zadání kombinace **CH** a při aktivním režimu S CH vykreslí správný znak.
 
@@ -79,7 +77,7 @@ Pomocná funkce pro hledání jmenin a svátků v českém kalendáři.
 
 ### 🔲 Mřížková šifra (Grille)
 
-Implementace otočné mřížkové šifry. Čtvercová mřížka o velikosti 4×4 až 8×8. Klepnutím se označují otvory — aplikace automaticky hlídá platnost (každý otvor musí být jedinečný ve všech čtyřech otočeních).
+Implementace otočné mřížkové šifry. Čtvercová mřížka o velikosti 4×4 až 8×8. Klepnutím se označují otvory - aplikace automaticky hlídá platnost (každý otvor musí být jedinečný ve všech čtyřech otočeních).
 
 Dva režimy podle pořadí zadávání:
 
@@ -100,12 +98,12 @@ Mřížkový kreslicí nástroj pro tvorbu vzorů, šifer a symbolů.
 **Ovládání**:
 - 1. klepnutí na prázdné pole → obarví barvou z palety
 - 2. klepnutí na pole stejné barvy → označí celý **spojený tvar** (BFS po hranách)
-- 3. klepnutí + podržení 300 ms na označeném tvaru → aktivuje přesun tažením
+- 3. klepnutí + podržení na označeném tvaru → aktivuje přesun tažením
 
 **Operace s označeným tvarem**:
-- **↻ 90°** — otočení o 90° po směru hodinových ručiček
-- **⇄ Flip** — horizontální překlopení (zrcadlení)
-- **Přesun tažením** — přetažení na libovolnou volnou pozici
+- **↻ 90°** - otočení o 90° po směru hodinových ručiček
+- **⇄ Flip** - horizontální překlopení (zrcadlení)
+- **Přesun tažením** - přetažení na libovolnou volnou pozici
 
 Při otočení nebo překlopení, které by způsobilo překryv s objektem jiné barvy, se tvar automaticky posune na nejbližší volnou pozici (spirálové prohledávání od původní polohy).
 
@@ -129,11 +127,10 @@ Výstupní pole nahoře zobrazuje sestavený text. Znaky jsou zobrazeny bez meze
 ## Technické informace
 
 - **Typ**: Single-page PWA (Progressive Web App)
-- **Závislosti**: žádné — čistý HTML/CSS/JavaScript, bez frameworků
+- **Závislosti**: žádné - čistý HTML/CSS/JavaScript, bez frameworků
 - **Offline podpora**: ano, po přidání na plochu funguje bez připojení
 - **Kompatibilita**: iOS Safari 15+, Android Chrome 90+, moderní desktopové prohlížeče
-- **Optimalizace**: dotykové události s `preventDefault` pro plynulé ovládání, ResizeObserver pro adaptivní rozložení, vibrace API pro haptickou zpětnou vazbu
 
 ## Instalace
 
-Otevřete aplikaci v mobilním prohlížeči a vyberte **Přidat na plochu** (iOS: Sdílet → Přidat na plochu, Android: menu → Přidat na plochu). Po instalaci funguje jako nativní aplikace bez adresního řádku.
+Otevřete aplikaci (https://prokocku.github.io/CipherSolver/) v mobilním prohlížeči a vyberte **Přidat na plochu** (iOS: Sdílet → Přidat na plochu, Android: menu → Přidat na plochu). Po instalaci funguje jako nativní aplikace bez adresního řádku.
