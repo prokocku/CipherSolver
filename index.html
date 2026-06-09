@@ -147,9 +147,6 @@ nav{
 }
 .hl{display:inline-block;padding:2px 3px;background:var(--card2);border-radius:4px;font-size:14px;font-weight:700;margin:1px 0;}
 .hl.sp{background:transparent;color:var(--t3);font-size:10px;padding:2px 1px;}
-.bdel{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;padding:4px 6px;flex-shrink:0;align-self:center;}
-.bdel:active{color:var(--rose);}
-
 /* ── BODY AREA (fills remaining space) ─────────────────── */
 .body{
   flex:1;display:flex;flex-direction:column;
@@ -225,16 +222,17 @@ nav{
 ══════════════════════════════════════════════════════════ */
 .perm-input-wrap{
   flex:0 0 auto;width:100%;display:flex;align-items:center;gap:8px;
+  box-sizing:border-box;
 }
 @media(max-width:799px){
   .perm-input-wrap{ padding-right:54px; }
 }
 .perm-input{
-  flex:1;height:44px;padding:0 14px;
+  flex:1;min-width:0;height:44px;padding:0 14px;
   background:var(--card);border:1.5px solid var(--border);border-radius:10px;
   color:var(--t1);font-size:22px;font-weight:800;letter-spacing:4px;
   text-transform:uppercase;text-align:center;outline:none;-webkit-appearance:none;
-  font-family:'SF Mono',ui-monospace,monospace;
+  font-family:'SF Mono',ui-monospace,monospace;box-sizing:border-box;
 }
 .perm-input:focus{border-color:var(--violet);}
 .perm-list-wrap{
@@ -400,17 +398,6 @@ nav{
 
 .ter-match{color:var(--rose);}  /* extends .cipher-match */
 .ter-eq{} /* extends .cipher-eq */
-
-/* ══════════════════════════════════════════════════════════
-   REFERENCE
-══════════════════════════════════════════════════════════ */
-.ref-body{flex:1;overflow-y:auto;padding:12px;-webkit-overflow-scrolling:touch;}
-.rh{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);margin:14px 0 7px;}
-.rh:first-child{margin-top:0;}
-.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:5px;}
-.rc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 3px;text-align:center;}
-.rc .rl{font-size:14px;font-weight:800;display:block;}
-.rc .rs{font-family:'SF Mono',monospace;font-size:10px;color:var(--violet);display:block;margin-top:1px;word-break:break-all;}
 
 /* ══════════════════════════════════════════════════════════
    7-SEGMENT DISPLAY
@@ -634,7 +621,7 @@ nav{
 .gr-toolbar{
   flex:0 0 auto;display:flex;align-items:center;gap:8px;width:100%;
 }
-.gr-size-group{flex:1;} /* extends .ctrl-group */
+
 
 /* Text input */
 .gr-input{
@@ -844,7 +831,7 @@ nav{
       </div>
       <div class="cipher-match ter-match none" id="ter-match">?</div>
       <div class="ter-eq" id="ter-eq"></div>
-      <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
+      <div class="cipher-note" style="font-size:11px;color:var(--t3);text-align:center;line-height:1.8;">
         3 cifry (základ 3) &nbsp;·&nbsp; 001 = A &nbsp;·&nbsp; 222 = Z<br>
         <span style="color:#4b5563">■</span> = 0 &nbsp;
         <span style="color:var(--violet)">■</span> = 1 &nbsp;
@@ -972,7 +959,7 @@ nav{
 
     <!-- Toolbar -->
     <div class="gr-toolbar">
-      <div class="ctrl-group gr-size-group">
+      <div class="ctrl-group" style="flex:1;">
         <span class="ctrl-lbl">Velikost</span>
         <button class="ctrl-btn" onclick="grResize(-2)">−</button>
         <span class="ctrl-val" id="gr-size-val">4</span>
@@ -1042,8 +1029,6 @@ nav{
 
   </div>
 </div>
-
-<!-- ══ REFERENCE ══════════════════════════════════════════ -->
 
 <!-- ══ PERMUTACE ══════════════════════════════════════════ -->
 <div id="pg-perm" class="pg">
@@ -1254,13 +1239,13 @@ let _pages=null,_navBtns=null,_hbrBtns=null;
 // Per-page activation callbacks (called once page is visible)
 const PAGE_INIT={
   semaphore: ()=>{ semDrawState(); applySemSize(); },
-  braille:   ()=>{ applyBrlSize(); },
-  ternary:   ()=>{ applyTerSize(); },
+  braille:   applyBrlSize,
+  ternary:   applyTerSize,
   '7seg':    ()=>{ segRefresh(); applySegSize(); },
-  pkriz:     ()=>{ pkDraw(); },
-  svatky:    ()=>{ initSvatky(); },
-  kresli:    ()=>{ krBuildGrid(); },
-  grille:    ()=>{ grBuildGrid(); },
+  pkriz:     pkDraw,
+  svatky:    initSvatky,
+  kresli:    krBuildGrid,
+  grille:    grBuildGrid,
   perm:      ()=>{ permUpdate(document.getElementById('perm-input')); },
 };
 
@@ -3005,13 +2990,12 @@ function applySemSize(){
   const pg=document.getElementById('pg-semaphore');
   const obar=document.getElementById('sem-obar');
   const step=pg.querySelector('.sem-step');
-  const actRow=pg.querySelector('.act-row');
+  const actRow=pg.querySelector('.morse-actions');
   const obarH=obar?obar.offsetHeight:80;
   const stepH=step?step.offsetHeight:30;
   const actH=actRow?actRow.offsetHeight:56;
-  const avail=pg.offsetHeight-obarH-stepH-actH-32; // gaps/padding
-  const W=Math.min(window.innerWidth-24, avail);
-  const S=Math.max(120,W);
+  const avail=pg.offsetHeight-obarH-stepH-actH-32;
+  const S=Math.max(120,Math.min(window.innerWidth-24,avail));
   const dial=document.getElementById('sem-dial');
   if(dial){dial.style.width=S+'px';dial.style.height=S+'px';}
   requestAnimationFrame(()=>{semDraw();});
@@ -3041,13 +3025,13 @@ function applyTerSize(){
   const obar=document.getElementById('t-obar');
   const actRow=pg.querySelector('.morse-actions');
   const match=document.getElementById('ter-match');
-  const note=pg.querySelector('[style*="font-size:11px"]');
+  const note=pg.querySelector('.cipher-note');
   const avail=pg.offsetHeight
     -(obar?obar.offsetHeight:80)
     -(actRow?actRow.offsetHeight:56)
     -(match?match.offsetHeight:72)
     -(note?note.offsetHeight:36)
-    -60; // eq, gaps
+    -60;
   const gridSize=Math.max(120, Math.min(340, avail, window.innerWidth-60));
   const wrap=pg.querySelector('.ter-wrap');
   if(wrap) wrap.style.maxWidth=gridSize+'px';
