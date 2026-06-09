@@ -163,7 +163,7 @@ nav{
   background:var(--card);border:1px solid var(--border);border-radius:10px;
   padding:4px 8px;
 }
-.ctrl-lbl{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;}
+.ctrl-lbl{font-size:11px;font-weight:800;color:var(--t2);text-transform:uppercase;letter-spacing:.3px;}
 .ctrl-btn{
   width:28px;height:28px;border-radius:7px;border:none;
   background:var(--card2);color:var(--t1);font-size:16px;font-weight:700;
@@ -220,7 +220,52 @@ nav{
 .mb .sym{font-size:min(52px,10vw);line-height:1;}
 .mb .lbl{font-size:11px;font-weight:700;letter-spacing:.6px;color:var(--t2);}
 
-/* ── CIPHER LOOKUP (reverse encode) ─────────────────────── */
+/* ══════════════════════════════════════════════════════════
+   PERMUTACE
+══════════════════════════════════════════════════════════ */
+.perm-input-wrap{
+  flex:0 0 auto;width:100%;display:flex;align-items:center;gap:8px;
+}
+@media(max-width:799px){
+  .perm-input-wrap{ padding-right:54px; }
+}
+.perm-input{
+  flex:1;height:44px;padding:0 14px;
+  background:var(--card);border:1.5px solid var(--border);border-radius:10px;
+  color:var(--t1);font-size:22px;font-weight:800;letter-spacing:4px;
+  text-transform:uppercase;text-align:center;outline:none;-webkit-appearance:none;
+  font-family:'SF Mono',ui-monospace,monospace;
+}
+.perm-input:focus{border-color:var(--violet);}
+.perm-list-wrap{
+  flex:1;min-height:0;width:100%;
+  column-count:2;column-gap:0;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+.perm-item{
+  display:flex;align-items:baseline;gap:6px;
+  padding:5px 10px;break-inside:avoid;
+}
+.perm-num{
+  font-size:11px;font-weight:800;color:var(--t2);
+  min-width:22px;text-align:right;flex-shrink:0;
+}
+.perm-val{
+  font-size:17px;font-weight:800;color:var(--t1);
+  font-family:'SF Mono',ui-monospace,monospace;letter-spacing:2px;
+}
+.perm-toolbar{
+  flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+}
+.perm-empty{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  color:var(--t3);font-size:14px;text-align:center;padding:20px;
+  column-span:all;
+}
+.perm-key{
+  font-size:12px;color:var(--t3);text-align:center;
+  padding:8px 10px;column-span:all;letter-spacing:.5px;
+}
 .cipher-lookup{
   flex:0 0 auto;display:flex;align-items:center;gap:8px;
   padding:4px 12px 0;
@@ -1000,6 +1045,36 @@ nav{
 
 <!-- ══ REFERENCE ══════════════════════════════════════════ -->
 
+<!-- ══ PERMUTACE ══════════════════════════════════════════ -->
+<div id="pg-perm" class="pg">
+  <div class="body" style="gap:8px;padding:calc(var(--safe-t) + 14px) 10px 8px;">
+
+    <!-- Input + clear -->
+    <div class="perm-input-wrap">
+      <input class="perm-input" id="perm-input" maxlength="4"
+        placeholder="" autocomplete="off" autocorrect="off"
+        autocapitalize="characters" spellcheck="false"
+        style="flex:1;"
+        oninput="permUpdate(this)">
+      <button class="ctrl-clear" onclick="permClear()">Vymaž</button>
+    </div>
+
+    <!-- Sort toggle -->
+    <div class="perm-toolbar">
+      <div class="pkr-variant" id="perm-sort-toggle">
+        <button class="on" id="perm-sort-abc" onclick="permSetSort('abc')">ABC</button>
+        <button id="perm-sort-input" onclick="permSetSort('input')">BCA</button>
+      </div>
+    </div>
+
+    <!-- Results list -->
+    <div class="perm-list-wrap" id="perm-list">
+      <div class="perm-empty">Zadej 3 nebo 4 znaky (A-Z, 0-9)</div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ══ NAV ════════════════════════════════════════════════ -->
 <nav>
   <button class="nb on" onclick="go('morse',this)">
@@ -1084,6 +1159,13 @@ nav{
     </svg>
     <span class="lbl">Mřížka</span>
   </button>
+  <button class="nb" onclick="go('perm',this)">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="1" y="10" font-size="8" font-weight="800" fill="currentColor" font-family="-apple-system,monospace">ABC</text>
+      <text x="1" y="20" font-size="8" font-weight="800" fill="currentColor" font-family="-apple-system,monospace">BAC</text>
+    </svg>
+    <span class="lbl">Perm.</span>
+  </button>
   <button class="nb" onclick="go('kresli',this)">
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="4" y="4" width="14" height="14" rx="2.5" fill="currentColor"/>
@@ -1152,12 +1234,15 @@ nav{
       <circle cx="16" cy="6" r="2" fill="currentColor"/>
       <circle cx="6" cy="16" r="2" fill="currentColor"/>
     </svg><span>Mřížka</span></button>
+  <button class="hbr-item" onclick="hbrGo('perm',this)"><svg width="26" height="22" viewBox="0 0 26 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="10" font-size="9" font-weight="800" fill="currentColor" font-family="-apple-system,monospace">ABC</text>
+      <text x="0" y="21" font-size="9" font-weight="800" fill="currentColor" font-family="-apple-system,monospace">BAC</text>
+    </svg><span>Permutace</span></button>
   <button class="hbr-item" onclick="hbrGo('kresli',this)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="4" y="4" width="14" height="14" rx="2.5" fill="currentColor"/>
     </svg><span>Kresli</span></button>
 </div>
-</div><!-- #app -->
-
+<!-- ══ PERMUTACE ══════════════════════════════════════════ -->
 <script>
 // ── vh fix for iOS ──────────────────────────────────────────
 function setVH(){document.documentElement.style.setProperty('--vh',window.innerHeight*.01+'px');}
@@ -1176,6 +1261,7 @@ const PAGE_INIT={
   svatky:    ()=>{ initSvatky(); },
   kresli:    ()=>{ krBuildGrid(); },
   grille:    ()=>{ grBuildGrid(); },
+  perm:      ()=>{ permUpdate(document.getElementById('perm-input')); },
 };
 
 function go(name,btn){
@@ -1236,7 +1322,7 @@ const SEM={
   A:[5,6],B:[5,7],C:[5,8],D:[5,1],E:[5,2],F:[5,3],G:[5,4],
   H:[6,7],I:[6,8],J:[1,3],K:[6,1],L:[6,2],M:[6,3],N:[6,4],
   O:[7,8],P:[7,1],Q:[7,2],R:[7,3],S:[7,4],
-  T:[8,1],U:[8,2],V:[1,4],W:[2,3],X:[2,4],Y:[8,5],Z:[3,4]};
+  T:[8,1],U:[8,2],V:[1,4],W:[2,3],X:[2,4],Y:[8,3],Z:[3,4]};
 function posRad(p){return((p-1)*45-90)*Math.PI/180;}
 
 // Binary: A=1=00001 … Z=26=11010
@@ -1318,36 +1404,48 @@ attachMorse('mb-dash','-');
 // ═══════════════════════════════════════════════════════════
 let semA={L:null,R:null},semStep='L',semHist={v:[]};
 
+// Precomputed reverse map: "L,R" and "R,L" → letter
+const SEM_REV={};
+for(const[lt,[lp,rp]] of Object.entries(SEM)){
+  SEM_REV[`${lp},${rp}`]=lt;
+  SEM_REV[`${rp},${lp}`]=lt;
+}
+function semFind(l,r){return(l&&r)?SEM_REV[`${l},${r}`]||null:null;}
+
+function semArmAt(ctx,cx,cy,len,pos,col,lineW){
+  if(!pos)return;
+  const a=posRad(pos);
+  ctx.beginPath();
+  ctx.moveTo(cx,cy);
+  ctx.lineTo(cx+len*Math.cos(a),cy+len*Math.sin(a));
+  ctx.strokeStyle=col;ctx.lineWidth=lineW;ctx.lineCap='round';ctx.stroke();
+}
+
 function semDraw(){
   const cv=document.getElementById('sem-cv');
-  const dial=document.getElementById('sem-dial');
-  const W=dial.offsetWidth||300;
-  cv.width=W*devicePixelRatio;cv.height=W*devicePixelRatio;
+  const W=document.getElementById('sem-dial').offsetWidth||300;
+  const dpr=devicePixelRatio||1;
+  cv.width=W*dpr;cv.height=W*dpr;
   cv.style.width=W+'px';cv.style.height=W+'px';
-  const ctx=cv.getContext('2d');ctx.scale(devicePixelRatio,devicePixelRatio);
+  const ctx=cv.getContext('2d');
+  ctx.scale(dpr,dpr);
   const cx=W/2,cy=W/2,R=W/2-3,ir=R-W*0.12;
+  const armW=Math.max(6,W*0.026);
 
+  // Background circle
   ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
   ctx.fillStyle='#1b1b27';ctx.fill();
   const ringCol=semStep==='L'?'#a78bfa':semStep==='R'?'#fbbf24':'#34d399';
   ctx.strokeStyle=ringCol;ctx.lineWidth=3;ctx.stroke();
 
-  // Arms drawn before buttons
-  const armLen=ir*0.72;
-  function drawArm(pos,col){
-    if(!pos)return;
-    const a=posRad(pos);
-    ctx.beginPath();
-    ctx.moveTo(cx,cy);
-    ctx.lineTo(cx+armLen*Math.cos(a),cy+armLen*Math.sin(a));
-    ctx.strokeStyle=col;ctx.lineWidth=Math.max(6,W*0.026);
-    ctx.lineCap='round';ctx.stroke();
-  }
-  drawArm(semA.L,'#a78bfa');
-  drawArm(semA.R,'#fbbf24');
+  // Arms
+  semArmAt(ctx,cx,cy,ir*0.72,semA.L,'#a78bfa',armW);
+  semArmAt(ctx,cx,cy,ir*0.72,semA.R,'#fbbf24',armW);
 
-  // 8 position buttons
+  // Position buttons
   const btnR=Math.max(20,W*0.085);
+  ctx.font=`bold ${Math.max(13,W*.052)}px -apple-system,sans-serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
   for(let p=1;p<=8;p++){
     const a=posRad(p);
     const bx=cx+ir*Math.cos(a),by=cy+ir*Math.sin(a);
@@ -1357,36 +1455,29 @@ function semDraw(){
     ctx.fill();
     ctx.strokeStyle=isL||isR?'transparent':'#3a3a58';ctx.lineWidth=1.5;ctx.stroke();
     ctx.fillStyle=isL||isR?'#fff':'#6060a0';
-    ctx.font=`bold ${Math.max(13,W*.052)}px -apple-system,sans-serif`;
-    ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(p,bx,by);
   }
 
-  // Figure in center
-  const headR=Math.max(9,W*.038);
-  const figTop=cy-headR*1.7;
+  // Figure
+  const headR=Math.max(9,W*.038),figTop=cy-headR*1.7;
   ctx.beginPath();ctx.arc(cx,figTop,headR,0,Math.PI*2);
   ctx.fillStyle='#2a2a3f';ctx.fill();
   ctx.strokeStyle='#8080aa';ctx.lineWidth=Math.max(2,W*0.009);ctx.stroke();
   ctx.beginPath();ctx.moveTo(cx,figTop+headR);ctx.lineTo(cx,figTop+headR*3.2);
   ctx.strokeStyle='#8080aa';ctx.lineWidth=Math.max(3,W*0.012);ctx.lineCap='round';ctx.stroke();
 
-  // Result letter
+  // Result or hint
+  ctx.textAlign='center';ctx.textBaseline='middle';
   if(semStep==='done'){
     const l=semFind(semA.L,semA.R);
     ctx.fillStyle=l?'#34d399':'#fb7185';
     ctx.font=`bold ${Math.max(32,W*.14)}px -apple-system,sans-serif`;
-    ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(l||'?',cx,cy+W*0.22);
-  }
-
-  // Step hint
-  if(semStep!=='done'){
+  } else {
     const sc=semStep==='L'?'#a78bfa':'#fbbf24';
     const ht=semStep==='L'?'LEV\u00c1 RUKA':'PRAV\u00c1 RUKA';
     ctx.fillStyle=sc+'99';
     ctx.font=`bold ${Math.max(9,W*.030)}px -apple-system,sans-serif`;
-    ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(ht,cx,cy+R-Math.max(13,W*.048));
   }
 }
@@ -1419,22 +1510,14 @@ function semTap(e){
   const y=touch.clientY-rect.top-rect.height/2;
   const deg=((Math.atan2(y,x)*180/Math.PI)+90+360)%360;
   const pos=Math.round(deg/45)%8+1;
-  // Check if tap is near a button (within inner ring radius)
   const W=cv.offsetWidth||300;
   const ir=(W/2-3)-W*0.12;
-  const dist=Math.sqrt(x*x+y*y);
-  const btnR=Math.max(20,W*0.085);
-  const nearButton=Math.abs(dist-ir)<btnR*1.6;
+  const nearButton=Math.abs(Math.sqrt(x*x+y*y)-ir)<Math.max(20,W*0.085)*1.6;
 
   if(semStep==='done'){
     semA={L:null,R:null};semStep='L';
-    if(nearButton){
-      // Tap was on a position — register as left arm immediately
-      semA.L=pos;semStep='R';
-      semDrawState();semDraw();vib(20);
-    } else {
-      semDrawState();semDraw();
-    }
+    if(nearButton){semA.L=pos;semStep='R';vib(20);}
+    semDrawState();semDraw();
     return;
   }
   semA[semStep]=pos;
@@ -1445,25 +1528,19 @@ function semTap(e){
     semStep='done';
     const l=semFind(semA.L,semA.R);
     const el=document.getElementById('s-let');
-    if(l){
-      el.textContent=l;el.style.color='var(--green)';
-      vib([25,20,25]);
-    } else {
-      el.textContent='?';el.style.color='var(--rose)';
-      vib(70);
-    }
+    el.textContent=l||'?';
+    el.style.color=l?'var(--green)':'var(--rose)';
+    vib(l?[25,20,25]:70);
     semDrawState();semDraw();
   }
 }
-const semCv=document.getElementById('sem-cv');
-semCv.addEventListener('touchstart',semTap,{passive:false});
-semCv.addEventListener('click',semTap);
 
-function semFind(l,r){
-  for(const[lt,[lp,rp]]of Object.entries(SEM))
-    if((lp===l&&rp===r)||(lp===r&&rp===l))return lt;
-  return null;
+function initSem(){
+  const cv=document.getElementById('sem-cv');
+  cv.addEventListener('touchstart',semTap,{passive:false});
+  cv.addEventListener('click',semTap);
 }
+
 function sReset(){
   semA={L:null,R:null};semStep='L';
   const el=document.getElementById('s-let');
@@ -1471,7 +1548,6 @@ function sReset(){
   semDrawState();semDraw();
 }
 makeCipher('s',semHist,'s-hist','s-let',sReset,(l=>l!=='—'&&l!=='?'));
-function sRender(){histRender('s-hist',semHist.v);}
 
 // ═══════════════════════════════════════════════════════════
 // BRAILLE
@@ -1738,7 +1814,9 @@ function initSvatky(){
 // 4 rotations 90°CW, each reveals different cells
 // ═══════════════════════════════════════════════════════════
 const GR_MIN=4,GR_MAX=8;
-let grN=4,grHoles=new Set(),grTextFirst=false; // holes stored as "r-c" strings
+let grN=4,grHoles=new Set(),grTextFirst=false;
+
+const GR_PAD='·';
 
 function grRotCW(r,c){return[c,grN-1-r];}
 
@@ -1750,19 +1828,45 @@ function grAllRotations(r,c){
 
 function grIsValidHole(r,c){
   const rots=new Set(grAllRotations(r,c));
-  for(const h of grHoles){
-    // If any existing hole is in our rotation set, invalid
-    if(rots.has(h)) return false;
-  }
+  for(const h of grHoles) if(rots.has(h)) return false;
   return true;
+}
+
+// Returns sorted [r,c] positions visible through holes at given rotation
+function grHolePositions(rot){
+  const positions=[];
+  for(const h of grHoles){
+    const [hr,hc]=h.split('-').map(Number);
+    let pr=hr,pc=hc;
+    for(let i=0;i<rot;i++){[pr,pc]=grRotCW(pr,pc);}
+    positions.push([pr,pc]);
+  }
+  return positions.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+}
+
+// Builds the displayGrid used by both grBuildGrid and grUpdateResult
+function grBuildDisplayGrid(raw){
+  const displayGrid=Array.from({length:grN},()=>Array(grN).fill(GR_PAD));
+  if(grHoles.size>0 && !grTextFirst){
+    // Holes-first (šifrování): fill in grille order rot 0→1→2→3
+    const ordered=[0,1,2,3].flatMap(rot=>grHolePositions(rot));
+    ordered.forEach(([r,c],i)=>{
+      displayGrid[r][c]=i<raw.length?raw[i]:GR_PAD;
+    });
+  } else {
+    // Text-first (dešifrování): linear fill
+    const padded=(raw+(GR_PAD).repeat(grN*grN)).slice(0,grN*grN);
+    for(let r=0;r<grN;r++)
+      for(let c=0;c<grN;c++)
+        displayGrid[r][c]=padded[r*grN+c];
+  }
+  return displayGrid;
 }
 
 function grBuildGrid(){
   const grid=document.getElementById('gr-grid');
   const wrap=document.querySelector('.gr-grid-wrap');
-  const avW=wrap.offsetWidth-4;
-  const avH=wrap.offsetHeight-4;
-  const cs=Math.floor(Math.min(avW,avH)/grN);
+  const cs=Math.floor(Math.min(wrap.offsetWidth-4,wrap.offsetHeight-4)/grN);
   const fontSize=Math.max(10,Math.min(cs*0.52,22));
 
   grid.style.gridTemplateColumns=`repeat(${grN},${cs}px)`;
@@ -1771,38 +1875,9 @@ function grBuildGrid(){
   grid.style.height=`${cs*grN}px`;
 
   const raw=(document.getElementById('gr-input').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const displayGrid=grBuildDisplayGrid(raw);
 
-  // Build display grid: linear fill (text-first / dešifrování) or grille-order fill (holes-first / šifrování)
-  const displayGrid=Array.from({length:grN},()=>Array(grN).fill('·'));
-
-  if(grHoles.size>0 && !grTextFirst){
-    // Holes-first (šifrování): distribute text into holes in grille order
-    const orderedPositions=[];
-    for(let rot=0;rot<4;rot++){
-      const positions=[];
-      for(const h of grHoles){
-        const [hr,hc]=h.split('-').map(Number);
-        let pr=hr,pc=hc;
-        for(let i=0;i<rot;i++){[pr,pc]=grRotCW(pr,pc);}
-        positions.push([pr,pc]);
-      }
-      positions.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
-      orderedPositions.push(...positions);
-    }
-    orderedPositions.forEach(([r,c],i)=>{
-      displayGrid[r][c]=i<raw.length?raw[i]:'·';
-    });
-  } else {
-    // Text-first (dešifrování) or no holes: linear fill
-    const total=grN*grN;
-    const padded=(raw+'·'.repeat(total)).slice(0,total);
-    for(let r=0;r<grN;r++)
-      for(let c=0;c<grN;c++)
-        displayGrid[r][c]=padded[r*grN+c];
-  }
-
-  grid.innerHTML='';
-  // Precompute rotation map for hole coloring
+  // Precompute rotation coloring map
   const rotMap={};
   for(const h of grHoles){
     const [hr,hc]=h.split('-').map(Number);
@@ -1810,23 +1885,19 @@ function grBuildGrid(){
     for(let rot=1;rot<4;rot++) rotMap[rots[rot]]=rot;
   }
 
+  grid.innerHTML='';
   for(let r=0;r<grN;r++){
-    for(let col=0;col<grN;col++){
-      const key=`${r}-${col}`;
+    for(let c=0;c<grN;c++){
+      const key=`${r}-${c}`;
       const cell=document.createElement('div');
       cell.className='gr-cell';
-      cell.dataset.r=r;cell.dataset.c=col;
+      cell.dataset.r=r;cell.dataset.c=c;
       cell.style.fontSize=fontSize+'px';
-      cell.textContent=displayGrid[r][col];
-
-      if(grHoles.has(key)){
-        cell.classList.add('hole');
-      } else if(rotMap[key]!==undefined){
-        cell.classList.add(`hole-rot${rotMap[key]}`);
-      }
-
-      cell.addEventListener('touchstart',e=>{e.preventDefault();grToggleHole(r,col);},{passive:false});
-      cell.addEventListener('click',()=>grToggleHole(r,col));
+      cell.textContent=displayGrid[r][c];
+      if(grHoles.has(key))            cell.classList.add('hole');
+      else if(rotMap[key]!==undefined) cell.classList.add(`hole-rot${rotMap[key]}`);
+      cell.addEventListener('touchstart',e=>{e.preventDefault();grToggleHole(r,c);},{passive:false});
+      cell.addEventListener('click',()=>grToggleHole(r,c));
       grid.appendChild(cell);
     }
   }
@@ -1837,11 +1908,10 @@ function grBuildGrid(){
 
 function grToggleHole(r,c){
   const key=`${r}-${c}`;
-  const maxHoles=grN*grN/4;
   if(grHoles.has(key)){
     grHoles.delete(key);
   } else {
-    if(grHoles.size>=maxHoles){vib(70);return;}
+    if(grHoles.size>=grN*grN/4){vib(70);return;}
     if(!grIsValidHole(r,c)){vib(70);return;}
     grHoles.add(key);
   }
@@ -1856,79 +1926,33 @@ function grUpdateResult(){
     return;
   }
   const raw=(document.getElementById('gr-input').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
-
-  // Build displayGrid same way as grBuildGrid
-  const displayGrid=Array.from({length:grN},()=>Array(grN).fill('·'));
-  if(!grTextFirst){
-    // Holes-first: grille-order fill
-    const orderedPositions=[];
-    for(let rot=0;rot<4;rot++){
-      const positions=[];
-      for(const h of grHoles){
-        const [hr,hc]=h.split('-').map(Number);
-        let pr=hr,pc=hc;
-        for(let i=0;i<rot;i++){[pr,pc]=grRotCW(pr,pc);}
-        positions.push([pr,pc]);
-      }
-      positions.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
-      orderedPositions.push(...positions);
-    }
-    orderedPositions.forEach(([r,c],i)=>{
-      displayGrid[r][c]=i<raw.length?raw[i]:'·';
-    });
-  } else {
-    // Text-first: linear fill
-    const total=grN*grN;
-    const padded=(raw+'·'.repeat(total)).slice(0,total);
-    for(let r=0;r<grN;r++)
-      for(let c=0;c<grN;c++)
-        displayGrid[r][c]=padded[r*grN+c];
-  }
+  const displayGrid=grBuildDisplayGrid(raw);
 
   const ROT_LABELS=['0°','90°','180°','270°'];
   const ROT_COLORS=['r0','r1','r2','r3'];
-  let html='';
-  for(let rot=0;rot<4;rot++){
-    const positions=[];
-    for(const h of grHoles){
-      const [hr,hc]=h.split('-').map(Number);
-      let pr=hr,pc=hc;
-      for(let i=0;i<rot;i++){[pr,pc]=grRotCW(pr,pc);}
-      positions.push([pr,pc]);
-    }
-    positions.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
-    const text=positions.map(([pr,pc])=>displayGrid[pr][pc]).join('');
-    html+=`<div class="gr-result-row">
+  res.innerHTML=[0,1,2,3].map(rot=>{
+    const text=grHolePositions(rot).map(([r,c])=>displayGrid[r][c]).join('');
+    return `<div class="gr-result-row">
       <span class="gr-rot-lbl ${ROT_COLORS[rot]}">${ROT_LABELS[rot]}</span>
       <span class="gr-rot-text">${text||'—'}</span>
     </div>`;
-  }
-  res.innerHTML=html;
+  }).join('');
 }
 
 function grInputHandler(el){
-  let raw=el.value.toUpperCase().replace(/[^A-Z0-9\n]/g,'');
-  raw=raw.replace(/\n/g,'');
-  if(raw.length>grN*grN) raw=raw.slice(0,grN*grN);
+  const raw=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,grN*grN);
   if(el.value!==raw) el.value=raw;
-  // If user types text while no holes selected yet → text-first mode (dešifrování)
-  if(raw.length>0 && grHoles.size===0) grTextFirst=true;
+  if(raw.length>0&&grHoles.size===0) grTextFirst=true;
   if(raw.length===0) grTextFirst=false;
   el.style.height='auto';
   el.style.height=el.scrollHeight+'px';
   grBuildGrid();
 }
-function grUpdate(){
-  const el=document.getElementById('gr-input');
-  if(el) grInputHandler(el);
-  else grBuildGrid();
-}
 
 function grResize(delta){
   const newN=Math.min(GR_MAX,Math.max(GR_MIN,grN+delta));
-  if(newN===grN)return;
+  if(newN===grN) return;
   grN=newN;grHoles.clear();grTextFirst=false;
-  // Trim input to new cell count
   const el=document.getElementById('gr-input');
   if(el&&el.value.length>grN*grN){
     el.value=el.value.slice(0,grN*grN);
@@ -1939,17 +1963,15 @@ function grResize(delta){
 }
 
 function grClear(){
-  grHoles.clear();
-  grTextFirst=false;
+  grHoles.clear();grTextFirst=false;
   const el=document.getElementById('gr-input');
-  el.value='';
-  el.style.height='auto';
+  el.value='';el.style.height='auto';
   grBuildGrid();vib(30);
 }
 
 function grInit(){
   const el=document.getElementById('gr-input');
-  if(el){ el.style.height='auto'; el.style.height=el.scrollHeight+'px'; }
+  if(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
   grBuildGrid();
 }
 
@@ -2703,6 +2725,82 @@ function initSeg(){
 }
 
 // ── SHARED HISTORY HELPERS ─────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// PERMUTACE
+// ═══════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════
+// PERMUTACE
+// ═══════════════════════════════════════════════════════════
+let permSort='abc'; // 'abc' | 'input'
+
+// Knuth Algorithm L - lexicographic permutations.
+// startChars: array to use as first permutation (determines order).
+// Knuthův Algoritmus L - generuje všechny permutace lexikograficky
+// Vstup: seřazené pole prvků; Výstup: pole polí
+function lexPerms(start){
+  const a=[...start];
+  const result=[[...a]];
+  while(true){
+    let i=a.length-2;
+    while(i>=0&&a[i]>=a[i+1]) i--;
+    if(i<0) break;
+    let j=a.length-1;
+    while(a[j]<=a[i]) j--;
+    [a[i],a[j]]=[a[j],a[i]];
+    let l=i+1,r=a.length-1;
+    while(l<r){[a[l],a[r]]=[a[r],a[l]];l++;r--;}
+    result.push([...a]);
+  }
+  return result;
+}
+
+function permSetSort(mode){
+  permSort=mode;
+  document.getElementById('perm-sort-abc').classList.toggle('on',mode==='abc');
+  document.getElementById('perm-sort-input').classList.toggle('on',mode==='input');
+  permUpdate(document.getElementById('perm-input'));
+}
+
+function permClear(){
+  const el=document.getElementById('perm-input');
+  el.value='';
+  permUpdate(el);
+  vib(30);
+}
+
+function permUpdate(input){
+  const raw=input.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);
+  if(input.value!==raw) input.value=raw;
+  const list=document.getElementById('perm-list');
+
+  if(raw.length<3){
+    list.innerHTML='<div class="perm-empty">Zadej 3 nebo 4 znaky (A-Z, 0-9)</div>';
+    return;
+  }
+
+  const n=raw.length;
+  const startSeq=Array.from({length:n},(_,i)=>i+1);
+  const allPerms=lexPerms(startSeq);
+
+  let indexToChar, key;
+  if(permSort==='abc'){
+    const sorted=[...raw].sort();
+    indexToChar=i=>sorted[i-1];
+    key=sorted.map((ch,i)=>`${i+1}=${ch}`).join(' ');
+  } else {
+    indexToChar=i=>raw[i-1];
+    key=[...raw].map((ch,i)=>`${i+1}=${ch}`).join(' ');
+  }
+
+  list.innerHTML=allPerms.map((perm,i)=>
+    `<div class="perm-item">
+      <span class="perm-num">${i+1}.</span>
+      <span class="perm-val">${perm.map(indexToChar).join('')}</span>
+    </div>`
+  ).join('')+`<div class="perm-key">${key}</div>`;
+}
+
 function histRender(elId,hist){
   document.getElementById(elId).innerHTML=
     hist.map(c=>c===' '?'<span class="hl sp">·</span>':`<span class="hl">${c}</span>`).join('');
@@ -2861,7 +2959,7 @@ function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 
 // ── INIT ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
-  buildBrl();buildBin();buildTer();initSeg();initPk();initSvatky();krInit();grInit();
+  buildBrl();buildBin();buildTer();initSem();initSeg();initPk();initSvatky();krInit();grInit();
   applyBrlSize();applyTerSize();applySegSize();
   requestAnimationFrame(()=>{semDrawState();applySemSize();});
 });
