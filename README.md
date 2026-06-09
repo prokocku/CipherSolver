@@ -86,7 +86,17 @@ Dva režimy podle pořadí zadávání:
 **Dešifrování** (text → otvory): nejprve se vepíše šifrovaný text (limit = počet políček mřížky), poté se označují otvory. Písmena zůstávají na lineárních pozicích, otvory ukazují která jsou viditelná v každém otočení.
 
 ---
+### 🔢 Permutace
+Generátor všech permutací sekvence 3 nebo 4 alfanumerických znaků (A-Z, 0-9). Používá Knuthův Algoritmus L pro lexikografické generování - pro 3 znaky vzniká 6 permutací, pro 4 znaky 24 (při unikátních znacích).
+Výsledky jsou zobrazeny ve dvou sloupcích, každá permutace je očíslována. Pod výpisem je klíč přiřazující každému znaku jeho index.
 
+Dva režimy přepínatelné tlačítkem:
+
+**ABC** - znaky jsou seřazeny abecedně a každému je přiřazen index 1-4 (nejmenší znak = 1). Permutace vychází z tohoto abecedního pořadí. Příklad: TMOU → seřazeno MOTU, klíč 1=M 2=O 3=T 4=U, první permutace MOTU, druhá MOUT atd.
+
+**BCA** - indexy jsou přiřazeny podle pořadí zadání (první zadaný znak = 1). Permutace začíná zadanou sekvencí. Příklad: TMOU → klíč 1=T 2=M 3=O 4=U, první permutace TMOU, druhá TMUO atd.
+
+---
 ### 🎨 Kresli
 
 Mřížkový kreslicí nástroj pro tvorbu vzorů, šifer a symbolů.
