@@ -97,6 +97,19 @@ Dva režimy přepínatelné tlačítkem:
 **BCA** - indexy jsou přiřazeny podle pořadí zadání (první zadaný znak = 1). Permutace začíná zadanou sekvencí. Příklad: TMOU → klíč 1=T 2=M 3=O 4=U, první permutace TMOU, druhá TMUO atd.
 
 ---
+### ⚗️ Prvky
+Interaktivní průvodce periodickou tabulkou prvků. Obsahuje všech 118 prvků s českými názvy, latinskými názvy, zkratkami, atomovými čísly, hmotnostmi, skupenstvím a zařazením do kategorií.
+
+**Vyhledávání** - jediné vstupní pole prohledává zároveň podle českého názvu, latinského názvu, chemické zkratky i atomového čísla. Při psaní se zobrazuje seznam návrhů s barevným odznakem kategorie. Výsledná karta zobrazuje:
+
+- Zkratku a atomové číslo v barevném odznaku kategorie
+- Český název a latinský název v závorce, pokud se liší (např. Draslík - Kalium, Železo - Ferrum)
+- Kategorii prvku
+- Atomové číslo, zkratku, atomovou hmotnost a skupenství při 25 °C
+
+**Legenda kategorií a skupenství** - tapnutím na kategorii nebo skupenství se zobrazí seznam všech prvků, které do ní patří. Druhé tapnutí seznam schová. 
+
+---
 ### 🎨 Kresli
 
 Mřížkový kreslicí nástroj pro tvorbu vzorů, šifer a symbolů.
