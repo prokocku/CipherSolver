@@ -453,6 +453,105 @@ nav{
 .pkr-dial canvas{width:100%;height:100%;display:block;}
 
 /* ══════════════════════════════════════════════════════════
+   PRVKY (PERIODIC TABLE)
+══════════════════════════════════════════════════════════ */
+.el-section{ display:flex;flex-direction:column;gap:6px;width:100%; }
+.el-label{ font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px; }
+.el-input-wrap{
+  position:relative;width:100%;display:flex;align-items:center;gap:8px;
+  box-sizing:border-box;
+}
+@media(max-width:799px){
+  .el-input-wrap{ padding-right:54px; }
+}
+.el-input{
+  flex:1;min-width:0;padding:10px 14px;border-radius:12px;box-sizing:border-box;
+  border:1.5px solid var(--border);background:var(--card);
+  color:var(--t1);font-size:16px;font-weight:600;outline:none;-webkit-appearance:none;
+}
+.el-input:focus{ border-color:var(--violet); }
+.el-suggestions{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:100;
+  background:var(--card2);border:1px solid var(--border2);border-radius:10px;
+  overflow:hidden;display:none;max-height:180px;overflow-y:auto;
+}
+.el-suggestions.open{ display:block; }
+.el-sug{
+  padding:9px 14px;cursor:pointer;font-size:14px;font-weight:600;
+  display:flex;align-items:center;gap:10px;
+}
+.el-sug:active{ background:var(--card2); }
+.el-sug-sym{
+  width:32px;height:32px;border-radius:7px;display:flex;align-items:center;
+  justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:#fff;
+}
+.el-sug-info{ display:flex;flex-direction:column; }
+.el-sug-name{ font-size:13px;font-weight:700;color:var(--t1); }
+.el-sug-sub{ font-size:11px;color:var(--t3); }
+.el-result{
+  display:none;flex-direction:column;gap:0;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;
+}
+.el-result.visible{ display:flex; }
+.el-result-header{
+  display:flex;align-items:center;gap:14px;padding:14px 16px;
+}
+.el-result-badge{
+  width:56px;height:56px;border-radius:12px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;flex-shrink:0;color:#fff;
+}
+.el-result-sym{ font-size:22px;font-weight:900;line-height:1; }
+.el-result-num{ font-size:10px;font-weight:700;opacity:.8; }
+.el-result-main{ display:flex;flex-direction:column;gap:2px; }
+.el-result-name{ font-size:19px;font-weight:800;color:var(--t1); }
+.el-result-cat{ font-size:13px;font-weight:700;color:var(--t2); }
+.el-result-props{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border-top:1px solid var(--border);
+}
+.el-prop{
+  padding:10px 16px;display:flex;flex-direction:column;gap:2px;
+  border-right:1px solid var(--border);border-bottom:1px solid var(--border);
+}
+.el-prop:nth-child(2n){ border-right:none; }
+.el-prop:nth-last-child(-n+2){ border-bottom:none; }
+.el-prop-lbl{ font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.3px; }
+.el-prop-val{ font-size:14px;font-weight:700;color:var(--t1); }
+.el-empty{ color:var(--t3);font-size:14px;padding:8px 0; }
+
+.el-result-latin{ font-size:12px;font-weight:600;color:var(--t2);font-style:italic;line-height:1.3; }
+.el-legend{
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.el-legend-btn{
+  display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;
+  border:none;cursor:pointer;font-size:12px;font-weight:700;color:#fff;
+  transition:opacity .1s;flex-shrink:0;
+}
+.el-legend-btn:active{ opacity:.75; }
+.el-legend-btn.state-btn{
+  background:var(--card2);color:var(--t1);border:1px solid var(--border);
+}
+.el-legend-list{
+  margin-top:4px;font-size:13px;font-weight:700;color:var(--t2);
+  font-family:'SF Mono',ui-monospace,monospace;letter-spacing:.5px;
+  line-height:1.8;display:none;
+}
+.el-legend-list.open{ display:block; }
+.el-legend-state{ margin-top:0; }
+.el-kov-alkalicky   { background:#dc2626; }
+.el-kov-alkalickoze { background:#f97316; }
+.el-kov-prechodny   { background:#3b82f6; }
+.el-kov-ostatni     { background:#6366f1; }
+.el-polokov         { background:#10b981; }
+.el-nekov-reaktivni { background:#eab308; }
+.el-halogen         { background:#06b6d4; }
+.el-vzacny-plyn     { background:#8b5cf6; }
+.el-lanthanoid      { background:#ec4899; }
+.el-aktinoid        { background:#0d9488; }
+.el-nezaraden       { background:#6b7280; }
+
+/* ══════════════════════════════════════════════════════════
    SVÁTKY
 ══════════════════════════════════════════════════════════ */
 .sv-section{ display:flex;flex-direction:column;gap:6px;width:100%; }
@@ -908,6 +1007,73 @@ nav{
   </div>
 </div>
 
+<!-- ══ PRVKY ═══════════════════════════════════════════════ -->
+<div id="pg-prvky" class="pg">
+  <div class="body" style="gap:10px;padding-top:16px;overflow-y:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start;">
+
+    <!-- Vyhledávání -->
+    <div class="el-section" style="position:relative;">
+      <div class="el-input-wrap">
+        <input class="el-input" id="el-name-input" type="text"
+               placeholder="Název, zkratka nebo číslo…" autocomplete="off" autocorrect="off"
+               oninput="elNameInput(this.value)" onfocus="elNameInput(this.value)"/>
+        <button class="ctrl-clear" onclick="elClear()">Vymaž</button>
+      </div>
+      <div class="el-suggestions" id="el-sugs"></div>
+      <div class="el-result" id="el-result">
+        <div class="el-result-header">
+          <div class="el-result-badge" id="el-badge">
+            <span class="el-result-sym" id="el-sym">-</span>
+            <span class="el-result-num" id="el-anum">-</span>
+          </div>
+          <div class="el-result-main">
+            <div class="el-result-name" id="el-name">-</div>
+            <div class="el-result-latin" id="el-latin"></div>
+            <div class="el-result-cat" id="el-cat">-</div>
+          </div>
+        </div>
+        <div class="el-result-props">
+          <div class="el-prop">
+            <span class="el-prop-lbl">Atomové číslo</span>
+            <span class="el-prop-val" id="el-prop-z">-</span>
+          </div>
+          <div class="el-prop">
+            <span class="el-prop-lbl">Zkratka</span>
+            <span class="el-prop-val" id="el-prop-sym">-</span>
+          </div>
+          <div class="el-prop">
+            <span class="el-prop-lbl">Atom. hmotnost</span>
+            <span class="el-prop-val" id="el-prop-w">-</span>
+          </div>
+          <div class="el-prop">
+            <span class="el-prop-lbl">Skupenství (25 °C)</span>
+            <span class="el-prop-val" id="el-prop-st">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--border);flex-shrink:0;"></div>
+
+    <!-- Legenda kategorií -->
+    <div class="el-section">
+      <div class="el-label">Kategorie — klepni pro výpis</div>
+      <div class="el-legend" id="el-cat-legend"></div>
+      <div class="el-legend-list" id="el-cat-list"></div>
+    </div>
+
+    <div style="height:1px;background:var(--border);flex-shrink:0;"></div>
+
+    <!-- Legenda skupenství -->
+    <div class="el-section">
+      <div class="el-label">Skupenství při 25 °C — klepni pro výpis</div>
+      <div class="el-legend el-legend-state" id="el-state-legend"></div>
+      <div class="el-legend-list" id="el-state-list"></div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ══ SVÁTKY ═══════════════════════════════════════════════ -->
 <div id="pg-svatky" class="pg">
   <div class="body" style="gap:18px;padding-top:16px;">
@@ -1151,6 +1317,17 @@ nav{
     </svg>
     <span class="lbl">Perm.</span>
   </button>
+  <button class="nb" onclick="go('prvky',this)">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="1" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
+      <text x="5.5" y="8" font-size="6" font-weight="800" fill="currentColor" font-family="-apple-system,sans-serif" text-anchor="middle">Fe</text>
+      <rect x="12" y="1" width="9" height="9" rx="2" fill="currentColor" opacity=".25"/>
+      <rect x="1" y="12" width="9" height="9" rx="2" fill="currentColor" opacity=".25"/>
+      <rect x="12" y="12" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
+      <text x="16.5" y="19" font-size="6" font-weight="800" fill="currentColor" font-family="-apple-system,sans-serif" text-anchor="middle">Au</text>
+    </svg>
+    <span class="lbl">Prvky</span>
+  </button>
   <button class="nb" onclick="go('kresli',this)">
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="4" y="4" width="14" height="14" rx="2.5" fill="currentColor"/>
@@ -1223,6 +1400,12 @@ nav{
       <text x="0" y="10" font-size="9" font-weight="800" fill="currentColor" font-family="-apple-system,monospace">ABC</text>
       <text x="0" y="21" font-size="9" font-weight="800" fill="currentColor" font-family="-apple-system,monospace">BAC</text>
     </svg><span>Permutace</span></button>
+  <button class="hbr-item" onclick="hbrGo('prvky',this)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="1" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
+      <text x="5.5" y="8" font-size="6" font-weight="800" fill="currentColor" font-family="-apple-system,sans-serif" text-anchor="middle">Fe</text>
+      <rect x="12" y="12" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
+      <text x="16.5" y="19" font-size="6" font-weight="800" fill="currentColor" font-family="-apple-system,sans-serif" text-anchor="middle">Au</text>
+    </svg><span>Prvky</span></button>
   <button class="hbr-item" onclick="hbrGo('kresli',this)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="4" y="4" width="14" height="14" rx="2.5" fill="currentColor"/>
     </svg><span>Kresli</span></button>
@@ -1244,6 +1427,7 @@ const PAGE_INIT={
   '7seg':    ()=>{ segRefresh(); applySegSize(); },
   pkriz:     pkDraw,
   svatky:    initSvatky,
+  prvky:     elBuildLegend,
   kresli:    krBuildGrid,
   grille:    grBuildGrid,
   perm:      ()=>{ permUpdate(document.getElementById('perm-input')); },
@@ -2785,6 +2969,306 @@ function permUpdate(input){
     </div>`
   ).join('')+`<div class="perm-key">${key}</div>`;
 }
+
+// ═══════════════════════════════════════════════════════════
+// PRVKY (PERIODIC TABLE)
+// ═══════════════════════════════════════════════════════════
+// Pole: [Z, symbol, název_cs, kategorie, hmotnost, název_latin (null=shodný), skupenství]
+// Kategorie: ka kz kp ko pk nr ha vp la ak ??
+// Skupenství: s=pevný, l=kapalný, g=plyn, u=neznámé
+const PRVKY=[
+ [1,'H','Vodík','nr',1.008,null,'g'],
+ [2,'He','Helium','vp',4.003,null,'g'],
+ [3,'Li','Lithium','ka',6.941,null,'s'],
+ [4,'Be','Beryllium','kz',9.012,null,'s'],
+ [5,'B','Bor','pk',10.811,null,'s'],
+ [6,'C','Uhlík','nr',12.011,null,'s'],
+ [7,'N','Dusík','nr',14.007,null,'g'],
+ [8,'O','Kyslík','nr',15.999,null,'g'],
+ [9,'F','Fluor','ha',18.998,null,'g'],
+ [10,'Ne','Neon','vp',20.180,null,'g'],
+ [11,'Na','Sodík','ka',22.990,'Natrium','s'],
+ [12,'Mg','Hořčík','kz',24.305,'Magnesium','s'],
+ [13,'Al','Hliník','ko',26.982,'Aluminium','s'],
+ [14,'Si','Křemík','pk',28.086,null,'s'],
+ [15,'P','Fosfor','nr',30.974,'Phosphorus','s'],
+ [16,'S','Síra','nr',32.065,'Sulfur','s'],
+ [17,'Cl','Chlor','ha',35.453,null,'g'],
+ [18,'Ar','Argon','vp',39.948,null,'g'],
+ [19,'K','Draslík','ka',39.098,'Kalium','s'],
+ [20,'Ca','Vápník','kz',40.078,'Calcium','s'],
+ [21,'Sc','Skandium','kp',44.956,null,'s'],
+ [22,'Ti','Titan','kp',47.867,'Titanium','s'],
+ [23,'V','Vanad','kp',50.942,'Vanadium','s'],
+ [24,'Cr','Chrom','kp',51.996,'Chromium','s'],
+ [25,'Mn','Mangan','kp',54.938,'Manganum','s'],
+ [26,'Fe','Železo','kp',55.845,'Ferrum','s'],
+ [27,'Co','Kobalt','kp',58.933,'Cobaltum','s'],
+ [28,'Ni','Nikl','kp',58.693,'Niccolum','s'],
+ [29,'Cu','Měď','kp',63.546,'Cuprum','s'],
+ [30,'Zn','Zinek','kp',65.38,'Zincum','s'],
+ [31,'Ga','Gallium','ko',69.723,null,'s'],
+ [32,'Ge','Germanium','pk',72.630,null,'s'],
+ [33,'As','Arsen','pk',74.922,'Arsenicum','s'],
+ [34,'Se','Selen','nr',78.971,'Selenium','s'],
+ [35,'Br','Brom','ha',79.904,'Bromum','l'],
+ [36,'Kr','Krypton','vp',83.798,null,'g'],
+ [37,'Rb','Rubidium','ka',85.468,null,'s'],
+ [38,'Sr','Stroncium','kz',87.620,'Strontium','s'],
+ [39,'Y','Ytrium','kp',88.906,'Yttrium','s'],
+ [40,'Zr','Zirkonium','kp',91.224,'Zirconium','s'],
+ [41,'Nb','Niob','kp',92.906,'Niobium','s'],
+ [42,'Mo','Molybden','kp',95.960,'Molybdenum','s'],
+ [43,'Tc','Technecium','kp',98,null,'s'],
+ [44,'Ru','Ruthenium','kp',101.07,null,'s'],
+ [45,'Rh','Rhodium','kp',102.906,null,'s'],
+ [46,'Pd','Palladium','kp',106.42,null,'s'],
+ [47,'Ag','Stříbro','kp',107.868,'Argentum','s'],
+ [48,'Cd','Kadmium','kp',112.411,'Cadmium','s'],
+ [49,'In','Indium','ko',114.818,null,'s'],
+ [50,'Sn','Cín','ko',118.710,'Stannum','s'],
+ [51,'Sb','Antimon','pk',121.760,'Stibium','s'],
+ [52,'Te','Tellur','pk',127.600,'Tellurium','s'],
+ [53,'I','Jód','ha',126.904,'Iodum','s'],
+ [54,'Xe','Xenon','vp',131.293,null,'g'],
+ [55,'Cs','Cesium','ka',132.905,null,'s'],
+ [56,'Ba','Baryum','kz',137.327,'Barium','s'],
+ [57,'La','Lanthan','la',138.905,'Lanthanum','s'],
+ [58,'Ce','Cer','la',140.116,'Cerium','s'],
+ [59,'Pr','Praseodym','la',140.908,'Praseodymium','s'],
+ [60,'Nd','Neodym','la',144.242,'Neodymium','s'],
+ [61,'Pm','Promethium','la',145,null,'s'],
+ [62,'Sm','Samarium','la',150.360,null,'s'],
+ [63,'Eu','Europium','la',151.964,null,'s'],
+ [64,'Gd','Gadolinium','la',157.250,null,'s'],
+ [65,'Tb','Terbium','la',158.925,null,'s'],
+ [66,'Dy','Dysprosium','la',162.500,null,'s'],
+ [67,'Ho','Holmium','la',164.930,null,'s'],
+ [68,'Er','Erbium','la',167.259,null,'s'],
+ [69,'Tm','Thulium','la',168.934,null,'s'],
+ [70,'Yb','Yterbium','la',173.045,'Ytterbium','s'],
+ [71,'Lu','Lutecium','la',174.967,'Lutetium','s'],
+ [72,'Hf','Hafnium','kp',178.490,null,'s'],
+ [73,'Ta','Tantal','kp',180.948,'Tantalum','s'],
+ [74,'W','Wolfram','kp',183.840,null,'s'],
+ [75,'Re','Rhenium','kp',186.207,null,'s'],
+ [76,'Os','Osmium','kp',190.230,null,'s'],
+ [77,'Ir','Iridium','kp',192.217,null,'s'],
+ [78,'Pt','Platina','kp',195.084,'Platinum','s'],
+ [79,'Au','Zlato','kp',196.967,'Aurum','s'],
+ [80,'Hg','Rtuť','kp',200.592,'Hydrargyrum','l'],
+ [81,'Tl','Thallium','ko',204.383,null,'s'],
+ [82,'Pb','Olovo','ko',207.200,'Plumbum','s'],
+ [83,'Bi','Bismut','ko',208.980,'Bismuthum','s'],
+ [84,'Po','Polonium','pk',209,null,'s'],
+ [85,'At','Astat','ha',210,'Astatinum','s'],
+ [86,'Rn','Radon','vp',222,null,'g'],
+ [87,'Fr','Francium','ka',223,null,'s'],
+ [88,'Ra','Radium','kz',226,null,'s'],
+ [89,'Ac','Aktinium','ak',227,'Actinium','s'],
+ [90,'Th','Thorium','ak',232.038,null,'s'],
+ [91,'Pa','Protaktinium','ak',231.036,'Protactinium','s'],
+ [92,'U','Uran','ak',238.029,'Uranium','s'],
+ [93,'Np','Neptunium','ak',237,null,'s'],
+ [94,'Pu','Plutonium','ak',244,null,'s'],
+ [95,'Am','Americium','ak',243,null,'s'],
+ [96,'Cm','Curium','ak',247,null,'s'],
+ [97,'Bk','Berkelium','ak',247,null,'s'],
+ [98,'Cf','Californium','ak',251,null,'s'],
+ [99,'Es','Einsteinium','ak',252,null,'s'],
+ [100,'Fm','Fermium','ak',257,null,'s'],
+ [101,'Md','Mendelevium','ak',258,null,'s'],
+ [102,'No','Nobelium','ak',259,null,'s'],
+ [103,'Lr','Lawrencium','ak',266,null,'s'],
+ [104,'Rf','Rutherfordium','kp',267,null,'s'],
+ [105,'Db','Dubnium','kp',268,null,'s'],
+ [106,'Sg','Seaborgium','kp',269,null,'s'],
+ [107,'Bh','Bohrium','kp',270,null,'s'],
+ [108,'Hs','Hassium','kp',277,null,'s'],
+ [109,'Mt','Meitnerium','??',278,null,'u'],
+ [110,'Ds','Darmstadtium','??',281,null,'u'],
+ [111,'Rg','Roentgenium','??',282,null,'u'],
+ [112,'Cn','Kopernicium','kp',285,null,'u'],
+ [113,'Nh','Nihonium','ko',286,null,'u'],
+ [114,'Fl','Flerovium','ko',289,null,'u'],
+ [115,'Mc','Moscovium','ko',290,null,'u'],
+ [116,'Lv','Livermorium','ko',293,null,'u'],
+ [117,'Ts','Tennessine','ha',294,null,'u'],
+ [118,'Og','Oganesson','vp',294,null,'u'],
+];
+
+// Lookup indexes
+const EL_BY_SYM={}, EL_BY_NAME={}, EL_BY_Z={};
+PRVKY.forEach(p=>{
+  EL_BY_SYM[p[1].toLowerCase()]=p;
+  EL_BY_NAME[p[2].toLowerCase()]=p;
+  if(p[5]) EL_BY_NAME[p[5].toLowerCase()]=p; // latin name also searchable
+  EL_BY_Z[p[0]]=p;
+});
+
+const EL_CATS=[
+  {k:'ka', label:'Kovy alkalické',          cls:'el-kov-alkalicky'},
+  {k:'kz', label:'Kovy alkalických zemin',  cls:'el-kov-alkalickoze'},
+  {k:'kp', label:'Kovy přechodné',          cls:'el-kov-prechodny'},
+  {k:'ko', label:'Kovy ostatní',            cls:'el-kov-ostatni'},
+  {k:'pk', label:'Polokovy',                cls:'el-polokov'},
+  {k:'nr', label:'Nekovy reaktivní',        cls:'el-nekov-reaktivni'},
+  {k:'ha', label:'Halogeny',                cls:'el-halogen'},
+  {k:'vp', label:'Vzácné plyny',            cls:'el-vzacny-plyn'},
+  {k:'la', label:'Lanthanoidy',             cls:'el-lanthanoid'},
+  {k:'ak', label:'Aktinoidy',               cls:'el-aktinoid'},
+  {k:'??', label:'Nezařazeno',              cls:'el-nezaraden'},
+];
+const EL_CAT_MAP=Object.fromEntries(EL_CATS.map(c=>[c.k,c]));
+
+const EL_STATES=[
+  {k:'s', label:'Pevný',    icon:'⬛'},
+  {k:'l', label:'Kapalný',  icon:'💧'},
+  {k:'g', label:'Plyn',     icon:'💨'},
+  {k:'u', label:'Neznámé',  icon:'❓'},
+];
+const EL_STATE_LABEL={s:'Pevný',l:'Kapalný',g:'Plyn',u:'Neznámé'};
+
+let _elActiveCat=null, _elActiveState=null;
+
+function elSearch(q){
+  const ql=q.trim().toLowerCase();
+  if(!ql) return [];
+  // Číslo → přímý lookup
+  const z=parseInt(ql);
+  if(!isNaN(z)&&z>=1&&z<=118) return [EL_BY_Z[z]].filter(Boolean);
+  const res=[];
+  const bySym=EL_BY_SYM[ql];
+  if(bySym) res.push(bySym);
+  PRVKY.forEach(p=>{
+    if(!res.includes(p)&&p[2].toLowerCase().startsWith(ql)) res.push(p);
+    if(!res.includes(p)&&p[5]&&p[5].toLowerCase().startsWith(ql)) res.push(p);
+  });
+  PRVKY.forEach(p=>{
+    if(!res.includes(p)&&(p[2].toLowerCase().includes(ql)||(p[5]&&p[5].toLowerCase().includes(ql)))) res.push(p);
+  });
+  return res.slice(0,8);
+}
+
+function elRenderResult(p){
+  const cat=EL_CAT_MAP[p[3]]||EL_CAT_MAP['??'];
+  const badge=document.getElementById('el-badge');
+  badge.className='el-result-badge '+cat.cls;
+  document.getElementById('el-sym').textContent=p[1];
+  document.getElementById('el-anum').textContent=p[0];
+  document.getElementById('el-name').textContent=p[2];
+  const latinEl=document.getElementById('el-latin');
+  latinEl.textContent=p[5]?`(${p[5]})`:'';
+  document.getElementById('el-cat').textContent=cat.label;
+  document.getElementById('el-prop-z').textContent=p[0];
+  document.getElementById('el-prop-sym').textContent=p[1];
+  document.getElementById('el-prop-w').textContent=p[4];
+  document.getElementById('el-prop-st').textContent=EL_STATE_LABEL[p[6]]||'—';
+  document.getElementById('el-result').classList.add('visible');
+}
+
+function elNameInput(q){
+  const sugs=document.getElementById('el-sugs');
+  const res=document.getElementById('el-result');
+  // Close legend lists when searching
+  elCloseLists();
+  if(!q.trim()){
+    sugs.classList.remove('open');sugs.innerHTML='';
+    res.classList.remove('visible');
+    return;
+  }
+  const results=elSearch(q);
+  if(results.length===1){
+    sugs.classList.remove('open');sugs.innerHTML='';
+    elRenderResult(results[0]);
+    return;
+  }
+  if(results.length===0){
+    sugs.classList.remove('open');sugs.innerHTML='';
+    res.classList.remove('visible');
+    return;
+  }
+  sugs.innerHTML=results.map(p=>{
+    const cat=EL_CAT_MAP[p[3]]||EL_CAT_MAP['??'];
+    return `<div class="el-sug" onclick="elPickSug(${p[0]})">
+      <div class="el-sug-sym ${cat.cls}">${p[1]}</div>
+      <div class="el-sug-info">
+        <span class="el-sug-name">${p[2]}${p[5]?' ('+p[5]+')':''}</span>
+        <span class="el-sug-sub">Z=${p[0]} · ${cat.label}</span>
+      </div>
+    </div>`;
+  }).join('');
+  sugs.classList.add('open');
+  res.classList.remove('visible');
+}
+
+function elPickSug(z){
+  const p=EL_BY_Z[z];if(!p)return;
+  document.getElementById('el-name-input').value=p[2];
+  document.getElementById('el-sugs').classList.remove('open');
+  document.getElementById('el-sugs').innerHTML='';
+  elRenderResult(p);
+}
+
+function elClear(){
+  const inp=document.getElementById('el-name-input');
+  inp.value='';
+  document.getElementById('el-sugs').classList.remove('open');
+  document.getElementById('el-sugs').innerHTML='';
+  document.getElementById('el-result').classList.remove('visible');
+  vib(30);
+}
+
+function elCloseLists(){
+  document.getElementById('el-cat-list').classList.remove('open');
+  document.getElementById('el-state-list').classList.remove('open');
+  _elActiveCat=null;_elActiveState=null;
+}
+
+function elToggleCat(k){
+  const list=document.getElementById('el-cat-list');
+  if(_elActiveCat===k){elCloseLists();return;}
+  _elActiveCat=k;_elActiveState=null;
+  document.getElementById('el-state-list').classList.remove('open');
+  const cat=EL_CAT_MAP[k];
+  const syms=PRVKY.filter(p=>p[3]===k).map(p=>p[1]);
+  list.textContent=syms.join('  ');
+  list.classList.add('open');
+  // Scroll into view
+  setTimeout(()=>list.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+function elToggleState(k){
+  const list=document.getElementById('el-state-list');
+  if(_elActiveState===k){elCloseLists();return;}
+  _elActiveState=k;_elActiveCat=null;
+  document.getElementById('el-cat-list').classList.remove('open');
+  const syms=PRVKY.filter(p=>p[6]===k).map(p=>p[1]);
+  list.textContent=syms.join('  ');
+  list.classList.add('open');
+  setTimeout(()=>list.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+function elBuildLegend(){
+  // Kategorie
+  const catLeg=document.getElementById('el-cat-legend');
+  catLeg.innerHTML=EL_CATS.map(c=>
+    `<button class="el-legend-btn ${c.cls}" onclick="elToggleCat('${c.k}')">${c.label}</button>`
+  ).join('');
+  // Skupenství
+  const stLeg=document.getElementById('el-state-legend');
+  stLeg.innerHTML=EL_STATES.map(s=>
+    `<button class="el-legend-btn state-btn" onclick="elToggleState('${s.k}')">${s.icon} ${s.label}</button>`
+  ).join('');
+}
+
+// Close suggestions on outside tap
+['touchstart','mousedown'].forEach(ev=>
+  document.addEventListener(ev,e=>{
+    if(!e.target.closest('.el-input-wrap'))
+      document.getElementById('el-sugs').classList.remove('open');
+  },{passive:true})
+);
 
 function histRender(elId,hist){
   document.getElementById(elId).innerHTML=
