@@ -1009,7 +1009,7 @@ nav{
 
 <!-- ══ PRVKY ═══════════════════════════════════════════════ -->
 <div id="pg-prvky" class="pg">
-  <div class="body" style="gap:10px;padding-top:16px;overflow-y:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start;">
+  <div class="body" style="gap:10px;padding:calc(var(--safe-t) + 14px) 10px 8px;overflow-y:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start;">
 
     <!-- Vyhledávání -->
     <div class="el-section" style="position:relative;">
@@ -1048,6 +1048,14 @@ nav{
           <div class="el-prop">
             <span class="el-prop-lbl">Skupenství (25 °C)</span>
             <span class="el-prop-val" id="el-prop-st">-</span>
+          </div>
+          <div class="el-prop">
+            <span class="el-prop-lbl">Skupina</span>
+            <span class="el-prop-val" id="el-prop-grp">-</span>
+          </div>
+          <div class="el-prop">
+            <span class="el-prop-lbl">Perioda</span>
+            <span class="el-prop-val" id="el-prop-per">-</span>
           </div>
         </div>
       </div>
@@ -2973,128 +2981,128 @@ function permUpdate(input){
 // ═══════════════════════════════════════════════════════════
 // PRVKY (PERIODIC TABLE)
 // ═══════════════════════════════════════════════════════════
-// Pole: [Z, symbol, název_cs, kategorie, hmotnost, název_latin (null=shodný), skupenství]
+// Pole: [Z, symbol, název_cs, kategorie, hmotnost, název_latin (null=shodný), skupenství, skupina, perioda]
 // Kategorie: ka kz kp ko pk nr ha vp la ak ??
 // Skupenství: s=pevný, l=kapalný, g=plyn, u=neznámé
 const PRVKY=[
- [1,'H','Vodík','nr',1.008,null,'g'],
- [2,'He','Helium','vp',4.003,null,'g'],
- [3,'Li','Lithium','ka',6.941,null,'s'],
- [4,'Be','Beryllium','kz',9.012,null,'s'],
- [5,'B','Bor','pk',10.811,null,'s'],
- [6,'C','Uhlík','nr',12.011,null,'s'],
- [7,'N','Dusík','nr',14.007,null,'g'],
- [8,'O','Kyslík','nr',15.999,null,'g'],
- [9,'F','Fluor','ha',18.998,null,'g'],
- [10,'Ne','Neon','vp',20.180,null,'g'],
- [11,'Na','Sodík','ka',22.990,'Natrium','s'],
- [12,'Mg','Hořčík','kz',24.305,'Magnesium','s'],
- [13,'Al','Hliník','ko',26.982,'Aluminium','s'],
- [14,'Si','Křemík','pk',28.086,null,'s'],
- [15,'P','Fosfor','nr',30.974,'Phosphorus','s'],
- [16,'S','Síra','nr',32.065,'Sulfur','s'],
- [17,'Cl','Chlor','ha',35.453,null,'g'],
- [18,'Ar','Argon','vp',39.948,null,'g'],
- [19,'K','Draslík','ka',39.098,'Kalium','s'],
- [20,'Ca','Vápník','kz',40.078,'Calcium','s'],
- [21,'Sc','Skandium','kp',44.956,null,'s'],
- [22,'Ti','Titan','kp',47.867,'Titanium','s'],
- [23,'V','Vanad','kp',50.942,'Vanadium','s'],
- [24,'Cr','Chrom','kp',51.996,'Chromium','s'],
- [25,'Mn','Mangan','kp',54.938,'Manganum','s'],
- [26,'Fe','Železo','kp',55.845,'Ferrum','s'],
- [27,'Co','Kobalt','kp',58.933,'Cobaltum','s'],
- [28,'Ni','Nikl','kp',58.693,'Niccolum','s'],
- [29,'Cu','Měď','kp',63.546,'Cuprum','s'],
- [30,'Zn','Zinek','kp',65.38,'Zincum','s'],
- [31,'Ga','Gallium','ko',69.723,null,'s'],
- [32,'Ge','Germanium','pk',72.630,null,'s'],
- [33,'As','Arsen','pk',74.922,'Arsenicum','s'],
- [34,'Se','Selen','nr',78.971,'Selenium','s'],
- [35,'Br','Brom','ha',79.904,'Bromum','l'],
- [36,'Kr','Krypton','vp',83.798,null,'g'],
- [37,'Rb','Rubidium','ka',85.468,null,'s'],
- [38,'Sr','Stroncium','kz',87.620,'Strontium','s'],
- [39,'Y','Ytrium','kp',88.906,'Yttrium','s'],
- [40,'Zr','Zirkonium','kp',91.224,'Zirconium','s'],
- [41,'Nb','Niob','kp',92.906,'Niobium','s'],
- [42,'Mo','Molybden','kp',95.960,'Molybdenum','s'],
- [43,'Tc','Technecium','kp',98,null,'s'],
- [44,'Ru','Ruthenium','kp',101.07,null,'s'],
- [45,'Rh','Rhodium','kp',102.906,null,'s'],
- [46,'Pd','Palladium','kp',106.42,null,'s'],
- [47,'Ag','Stříbro','kp',107.868,'Argentum','s'],
- [48,'Cd','Kadmium','kp',112.411,'Cadmium','s'],
- [49,'In','Indium','ko',114.818,null,'s'],
- [50,'Sn','Cín','ko',118.710,'Stannum','s'],
- [51,'Sb','Antimon','pk',121.760,'Stibium','s'],
- [52,'Te','Tellur','pk',127.600,'Tellurium','s'],
- [53,'I','Jód','ha',126.904,'Iodum','s'],
- [54,'Xe','Xenon','vp',131.293,null,'g'],
- [55,'Cs','Cesium','ka',132.905,null,'s'],
- [56,'Ba','Baryum','kz',137.327,'Barium','s'],
- [57,'La','Lanthan','la',138.905,'Lanthanum','s'],
- [58,'Ce','Cer','la',140.116,'Cerium','s'],
- [59,'Pr','Praseodym','la',140.908,'Praseodymium','s'],
- [60,'Nd','Neodym','la',144.242,'Neodymium','s'],
- [61,'Pm','Promethium','la',145,null,'s'],
- [62,'Sm','Samarium','la',150.360,null,'s'],
- [63,'Eu','Europium','la',151.964,null,'s'],
- [64,'Gd','Gadolinium','la',157.250,null,'s'],
- [65,'Tb','Terbium','la',158.925,null,'s'],
- [66,'Dy','Dysprosium','la',162.500,null,'s'],
- [67,'Ho','Holmium','la',164.930,null,'s'],
- [68,'Er','Erbium','la',167.259,null,'s'],
- [69,'Tm','Thulium','la',168.934,null,'s'],
- [70,'Yb','Yterbium','la',173.045,'Ytterbium','s'],
- [71,'Lu','Lutecium','la',174.967,'Lutetium','s'],
- [72,'Hf','Hafnium','kp',178.490,null,'s'],
- [73,'Ta','Tantal','kp',180.948,'Tantalum','s'],
- [74,'W','Wolfram','kp',183.840,null,'s'],
- [75,'Re','Rhenium','kp',186.207,null,'s'],
- [76,'Os','Osmium','kp',190.230,null,'s'],
- [77,'Ir','Iridium','kp',192.217,null,'s'],
- [78,'Pt','Platina','kp',195.084,'Platinum','s'],
- [79,'Au','Zlato','kp',196.967,'Aurum','s'],
- [80,'Hg','Rtuť','kp',200.592,'Hydrargyrum','l'],
- [81,'Tl','Thallium','ko',204.383,null,'s'],
- [82,'Pb','Olovo','ko',207.200,'Plumbum','s'],
- [83,'Bi','Bismut','ko',208.980,'Bismuthum','s'],
- [84,'Po','Polonium','pk',209,null,'s'],
- [85,'At','Astat','ha',210,'Astatinum','s'],
- [86,'Rn','Radon','vp',222,null,'g'],
- [87,'Fr','Francium','ka',223,null,'s'],
- [88,'Ra','Radium','kz',226,null,'s'],
- [89,'Ac','Aktinium','ak',227,'Actinium','s'],
- [90,'Th','Thorium','ak',232.038,null,'s'],
- [91,'Pa','Protaktinium','ak',231.036,'Protactinium','s'],
- [92,'U','Uran','ak',238.029,'Uranium','s'],
- [93,'Np','Neptunium','ak',237,null,'s'],
- [94,'Pu','Plutonium','ak',244,null,'s'],
- [95,'Am','Americium','ak',243,null,'s'],
- [96,'Cm','Curium','ak',247,null,'s'],
- [97,'Bk','Berkelium','ak',247,null,'s'],
- [98,'Cf','Californium','ak',251,null,'s'],
- [99,'Es','Einsteinium','ak',252,null,'s'],
- [100,'Fm','Fermium','ak',257,null,'s'],
- [101,'Md','Mendelevium','ak',258,null,'s'],
- [102,'No','Nobelium','ak',259,null,'s'],
- [103,'Lr','Lawrencium','ak',266,null,'s'],
- [104,'Rf','Rutherfordium','kp',267,null,'s'],
- [105,'Db','Dubnium','kp',268,null,'s'],
- [106,'Sg','Seaborgium','kp',269,null,'s'],
- [107,'Bh','Bohrium','kp',270,null,'s'],
- [108,'Hs','Hassium','kp',277,null,'s'],
- [109,'Mt','Meitnerium','??',278,null,'u'],
- [110,'Ds','Darmstadtium','??',281,null,'u'],
- [111,'Rg','Roentgenium','??',282,null,'u'],
- [112,'Cn','Kopernicium','kp',285,null,'u'],
- [113,'Nh','Nihonium','ko',286,null,'u'],
- [114,'Fl','Flerovium','ko',289,null,'u'],
- [115,'Mc','Moscovium','ko',290,null,'u'],
- [116,'Lv','Livermorium','ko',293,null,'u'],
- [117,'Ts','Tennessine','ha',294,null,'u'],
- [118,'Og','Oganesson','vp',294,null,'u'],
+ [1,'H','Vodík','nr',1.008,'Hydrogenium','g',1,1],
+ [2,'He','Helium','vp',4.003,null,'g',18,1],
+ [3,'Li','Lithium','ka',6.941,null,'s',1,2],
+ [4,'Be','Beryllium','kz',9.012,null,'s',2,2],
+ [5,'B','Bor','pk',10.811,'Borum','s',13,2],
+ [6,'C','Uhlík','nr',12.011,'Carboneum','s',14,2],
+ [7,'N','Dusík','nr',14.007,'Nitrogenium','g',15,2],
+ [8,'O','Kyslík','nr',15.999,'Oxygenium','g',16,2],
+ [9,'F','Fluor','ha',18.998,'Fluorum','g',17,2],
+ [10,'Ne','Neon','vp',20.180,null,'g',18,2],
+ [11,'Na','Sodík','ka',22.990,'Natrium','s',1,3],
+ [12,'Mg','Hořčík','kz',24.305,'Magnesium','s',2,3],
+ [13,'Al','Hliník','ko',26.982,'Aluminium','s',13,3],
+ [14,'Si','Křemík','pk',28.086,'Silicium','s',14,3],
+ [15,'P','Fosfor','nr',30.974,'Phosphorus','s',15,3],
+ [16,'S','Síra','nr',32.065,'Sulfur','s',16,3],
+ [17,'Cl','Chlor','ha',35.453,'Chlorum','g',17,3],
+ [18,'Ar','Argon','vp',39.948,'Argonium','g',18,3],
+ [19,'K','Draslík','ka',39.098,'Kalium','s',1,4],
+ [20,'Ca','Vápník','kz',40.078,'Calcium','s',2,4],
+ [21,'Sc','Skandium','kp',44.956,'Scandium','s',3,4],
+ [22,'Ti','Titan','kp',47.867,'Titanium','s',4,4],
+ [23,'V','Vanad','kp',50.942,'Vanadium','s',5,4],
+ [24,'Cr','Chrom','kp',51.996,'Chromium','s',6,4],
+ [25,'Mn','Mangan','kp',54.938,'Manganum','s',7,4],
+ [26,'Fe','Železo','kp',55.845,'Ferrum','s',8,4],
+ [27,'Co','Kobalt','kp',58.933,'Cobaltum','s',9,4],
+ [28,'Ni','Nikl','kp',58.693,'Niccolum','s',10,4],
+ [29,'Cu','Měď','kp',63.546,'Cuprum','s',11,4],
+ [30,'Zn','Zinek','kp',65.38,'Zincum','s',12,4],
+ [31,'Ga','Gallium','ko',69.723,null,'s',13,4],
+ [32,'Ge','Germanium','pk',72.630,null,'s',14,4],
+ [33,'As','Arsen','pk',74.922,'Arsenicum','s',15,4],
+ [34,'Se','Selen','nr',78.971,'Selenium','s',16,4],
+ [35,'Br','Brom','ha',79.904,'Bromum','l',17,4],
+ [36,'Kr','Krypton','vp',83.798,null,'g',18,4],
+ [37,'Rb','Rubidium','ka',85.468,null,'s',1,5],
+ [38,'Sr','Stroncium','kz',87.620,'Strontium','s',2,5],
+ [39,'Y','Ytrium','kp',88.906,'Yttrium','s',3,5],
+ [40,'Zr','Zirkonium','kp',91.224,'Zirconium','s',4,5],
+ [41,'Nb','Niob','kp',92.906,'Niobium','s',5,5],
+ [42,'Mo','Molybden','kp',95.960,'Molybdenum','s',6,5],
+ [43,'Tc','Technecium','kp',98,null,'s',7,5],
+ [44,'Ru','Ruthenium','kp',101.07,null,'s',8,5],
+ [45,'Rh','Rhodium','kp',102.906,null,'s',9,5],
+ [46,'Pd','Palladium','kp',106.42,null,'s',10,5],
+ [47,'Ag','Stříbro','kp',107.868,'Argentum','s',11,5],
+ [48,'Cd','Kadmium','kp',112.411,'Cadmium','s',12,5],
+ [49,'In','Indium','ko',114.818,null,'s',13,5],
+ [50,'Sn','Cín','ko',118.710,'Stannum','s',14,5],
+ [51,'Sb','Antimon','pk',121.760,'Stibium','s',15,5],
+ [52,'Te','Tellur','pk',127.600,'Tellurium','s',16,5],
+ [53,'I','Jód','ha',126.904,'Iodum','s',17,5],
+ [54,'Xe','Xenon','vp',131.293,null,'g',18,5],
+ [55,'Cs','Cesium','ka',132.905,null,'s',1,6],
+ [56,'Ba','Baryum','kz',137.327,'Barium','s',2,6],
+ [57,'La','Lanthan','la',138.905,'Lanthanum','s',3,6],
+ [58,'Ce','Cer','la',140.116,'Cerium','s',null,6],
+ [59,'Pr','Praseodym','la',140.908,'Praseodymium','s',null,6],
+ [60,'Nd','Neodym','la',144.242,'Neodymium','s',null,6],
+ [61,'Pm','Promethium','la',145,null,'s',null,6],
+ [62,'Sm','Samarium','la',150.360,null,'s',null,6],
+ [63,'Eu','Europium','la',151.964,null,'s',null,6],
+ [64,'Gd','Gadolinium','la',157.250,null,'s',null,6],
+ [65,'Tb','Terbium','la',158.925,null,'s',null,6],
+ [66,'Dy','Dysprosium','la',162.500,null,'s',null,6],
+ [67,'Ho','Holmium','la',164.930,null,'s',null,6],
+ [68,'Er','Erbium','la',167.259,null,'s',null,6],
+ [69,'Tm','Thulium','la',168.934,null,'s',null,6],
+ [70,'Yb','Yterbium','la',173.045,'Ytterbium','s',null,6],
+ [71,'Lu','Lutecium','la',174.967,'Lutetium','s',3,6],
+ [72,'Hf','Hafnium','kp',178.490,null,'s',4,6],
+ [73,'Ta','Tantal','kp',180.948,'Tantalum','s',5,6],
+ [74,'W','Wolfram','kp',183.840,'Wolframium','s',6,6],
+ [75,'Re','Rhenium','kp',186.207,null,'s',7,6],
+ [76,'Os','Osmium','kp',190.230,null,'s',8,6],
+ [77,'Ir','Iridium','kp',192.217,null,'s',9,6],
+ [78,'Pt','Platina','kp',195.084,'Platinum','s',10,6],
+ [79,'Au','Zlato','kp',196.967,'Aurum','s',11,6],
+ [80,'Hg','Rtuť','kp',200.592,'Hydrargyrum','l',12,6],
+ [81,'Tl','Thallium','ko',204.383,null,'s',13,6],
+ [82,'Pb','Olovo','ko',207.200,'Plumbum','s',14,6],
+ [83,'Bi','Bismut','ko',208.980,'Bismuthum','s',15,6],
+ [84,'Po','Polonium','pk',209,null,'s',16,6],
+ [85,'At','Astat','ha',210,'Astatinum','s',17,6],
+ [86,'Rn','Radon','vp',222,null,'g',18,6],
+ [87,'Fr','Francium','ka',223,null,'s',1,7],
+ [88,'Ra','Radium','kz',226,null,'s',2,7],
+ [89,'Ac','Aktinium','ak',227,'Actinium','s',3,7],
+ [90,'Th','Thorium','ak',232.038,null,'s',null,7],
+ [91,'Pa','Protaktinium','ak',231.036,'Protactinium','s',null,7],
+ [92,'U','Uran','ak',238.029,'Uranium','s',null,7],
+ [93,'Np','Neptunium','ak',237,null,'s',null,7],
+ [94,'Pu','Plutonium','ak',244,null,'s',null,7],
+ [95,'Am','Americium','ak',243,null,'s',null,7],
+ [96,'Cm','Curium','ak',247,null,'s',null,7],
+ [97,'Bk','Berkelium','ak',247,null,'s',null,7],
+ [98,'Cf','Californium','ak',251,null,'s',null,7],
+ [99,'Es','Einsteinium','ak',252,null,'s',null,7],
+ [100,'Fm','Fermium','ak',257,null,'s',null,7],
+ [101,'Md','Mendelevium','ak',258,null,'s',null,7],
+ [102,'No','Nobelium','ak',259,null,'s',null,7],
+ [103,'Lr','Lawrencium','ak',266,null,'s',3,7],
+ [104,'Rf','Rutherfordium','kp',267,null,'s',4,7],
+ [105,'Db','Dubnium','kp',268,null,'s',5,7],
+ [106,'Sg','Seaborgium','kp',269,null,'s',6,7],
+ [107,'Bh','Bohrium','kp',270,null,'s',7,7],
+ [108,'Hs','Hassium','kp',277,null,'s',8,7],
+ [109,'Mt','Meitnerium','??',278,null,'u',9,7],
+ [110,'Ds','Darmstadtium','??',281,null,'u',10,7],
+ [111,'Rg','Roentgenium','??',282,null,'u',11,7],
+ [112,'Cn','Kopernicium','kp',285,null,'u',12,7],
+ [113,'Nh','Nihonium','ko',286,null,'u',13,7],
+ [114,'Fl','Flerovium','ko',289,null,'u',14,7],
+ [115,'Mc','Moscovium','ko',290,null,'u',15,7],
+ [116,'Lv','Livermorium','ko',293,null,'u',16,7],
+ [117,'Ts','Tennessine','ha',294,null,'u',17,7],
+ [118,'Og','Oganesson','vp',294,null,'u',18,7],
 ];
 
 // Lookup indexes
@@ -3164,13 +3172,14 @@ function elRenderResult(p){
   document.getElementById('el-prop-sym').textContent=p[1];
   document.getElementById('el-prop-w').textContent=p[4];
   document.getElementById('el-prop-st').textContent=EL_STATE_LABEL[p[6]]||'—';
+  document.getElementById('el-prop-grp').textContent=p[7]||'—';
+  document.getElementById('el-prop-per').textContent=p[8]||'—';
   document.getElementById('el-result').classList.add('visible');
 }
 
 function elNameInput(q){
   const sugs=document.getElementById('el-sugs');
   const res=document.getElementById('el-result');
-  // Close legend lists when searching
   elCloseLists();
   if(!q.trim()){
     sugs.classList.remove('open');sugs.innerHTML='';
@@ -3190,7 +3199,7 @@ function elNameInput(q){
   }
   sugs.innerHTML=results.map(p=>{
     const cat=EL_CAT_MAP[p[3]]||EL_CAT_MAP['??'];
-    return `<div class="el-sug" onclick="elPickSug(${p[0]})">
+    return `<div class="el-sug" onmousedown="elPickSug(${p[0]},event)" ontouchstart="elPickSug(${p[0]},event)" onclick="elPickSug(${p[0]},event)">
       <div class="el-sug-sym ${cat.cls}">${p[1]}</div>
       <div class="el-sug-info">
         <span class="el-sug-name">${p[2]}${p[5]?' ('+p[5]+')':''}</span>
@@ -3202,7 +3211,8 @@ function elNameInput(q){
   res.classList.remove('visible');
 }
 
-function elPickSug(z){
+function elPickSug(z,e){
+  if(e) e.preventDefault();
   const p=EL_BY_Z[z];if(!p)return;
   document.getElementById('el-name-input').value=p[2];
   document.getElementById('el-sugs').classList.remove('open');
@@ -3262,10 +3272,10 @@ function elBuildLegend(){
   ).join('');
 }
 
-// Close suggestions on outside tap
+// Close suggestions on outside tap/click — but not when clicking a suggestion
 ['touchstart','mousedown'].forEach(ev=>
   document.addEventListener(ev,e=>{
-    if(!e.target.closest('.el-input-wrap'))
+    if(!e.target.closest('.el-input-wrap')&&!e.target.closest('.el-suggestions'))
       document.getElementById('el-sugs').classList.remove('open');
   },{passive:true})
 );
