@@ -471,10 +471,19 @@ nav{
 }
 .el-input:focus{ border-color:var(--violet); }
 .el-suggestions{
-  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:100;
+  position:fixed;left:10px;right:10px;z-index:100;
   background:var(--card2);border:1px solid var(--border2);border-radius:10px;
-  overflow:hidden;display:none;max-height:180px;overflow-y:auto;
+  overflow:hidden;display:none;
+  overflow-y:scroll;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+  /* scrollbar always visible so user can grab it with finger */
+  scrollbar-width:thin;
+  scrollbar-color:var(--border2) transparent;
 }
+.el-suggestions::-webkit-scrollbar{width:6px;}
+.el-suggestions::-webkit-scrollbar-track{background:transparent;}
+.el-suggestions::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 .el-suggestions.open{ display:block; }
 .el-sug{
   padding:9px 14px;cursor:pointer;font-size:14px;font-weight:600;
@@ -515,8 +524,8 @@ nav{
 }
 .el-prop:nth-child(2n){ border-right:none; }
 .el-prop:nth-last-child(-n+2){ border-bottom:none; }
-.el-prop-lbl{ font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.3px; }
-.el-prop-val{ font-size:14px;font-weight:700;color:var(--t1); }
+.el-prop-lbl{ font-size:12px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.3px; }
+.el-prop-val{ font-size:16px;font-weight:700;color:var(--t1); }
 .el-empty{ color:var(--t3);font-size:14px;padding:8px 0; }
 
 .el-result-latin{ font-size:12px;font-weight:600;color:var(--t2);font-style:italic;line-height:1.3; }
@@ -525,7 +534,7 @@ nav{
 }
 .el-legend-btn{
   display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;
-  border:none;cursor:pointer;font-size:12px;font-weight:700;color:#fff;
+  border:none;cursor:pointer;font-size:14px;font-weight:700;color:#fff;
   transition:opacity .1s;flex-shrink:0;
 }
 .el-legend-btn:active{ opacity:.75; }
@@ -3146,16 +3155,22 @@ function elSearch(q){
   const z=parseInt(ql);
   if(!isNaN(z)&&z>=1&&z<=118) return [EL_BY_Z[z]].filter(Boolean);
   const res=[];
+  // 1. Přesná shoda zkratky (case-insensitive)
   const bySym=EL_BY_SYM[ql];
   if(bySym) res.push(bySym);
+  // 2. Zkratka začíná hledaným řetězcem
+  PRVKY.forEach(p=>{
+    if(!res.includes(p)&&p[1].toLowerCase().startsWith(ql)) res.push(p);
+  });
+  // 3. Český název začíná hledaným řetězcem
   PRVKY.forEach(p=>{
     if(!res.includes(p)&&p[2].toLowerCase().startsWith(ql)) res.push(p);
+  });
+  // 4. Latinský název začíná hledaným řetězcem
+  PRVKY.forEach(p=>{
     if(!res.includes(p)&&p[5]&&p[5].toLowerCase().startsWith(ql)) res.push(p);
   });
-  PRVKY.forEach(p=>{
-    if(!res.includes(p)&&(p[2].toLowerCase().includes(ql)||(p[5]&&p[5].toLowerCase().includes(ql)))) res.push(p);
-  });
-  return res.slice(0,8);
+  return res;
 }
 
 function elRenderResult(p){
@@ -3177,6 +3192,17 @@ function elRenderResult(p){
   document.getElementById('el-result').classList.add('visible');
 }
 
+function elPositionSugs(){
+  const inp=document.getElementById('el-name-input');
+  const sugs=document.getElementById('el-sugs');
+  if(!inp||!sugs) return;
+  const rect=inp.getBoundingClientRect();
+  const topPos=rect.bottom+4;
+  const availH=window.innerHeight-topPos-8;
+  sugs.style.top=topPos+'px';
+  sugs.style.maxHeight=Math.max(120,availH)+'px';
+}
+
 function elNameInput(q){
   const sugs=document.getElementById('el-sugs');
   const res=document.getElementById('el-result');
@@ -3187,11 +3213,6 @@ function elNameInput(q){
     return;
   }
   const results=elSearch(q);
-  if(results.length===1){
-    sugs.classList.remove('open');sugs.innerHTML='';
-    elRenderResult(results[0]);
-    return;
-  }
   if(results.length===0){
     sugs.classList.remove('open');sugs.innerHTML='';
     res.classList.remove('visible');
@@ -3199,7 +3220,7 @@ function elNameInput(q){
   }
   sugs.innerHTML=results.map(p=>{
     const cat=EL_CAT_MAP[p[3]]||EL_CAT_MAP['??'];
-    return `<div class="el-sug" onmousedown="elPickSug(${p[0]},event)" ontouchstart="elPickSug(${p[0]},event)" onclick="elPickSug(${p[0]},event)">
+    return `<div class="el-sug" data-z="${p[0]}">
       <div class="el-sug-sym ${cat.cls}">${p[1]}</div>
       <div class="el-sug-info">
         <span class="el-sug-name">${p[2]}${p[5]?' ('+p[5]+')':''}</span>
@@ -3207,12 +3228,20 @@ function elNameInput(q){
       </div>
     </div>`;
   }).join('');
+  // Attach tap-safe touch handlers (ignore scroll, fire on touchend without move)
+  sugs.querySelectorAll('.el-sug').forEach(el=>{
+    let _tsY=0,_moved=false;
+    el.addEventListener('touchstart',e=>{_tsY=e.touches[0].clientY;_moved=false;},{passive:true});
+    el.addEventListener('touchmove',e=>{if(Math.abs(e.touches[0].clientY-_tsY)>8)_moved=true;},{passive:true});
+    el.addEventListener('touchend',e=>{if(!_moved){e.preventDefault();elPickSug(+el.dataset.z);}});
+    el.addEventListener('mousedown',e=>{e.preventDefault();elPickSug(+el.dataset.z);});
+  });
+  elPositionSugs();
   sugs.classList.add('open');
   res.classList.remove('visible');
 }
 
-function elPickSug(z,e){
-  if(e) e.preventDefault();
+function elPickSug(z){
   const p=EL_BY_Z[z];if(!p)return;
   document.getElementById('el-name-input').value=p[2];
   document.getElementById('el-sugs').classList.remove('open');
@@ -3444,6 +3473,7 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 window.addEventListener('resize',()=>{
   setVH();
+  elPositionSugs();
   const on=document.querySelector('.pg.on');
   if(!on) return;
   const RESIZE_FN={
