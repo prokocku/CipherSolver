@@ -2979,7 +2979,16 @@ function permUpdate(input){
     key=[...raw].map((ch,i)=>`${i+1}=${ch}`).join(' ');
   }
 
-  list.innerHTML=allPerms.map((perm,i)=>
+  // Deduplicate: keep only first occurrence of each unique string
+  const seen=new Set();
+  const unique=allPerms.filter(perm=>{
+    const s=perm.map(indexToChar).join('');
+    if(seen.has(s)) return false;
+    seen.add(s);
+    return true;
+  });
+
+  list.innerHTML=unique.map((perm,i)=>
     `<div class="perm-item">
       <span class="perm-num">${i+1}.</span>
       <span class="perm-val">${perm.map(indexToChar).join('')}</span>
